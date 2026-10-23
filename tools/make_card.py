@@ -107,7 +107,46 @@ def signed(n):
     return f"+{n}" if n > 0 else (f"–{abs(n)}" if n < 0 else "0")
 
 
-def draw_card(m, out_path):
+def plural(n, one, few, many):
+    if n % 10 == 1 and n % 100 != 11:
+        return one
+    if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14:
+        return few
+    return many
+
+
+def effects(data):
+    """Same point rules as the page: streak bonus (rule 8.1) and automatic blocks (rules 8.5, 2.6)."""
+    ban_pts = data.get("points", {}).get("ban", 20)
+    out, streak, lstreak, blocks = {}, {}, {}, {}
+    extra = sorted(data.get("penalties") or [], key=lambda p: p["date"])
+    i, last_n = 0, 0
+
+    def block(name, game_no, info):
+        key = (name, (max(1, game_no) - 1) // 50)
+        blocks[key] = blocks.get(key, 0) + 1
+        pts = info.get("points")
+        return {"days": info.get("days") or blocks[key], "pts": pts if isinstance(pts, int) else -ban_pts,
+                "reason": info.get("reason") or "Блокировка"}
+
+    for m in sorted(data["matches"], key=lambda m: m["n"]):
+        while i < len(extra) and extra[i]["date"] < m["date"][:10]:
+            block(extra[i]["p"], extra[i].get("match") or last_n or 1, extra[i])
+            i += 1
+        last_n = m["n"]
+        for side in ("alliance", "akatsuki"):
+            won = m["winner"] == side
+            for x in m.get(side, []):
+                p = x["p"]
+                streak[p] = streak.get(p, 0) + 1 if won else 0
+                lstreak[p] = 0 if won else lstreak.get(p, 0) + 1
+                bonus = (5 if streak[p] > 5 else 0) if won else (-5 if lstreak[p] > 5 else 0)
+                pen = block(p, m["n"], x["ban"]) if x.get("ban") else None
+                out[(m["n"], p)] = {"total": x["d"] + bonus + (pen["pts"] if pen else 0), "bonus": bonus, "pen": pen}
+    return out
+
+
+def draw_card(m, out_path, eff=None):
     img = Image.new("RGBA", (s(W), s(H)), BG + (255,))
     glow(img, s(140), s(-60), s(520), ALLY, 80)
     glow(img, s(1080), s(-40), s(500), AKA, 75)
@@ -190,12 +229,13 @@ def draw_card(m, out_path):
             ry = y + j * row_h
             if j:
                 d.line([(x0 + s(16), ry), (x0 + col_w - s(16), ry)], fill=LINE, width=S)
-            delta = signed(x["d"])
+            e = (eff or {}).get((m["n"], x["p"])) or {"total": x["d"], "bonus": 0, "pen": None}
+            delta = signed(e["total"])
             dw = d.textlength(delta, font=F_DELTA)
             kda = " / ".join(str(v) for v in x["kda"]) if x.get("kda") else ""
             kw = d.textlength(kda, font=F_KDA) if kda else 0
             right = x0 + col_w - s(18)
-            d.text((right - dw, ry + s(20)), delta, font=F_DELTA, fill=WIN if x["d"] > 0 else LOSS if x["d"] < 0 else MUTED)
+            d.text((right - dw, ry + s(20)), delta, font=F_DELTA, fill=WIN if e["total"] > 0 else LOSS if e["total"] < 0 else MUTED)
             if kda:
                 d.text((right - dw - s(22) - kw, ry + s(20)), kda, font=F_KDA, fill=SOFT)
             name_max = (right - dw - s(22) - kw - s(16)) - (x0 + s(18))
@@ -212,9 +252,12 @@ def draw_card(m, out_path):
                 o = (ay1 - ay0) * math.tan(math.radians(10))
                 d.polygon([(ax + o, ay0), (ax + aw + o, ay0), (ax + aw, ay1), (ax, ay1)], outline=ac, width=S)
                 d.text((ax + o / 2 + s(8), ay0 + (ay1 - ay0 - (ab[3] - ab[1])) / 2 - ab[1]), award, font=F_AWARD, fill=ac)
-            sub = " · ".join(t for t in (x.get("hero"), x.get("note")) if t)
+            pen = e["pen"]
+            ban_t = f"бан {pen['days']} {plural(pen['days'], 'день', 'дня', 'дней')} · {pen['reason'].lower()}" if pen else ""
+            bonus_t = (f"серия +{e['bonus']}" if e["bonus"] > 0 else f"серия –{abs(e['bonus'])}") if e["bonus"] else ""
+            sub = " · ".join(t for t in (x.get("hero"), ban_t, x.get("note"), bonus_t) if t)
             if sub:
-                d.text((nx, ry + s(41)), fit(d, sub, F_HERO, name_max), font=F_HERO, fill=LOSS if (x.get("note") and not x.get("hero")) else MUTED)
+                d.text((nx, ry + s(41)), fit(d, sub, F_HERO, name_max), font=F_HERO, fill=LOSS if (pen and not x.get("hero")) else MUTED)
 
     # footer
     fy = s(582)
@@ -261,11 +304,12 @@ def main():
     out_dir = os.path.join(os.path.dirname(os.path.abspath(page)), "cards")
     os.makedirs(out_dir, exist_ok=True)
     done = []
+    eff = effects(data)
     for match in data["matches"]:
         if wanted and match["n"] not in wanted:
             continue
         out = os.path.join(out_dir, f"game-{match['n']}.png")
-        draw_card(match, out)
+        draw_card(match, out, eff)
         done.append(match["n"])
         print("card", out)
     for path in [page] + also:

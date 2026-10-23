@@ -332,6 +332,43 @@ footer .line { border-top: 1px solid var(--line); padding-top: 16px; display: fl
 .cmp-row .v.better { color: var(--gold); text-shadow: 0 0 14px rgba(255, 201, 74, 0.35); }
 .h2h { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
 
+/* Streaks, current bans, Captains Mode, achievements */
+.streak {
+  display: inline-block; transform: skewX(-10deg); font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+  padding: 0 7px; line-height: 20px; white-space: nowrap; flex: none;
+}
+.streak.hot { background: rgba(255, 201, 74, 0.14); color: var(--gold); border: 1px solid rgba(255, 201, 74, 0.5); }
+.streak.cold { background: rgba(255, 107, 127, 0.12); color: var(--loss); border: 1px solid rgba(255, 107, 127, 0.45); }
+.lb-row .name-cell { display: flex; align-items: center; gap: 10px; min-width: 0; overflow: hidden; }
+.banbar { display: grid; gap: 10px; padding: 14px 18px; background: rgba(15, 19, 29, 0.86); border: 1px solid var(--line); }
+.banbar .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.banbar .lbl { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; color: var(--muted); margin-right: 4px; }
+.banbar .lbl b { color: var(--ink); }
+.tag.ban { border-color: var(--aka); background: rgba(255, 58, 92, 0.12); }
+.tag.circle { border-color: var(--gold); color: var(--gold); }
+.pen-note { color: var(--loss); }
+.bonus-note { color: var(--gold); }
+.cm { display: grid; gap: 14px; padding: 18px; }
+.cm-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 16px; }
+.cm-left { font-family: var(--f-display); font-size: 30px; }
+.cm-bar { height: 10px; background: var(--line); }
+.cm-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--ally), var(--aka)); }
+.cm-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.cm-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--panel-2); border: 1px solid var(--line); min-width: 0; }
+.cm-item.cap { border-color: var(--gold); box-shadow: 0 0 16px rgba(255, 201, 74, 0.12); }
+.cm-item .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.cm-item .pt { font-family: var(--f-display); font-size: 15px; }
+.cap-tag { font-size: 11px; font-weight: 800; color: var(--gold); letter-spacing: 0.08em; }
+.achs { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.ach { padding: 10px 14px; background: rgba(15, 19, 29, 0.9); border: 1px solid var(--line-2); display: grid; gap: 2px; align-content: start; }
+.ach .n { font-weight: 800; letter-spacing: 0.02em; }
+.ach .d { font-size: 13px; color: var(--muted); }
+.ach.rare { border-color: rgba(255, 201, 74, 0.6); box-shadow: 0 0 18px rgba(255, 201, 74, 0.12); }
+.ach.rare .n { color: var(--gold); }
+.ach.locked { opacity: 0.45; border-style: dashed; box-shadow: none; }
+.ach.locked .n { color: var(--soft); }
+.ach .who { font-size: 13px; display: flex; flex-wrap: wrap; gap: 2px 10px; margin-top: 4px; }
+
 @media (max-width: 600px) {
   main.gutter { padding-block: 28px 56px; gap: 36px; }
   .vs .side { padding: 12px 20px; }
@@ -379,12 +416,14 @@ img { max-width: 100%; }
       <div class="side k"><div><span class="sc" id="t-k">0</span><span class="nm">АКАЦУКИ</span></div></div>
     </div>
     <div class="facts" id="facts"></div>
+    <div class="banbar" id="banbar" aria-label="Сейчас в бане"></div>
   </header>
 
   <section class="sec" id="view-table" aria-labelledby="h-table">
     <div class="sec-head"><h2 id="h-table">ТАБЛИЦА ЛИДЕРОВ</h2><span class="note">нажми на ник — откроется профиль игрока</span></div>
     <div class="scroll-x"><div class="lb" id="board"></div></div>
     <details class="bench" id="bench"><summary id="bench-sum">Ещё не играли</summary><div class="bench-list" id="bench-list"></div></details>
+    <div class="sec" style="gap:14px;margin-top:24px" id="cm-wrap"></div>
   </section>
 
   <section class="sec" id="view-matches" hidden aria-labelledby="h-matches">
@@ -401,6 +440,10 @@ img { max-width: 100%; }
     <div class="sec" style="gap:16px">
       <div class="sec-head"><h2 id="h-records">РЕКОРДЫ СЕЗОНА</h2><span class="note" id="rec-note"></span></div>
       <div class="awards" id="awards"></div>
+    </div>
+    <div class="sec" style="gap:16px">
+      <h2>ДОСТИЖЕНИЯ СЕЗОНА</h2>
+      <div class="achs" id="ach-all"></div>
     </div>
     <div class="sec" style="gap:16px">
       <h2>ГЕРОИ СЕЗОНА</h2>
@@ -547,9 +590,11 @@ img { max-width: 100%; }
       "akatsuki": [
         {
           "p": "Inesska",
-          "d": -20,
-          "note": "лив, бан на 24 часа",
-          "rule": "2.3"
+          "d": 0,
+          "ban": {
+            "reason": "Лив из игры",
+            "rule": "2.3"
+          }
         },
         {
           "p": "SAND",
@@ -990,16 +1035,8 @@ img { max-width: 100%; }
     }
   ],
   "adjustments": [],
-  "penalties": [
-    {
-      "date": "2026-10-22",
-      "p": "Inesska",
-      "what": "Бан на 24 часа, −20",
-      "reason": "Лив из игры",
-      "rule": "2.3",
-      "match": 1
-    }
-  ]
+  "penalties": [],
+  "circle": []
 }
 </script>
 
@@ -1665,25 +1702,58 @@ img { max-width: 100%; }
     if (!stats[name]) {
       stats[name] = {
         name: name, pts: 0, w: 0, l: 0, form: [], games: [], sg: 0, k: 0, d: 0, a: 0, dmg: 0, cs: 0,
-        mvp: 0, svp: 0, streak: 0, bestStreak: 0,
+        mvp: 0, svp: 0, streak: 0, lstreak: 0, bestStreak: 0, bonus: 0, blocks: 0,
         sides: { alliance: { g: 0, w: 0 }, akatsuki: { g: 0, w: 0 } }, heroes: {}, mates: {}
       };
     }
     return stats[name];
   }
   var singleGames = [];
+  // Rule 8.5: every block costs points; rule 2.6: block length = its number, counter resets every 50 games
+  var BAN_PTS = data.points.ban || 20;
+  var penaltyLog = [], blockCount = {}, gameOf = {};
+  function daysText(n) { return n + ' ' + plural(n, 'день', 'дня', 'дней'); }
+  function giveBlock(name, gameNo, info) {
+    var key = name + '|' + Math.floor((Math.max(1, gameNo) - 1) / 50);
+    var no = (blockCount[key] || 0) + 1;
+    blockCount[key] = no;
+    var e = {
+      date: info.date, p: name, no: no, days: info.days || no,
+      pts: typeof info.points === 'number' ? info.points : -BAN_PTS,
+      reason: info.reason || 'Блокировка', rule: info.rule || '', match: info.match || null
+    };
+    var s = st(name); s.pts += e.pts; s.blocks++;
+    penaltyLog.push(e);
+    return e;
+  }
+  var extraPens = (data.penalties || []).slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  var penIdx = 0, lastN = 0;
+  function flushPens(beforeDate) {
+    while (penIdx < extraPens.length && (beforeDate === null || extraPens[penIdx].date < beforeDate)) {
+      var p = extraPens[penIdx++];
+      giveBlock(p.p, p.match || lastN || 1, p);
+    }
+  }
   matches.forEach(function (m) {
+    flushPens(m.date.slice(0, 10));
+    lastN = m.n;
     SIDES.forEach(function (side) {
       var won = m.winner === side;
       (m[side] || []).forEach(function (x) {
         var s = st(x.p);
-        s.pts += x.d;
         if (won) s.w++; else s.l++;
         s.form.push(won ? 'w' : 'l');
         s.streak = won ? s.streak + 1 : 0;
+        s.lstreak = won ? 0 : s.lstreak + 1;
         if (s.streak > s.bestStreak) s.bestStreak = s.streak;
+        // Rule 8.1: from the 6th win (loss) in a row, +5 (−5) for each
+        var bonus = won ? (s.streak > 5 ? 5 : 0) : (s.lstreak > 5 ? -5 : 0);
+        s.pts += x.d + bonus; s.bonus += bonus;
         s.sides[side].g++; if (won) s.sides[side].w++;
-        var g = { m: m, side: side, won: won, x: x };
+        var g = { m: m, side: side, won: won, x: x, bonus: bonus, pen: null };
+        if (x.ban) g.pen = giveBlock(x.p, m.n, { date: m.date.slice(0, 10), reason: x.ban.reason, rule: x.ban.rule, match: m.n, days: x.ban.days, points: x.ban.points });
+        g.total = x.d + bonus + (g.pen ? g.pen.pts : 0);
+        gameOf[m.n + '|' + x.p] = g;
         s.games.push(g);
         if (x.kda) {
           s.sg++; s.k += x.kda[0]; s.d += x.kda[1]; s.a += x.kda[2];
@@ -1704,6 +1774,7 @@ img { max-width: 100%; }
       });
     });
   });
+  flushPens(null);
   (data.adjustments || []).forEach(function (a) {
     var rule = ADJ[a.kind];
     if (rule) st(a.p).pts += rule.sign * data.points[a.kind] * (a.count || 1);
@@ -1727,6 +1798,31 @@ img { max-width: 100%; }
   rows.forEach(function (s) { slugFor(s.name); });
   var withStats = matches.filter(function (m) { return SIDES.some(function (side) { return (m[side] || []).some(function (x) { return x.kda; }); }); }).length;
 
+  function gameNote(g) {
+    var parts = [];
+    if (g.pen) parts.push('<span class="pen-note">' + ruleLink('бан ' + daysText(g.pen.days) + ' · ' + g.pen.reason, g.pen.rule) + '</span>');
+    if (g.x.note) parts.push(ruleLink(g.x.note, g.x.rule));
+    if (g.bonus) parts.push('<span class="bonus-note">' + ruleLink((g.bonus > 0 ? 'серия +' : 'серия −') + Math.abs(g.bonus), '8.1') + '</span>');
+    return parts.join(' · ');
+  }
+  function deltaTitle(g) {
+    var t = 'За игру ' + signed(g.x.d);
+    if (g.bonus) t += ', серия ' + signed(g.bonus);
+    if (g.pen) t += ', блокировка ' + signed(g.pen.pts);
+    return t;
+  }
+  function streakChip(s) {
+    if (s.streak >= 3) {
+      var left = 6 - s.streak;
+      return '<span class="streak hot" title="' + (left > 0 ? 'Ещё ' + left + ' ' + plural(left, 'победа', 'победы', 'побед') + ' подряд — и каждая следующая даст +5 (пункт 8.1)' : 'Каждая следующая победа подряд даёт +5 (пункт 8.1)') + '">' +
+        s.streak + ' ПОДРЯД' + (s.streak >= 5 ? ' · +5' : '') + '</span>';
+    }
+    if (s.lstreak >= 3) {
+      return '<span class="streak cold" title="С 6-го поражения подряд каждое следующее −5 (пункт 8.1)">' + s.lstreak + ' ПОРАЖ.' + (s.lstreak >= 5 ? ' · −5' : '') + '</span>';
+    }
+    return '';
+  }
+
   // ---------- Header ----------
   var aw = matches.filter(function (m) { return m.winner === 'alliance'; }).length;
   document.getElementById('t-a').textContent = aw;
@@ -1743,6 +1839,27 @@ img { max-width: 100%; }
     facts.push(['Средняя игра', Math.floor(avg / 60) + ':' + String(Math.round(avg % 60)).padStart(2, '0')]);
   }
   document.getElementById('facts').innerHTML = facts.map(function (f) { return '<span>' + f[0] + ' <b>' + esc(f[1]) + '</b></span>'; }).join('');
+  (function () {
+    var bar = document.getElementById('banbar');
+    var last = matches[matches.length - 1];
+    if (!last) { bar.hidden = true; return; }
+    var html = '';
+    if (last.bans && last.bans.length) {
+      html += '<div class="row"><span class="lbl">В БАНЕ НА <b>ИГРУ #' + (last.n + 1) + '</b></span>' +
+        last.bans.map(function (b) { return '<span class="tag ban"><span>' + esc(b) + '</span></span>'; }).join('') +
+        '<span class="note">герои победителей игры #' + last.n + ' · ' + ruleLink('пункт 6.13', '6.13') + '</span></div>';
+    }
+    var circle = (data.circle || []).slice().sort(function (a, b) { return b.fromGame - a.fromGame; })[0];
+    if (circle) {
+      if (circle.heroes && circle.heroes.length) html += '<div class="row"><span class="lbl">ГЕРОИ КРУГА <b>+30 / −10</b></span>' +
+        circle.heroes.map(function (b) { return '<span class="tag circle"><span>' + esc(b) + '</span></span>'; }).join('') + '<span class="note">с игры #' + circle.fromGame + ' · ' + ruleLink('пункт 8.3', '8.3') + '</span></div>';
+      if (circle.shame && circle.shame.length) html += '<div class="row"><span class="lbl">ГЕРОИ ПОЗОРА <b>В БАНЕ</b></span>' +
+        circle.shame.map(function (b) { return '<span class="tag ban"><span>' + esc(b) + '</span></span>'; }).join('') + '<span class="note">до игры #' + (circle.fromGame + 10) + ' · ' + ruleLink('пункт 8.4', '8.4') + '</span></div>';
+    } else {
+      html += '<div class="row"><span class="note">Герои круга и позора появятся с 30-й игры сезона — ' + ruleLink('пункт 8.3', '8.3') + '</span></div>';
+    }
+    bar.innerHTML = html;
+  })();
 
   // ---------- Leaderboard ----------
   (function () {
@@ -1751,7 +1868,7 @@ img { max-width: 100%; }
       var w = Math.round(s.wr * 100);
       html += '<div class="lb-row">' +
         '<span><span class="rk' + (s.place === 1 ? ' gold' : '') + '">' + s.place + '</span></span>' +
-        '<span style="min-width:0">' + plink(s.name) + '</span>' +
+        '<span class="name-cell">' + plink(s.name) + streakChip(s) + '</span>' +
         '<span class="pts ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' +
         '<span>' + s.w + ' – ' + s.l + '</span>' +
         '<span class="wr"><span class="bar"><i style="width:' + w + '%"></i></span><span class="v">' + w + '%</span></span>' +
@@ -1770,6 +1887,22 @@ img { max-width: 100%; }
     } else {
       document.getElementById('bench').hidden = true;
     }
+    // Captains Mode countdown (rules 4.2–4.4)
+    var lastNo = matches.length ? matches[matches.length - 1].n : 0;
+    var left = Math.max(0, 100 - lastNo);
+    var top8 = rows.slice(0, 8);
+    var tie = rows[8] && rows[7] && rows[8].pts === rows[7].pts;
+    var cm = '<h2>CAPTAINS MODE</h2><div class="panel cm">' +
+      '<div class="cm-top"><span>' + (left ? 'Режим включится после 100-й рейтинговой игры' : 'Режим уже доступен') + ' · ' + ruleLink('раздел 4 правил', '4.2') + '</span>' +
+      '<span class="cm-left">' + (left ? 'ОСТАЛОСЬ ' + left + ' ' + plural(left, 'ИГРА', 'ИГРЫ', 'ИГР').toUpperCase() : 'ДОСТУПЕН') + '</span></div>' +
+      '<div class="cm-bar"><i style="width:' + Math.min(100, lastNo) + '%"></i></div>' +
+      '<div class="note">Если бы регистрация была сейчас: играют 8 лучших по очкам, двое первых — капитаны.' + (tie ? ' На 8-м месте ничья по очкам — решит регистрация.' : '') + '</div>' +
+      '<div class="cm-list">' + top8.map(function (s, i) {
+        return '<div class="cm-item' + (i < 2 ? ' cap' : '') + '"><span class="rk' + (s.place === 1 ? ' gold' : '') + '">' + s.place + '</span>' +
+          '<span class="nm">' + plink(s.name) + '</span>' + (i < 2 ? '<span class="cap-tag">КАПИТАН</span>' : '') +
+          '<span class="pt ' + pcls(s.pts) + '">' + signed(s.pts) + '</span></div>';
+      }).join('') + '</div></div>';
+    document.getElementById('cm-wrap').innerHTML = cm;
   })();
 
   // ---------- Matches ----------
@@ -1790,10 +1923,11 @@ img { max-width: 100%; }
           '<div class="t-head"><span class="t-name ' + (side === 'alliance' ? 'side-a' : 'side-k') + '">' + SIDE_UP[side] + '</span>' +
           '<span class="t-sub">' + (won ? 'ПОБЕДА' : 'ПОРАЖЕНИЕ') + (m.kills ? ' · ' + m.kills[si] + ' УБ.' : '') + '</span></div>';
         m[side].forEach(function (x) {
+          var g = gameOf[m.n + '|' + x.p];
           html += '<div class="pl"><span class="who"><span>' + plink(x.p) + awardTag(x.award) + '</span>' +
-            '<span class="hero-n">' + (x.hero ? esc(x.hero) : '') + (x.note ? (x.hero ? ' · ' : '') + ruleLink(x.note, x.rule) : '') + '</span></span>' +
+            '<span class="hero-n">' + [x.hero ? esc(x.hero) : '', gameNote(g)].filter(Boolean).join(' · ') + '</span></span>' +
             '<span class="kda">' + (x.kda ? kdaStr(x.kda) : '') + '</span>' +
-            '<span class="d ' + pcls(x.d) + '">' + signed(x.d) + '</span></div>';
+            '<span class="d ' + pcls(g.total) + '" title="' + esc(deltaTitle(g)) + '">' + signed(g.total) + '</span></div>';
         });
         html += '</div>';
       });
@@ -1825,12 +1959,44 @@ img { max-width: 100%; }
       var sub = '<span><b>' + s.w + '–' + s.l + '</b> · ' + pct(s.w, s.g) + '</span>';
       if (s.mainHero) sub += '<span>Герой <b>' + esc(s.mainHero) + '</b></span>';
       if (s.mvp) sub += '<span>MVP <b>' + s.mvp + '</b></span>';
+      if (s.achs) sub += '<span>Ачивки <b>' + s.achs + '</b></span>';
       return '<a class="pcard" href="#' + slugFor(s.name) + '" data-go="' + slugFor(s.name) + '">' +
         '<span class="pcard-top"><span class="pcard-name">' + esc(s.name) + '</span><span class="rk' + (s.place === 1 ? ' gold' : '') + '">' + s.place + '</span></span>' +
         '<span class="pcard-pts ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' +
         '<span class="pcard-sub">' + sub + '</span></a>';
     }).join('');
   })();
+
+  function penText(p) {
+    return 'Блокировка ' + daysText(p.days) + ' (' + p.no + '-я)' + (p.pts ? ', ' + signed(p.pts) : '');
+  }
+
+  // ---------- Achievements ----------
+  var firstN = matches.length ? matches[0].n : 0;
+  var maxDeaths = Math.max.apply(null, [0].concat(rows.filter(function (s) { return s.sg; }).map(function (s) { return s.d; })));
+  function gamesWith(s, f) { return s.games.filter(function (g) { return g.x.kda && f(g.x); }).length; }
+  var ACH = [
+    { name: 'Лидер сезона', desc: 'Сейчас на 1-м месте', rare: true, test: function (s) { return s.place === 1; } },
+    { name: 'Первая кровь', desc: 'Победа в первой игре сезона', test: function (s) { return s.games.some(function (g) { return g.m.n === firstN && g.won; }); } },
+    { name: 'MVP', desc: 'Лучший игрок победителей', rare: true, count: function (s) { return s.mvp; } },
+    { name: 'SVP', desc: 'Лучший игрок проигравших', count: function (s) { return s.svp; } },
+    { name: 'Серия', desc: '3 победы подряд', test: function (s) { return s.bestStreak >= 3; } },
+    { name: 'В огне', desc: '5 побед подряд', rare: true, test: function (s) { return s.bestStreak >= 5; } },
+    { name: 'Неудержимый', desc: '10 побед подряд', rare: true, test: function (s) { return s.bestStreak >= 10; } },
+    { name: 'Бессмертный', desc: 'Игра без единой смерти', rare: true, count: function (s) { return gamesWith(s, function (x) { return x.kda[1] === 0; }); } },
+    { name: 'Палач', desc: '12+ убийств за игру', count: function (s) { return gamesWith(s, function (x) { return x.kda[0] >= 12; }); } },
+    { name: 'Опора команды', desc: '15+ помощи за игру', count: function (s) { return gamesWith(s, function (x) { return x.kda[2] >= 15; }); } },
+    { name: 'Разрушитель', desc: '50 000+ урона за игру', count: function (s) { return gamesWith(s, function (x) { return (x.dmg || 0) >= 50000; }); } },
+    { name: 'Обе стороны', desc: 'Победы и за Альянс, и за Акацуки', test: function (s) { return s.sides.alliance.w > 0 && s.sides.akatsuki.w > 0; } },
+    { name: 'Универсал', desc: '3 разных героя', test: function (s) { return Object.keys(s.heroes).length >= 3; } },
+    { name: 'Мастер героя', desc: '5 игр на одном герое', rare: true, test: function (s) { return Object.keys(s.heroes).some(function (h) { return s.heroes[h].g >= 5; }); } },
+    { name: 'Ветеран', desc: '10 игр в сезоне', test: function (s) { return s.g >= 10; } },
+    { name: 'Старожил', desc: '25 игр в сезоне', test: function (s) { return s.g >= 25; } },
+    { name: 'Легенда', desc: '50 игр в сезоне', rare: true, test: function (s) { return s.g >= 50; } },
+    { name: 'Танк', desc: 'Больше всех смертей в сезоне', test: function (s) { return s.sg > 0 && maxDeaths > 0 && s.d === maxDeaths; } }
+  ];
+  function achCount(a, s) { return a.count ? a.count(s) : (a.test(s) ? 1 : 0); }
+  rows.forEach(function (s) { s.achs = ACH.filter(function (a) { return achCount(a, s) > 0; }).length; });
 
   // ---------- Records ----------
   (function () {
@@ -1918,6 +2084,12 @@ img { max-width: 100%; }
     });
     document.getElementById('heroes').innerHTML = ht;
 
+    document.getElementById('ach-all').innerHTML = ACH.map(function (a) {
+      var who = rows.filter(function (s) { return achCount(a, s) > 0; });
+      return '<div class="ach' + (who.length ? (a.rare ? ' rare' : '') : ' locked') + '"><span class="n">' + esc(a.name) + '</span><span class="d">' + esc(a.desc) + '</span>' +
+        '<span class="who">' + (who.length ? who.slice(0, 6).map(function (s) { var c = achCount(a, s); return plink(s.name) + (c > 1 ? '<span class="muted">×' + c + '</span>' : ''); }).join('') + (who.length > 6 ? '<span class="muted">и ещё ' + (who.length - 6) + '</span>' : '') : '<span class="muted">пока никто</span>') + '</span></div>';
+    }).join('');
+
     var p = data.points;
     document.getElementById('rules').innerHTML = [
       ['+' + p.win, 'Победа'], ['−' + p.lose, 'Поражение'], ['+' + p.challenge, 'Круг / челлендж'],
@@ -1933,7 +2105,7 @@ img { max-width: 100%; }
     var tiles = [
       ['Очки', '<span class="' + pcls(s.pts) + '">' + signed(s.pts) + '</span>', 'место ' + s.place + ' из ' + rows.length],
       ['Игры', s.g, s.w + ' ' + plural(s.w, 'победа', 'победы', 'побед') + ', ' + s.l + ' ' + plural(s.l, 'поражение', 'поражения', 'поражений')],
-      ['Винрейт', pct(s.w, s.g), 'лучшая серия: ' + s.bestStreak],
+      ['Винрейт', pct(s.w, s.g), 'лучшая серия: ' + s.bestStreak + (s.streak >= 2 ? ', сейчас ' + s.streak + ' подряд' : '')],
       ['MVP / SVP', s.mvp + ' / ' + s.svp, 'награды за матчи']
     ];
     if (s.sg) {
@@ -1975,12 +2147,16 @@ img { max-width: 100%; }
       }).join('') + '</div></div>';
     html += '</div>';
 
-    var pens = (data.penalties || []).filter(function (p) { return p.p === s.name; });
+    var pens = penaltyLog.filter(function (p) { return p.p === s.name; });
     if (pens.length) {
       html += '<div class="sec" style="gap:10px"><h3>НАКАЗАНИЯ</h3><div class="panel list">' + pens.map(function (p) {
-        return '<div class="list-row"><span style="min-width:0">' + ruleLink(p.reason, p.rule) + '</span><span class="meta">' + esc(dmy(p.date)) + '</span><span style="color:var(--loss)">' + esc(p.what) + '</span></div>';
-      }).join('') + '</div></div>';
+        return '<div class="list-row"><span style="min-width:0">' + ruleLink(p.reason, p.rule) + (p.match ? ' <span class="muted">· игра #' + p.match + '</span>' : '') + '</span><span class="meta">' + esc(dmy(p.date)) + '</span><span style="color:var(--loss)">' + esc(penText(p)) + '</span></div>';
+      }).join('') + '</div><p class="note" style="margin:0">Следующая блокировка — ' + daysText((blockCount[s.name + '|' + Math.floor((Math.max(1, lastN) - 1) / 50)] || 0) + 1) + ' (' + ruleLink('пункт 2.6', '2.6') + ', счётчик обнуляется каждые 50 игр).</p></div>';
     }
+    html += '<div class="sec" style="gap:10px"><h3>ДОСТИЖЕНИЯ</h3><div class="achs">' + ACH.map(function (a) {
+      var c = achCount(a, s);
+      return '<div class="ach' + (c ? (a.rare ? ' rare' : '') : ' locked') + '" title="' + esc(a.desc) + '"><span class="n">' + esc(a.name) + (c > 1 ? ' ×' + c : '') + '</span><span class="d">' + esc(a.desc) + '</span></div>';
+    }).sort(function (x, y) { return (x.indexOf('locked') > 0) - (y.indexOf('locked') > 0); }).join('') + '</div></div>';
     // history
     html += '<div class="sec" style="gap:10px"><h3>ИСТОРИЯ МАТЧЕЙ</h3><div class="panel scroll-x"><div class="hist">' +
       '<div class="hist-row head"><span>ИГРА</span><span>СТОРОНА</span><span>ИТОГ</span><span>ГЕРОЙ</span><span>У / С / П</span><span class="r">УРОН</span><span class="r">ОЧКИ</span><span></span></div>' +
@@ -1988,10 +2164,10 @@ img { max-width: 100%; }
         return '<div class="hist-row"><span><a href="#match-' + g.m.n + '" data-go="match-' + g.m.n + '">Игра #' + g.m.n + '</a></span>' +
           '<span class="' + (g.side === 'alliance' ? 'side-a' : 'side-k') + '">' + SIDE[g.side] + '</span>' +
           '<span>' + chip(g.won ? 'w' : 'l') + '</span>' +
-          '<span style="min-width:0">' + (g.x.hero ? esc(g.x.hero) : '<span class="muted">—</span>') + (g.x.note ? ' <span class="muted" style="font-size:13px">· ' + ruleLink(g.x.note, g.x.rule) + '</span>' : '') + '</span>' +
+          '<span style="min-width:0">' + (g.x.hero ? esc(g.x.hero) : '<span class="muted">—</span>') + (gameNote(g) ? ' <span class="muted" style="font-size:13px">· ' + gameNote(g) + '</span>' : '') + '</span>' +
           '<span>' + (g.x.kda ? kdaStr(g.x.kda) : '<span class="muted">—</span>') + '</span>' +
           '<span class="r">' + (g.x.dmg ? fmt(g.x.dmg) : '<span class="muted">—</span>') + '</span>' +
-          '<span class="r ' + pcls(g.x.d) + '">' + signed(g.x.d) + '</span>' +
+          '<span class="r ' + pcls(g.total) + '" title="' + esc(deltaTitle(g)) + '">' + signed(g.total) + '</span>' +
           '<span>' + awardTag(g.x.award) + '</span></div>';
       }).join('') + '</div></div></div>';
     view.innerHTML = html;
@@ -2021,13 +2197,13 @@ img { max-width: 100%; }
     });
     document.getElementById('rules-toc').innerHTML = toc;
     document.getElementById('rules-body').innerHTML = body;
-    var pens = (data.penalties || []).slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
+    var pens = penaltyLog.slice().reverse();
     if (!pens.length) { document.getElementById('pen-wrap').hidden = true; return; }
     document.getElementById('penalties').innerHTML =
       '<div class="pen-row head"><span>ДАТА</span><span>ИГРОК</span><span>НАКАЗАНИЕ</span><span>ПРИЧИНА · ПУНКТ</span><span>ИГРА</span></div>' +
       pens.map(function (p) {
         return '<div class="pen-row"><span class="muted">' + esc(dmy(p.date)) + '</span><span style="min-width:0">' + plink(p.p) + '</span>' +
-          '<span class="what">' + esc(p.what) + '</span><span>' + ruleLink(p.reason, p.rule) + (p.rule ? ' <span class="muted">· ' + esc(p.rule) + '</span>' : '') + '</span>' +
+          '<span class="what">' + esc(penText(p)) + '</span><span>' + ruleLink(p.reason, p.rule) + (p.rule ? ' <span class="muted">· ' + esc(p.rule) + '</span>' : '') + '</span>' +
           '<span>' + (p.match ? '<a href="#match-' + p.match + '" data-go="match-' + p.match + '" style="color:var(--soft)">#' + p.match + '</a>' : '<span class="muted">—</span>') + '</span></div>';
       }).join('');
   })();
