@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Таблица лидеров, матчи, профили игроков и рекорды рейтинга Immortal на сервере Naruto Legend 3.0.">
+<meta name="description" content="Таблица лидеров, матчи, профили игроков, сравнение 1 на 1, рекорды и правила рейтинга Immortal на сервере Naruto Legend 3.0.">
 <meta property="og:title" content="Рейтинг Immortal · Naruto Legend 3.0">
 <meta property="og:description" content="Таблица лидеров, матчи со скриншотами, профили игроков и рекорды сезона.">
 <meta property="og:type" content="website">
@@ -45,11 +45,7 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  background:
-    radial-gradient(1200px 520px at 12% -8%, rgba(47, 155, 255, 0.15), transparent 60%),
-    radial-gradient(1000px 520px at 96% 0%, rgba(255, 58, 92, 0.13), transparent 60%),
-    var(--bg);
-  background-repeat: no-repeat;
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--f-body);
   font-size: 15px;
@@ -271,14 +267,81 @@ footer .line { border-top: 1px solid var(--line); padding-top: 16px; display: fl
 .lb-view.full { place-items: start; }
 .lb-view.full img { max-width: none; max-height: none; cursor: zoom-out; }
 
+
+/* Ambient smoke: original drifting mist in the two faction colours (no game symbols) */
+.smoke { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.smoke i {
+  position: absolute; width: 1000px; height: 1000px; background-size: 900px 900px;
+  -webkit-mask-image: radial-gradient(closest-side, #000 15%, transparent 100%);
+          mask-image: radial-gradient(closest-side, #000 15%, transparent 100%);
+  will-change: transform;
+}
+.smoke .s1 { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.005' numOctaves='5' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.18 0 0 0 0 0.6 0 0 0 0 1 2.2 0 0 0 -0.85'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); left: -380px; top: -420px; opacity: 0.55; animation: drift-a 80s ease-in-out infinite alternate; }
+.smoke .s2 { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0045' numOctaves='5' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.2 0 0 0 0 0.33 2.2 0 0 0 -0.85'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); right: -360px; top: -380px; opacity: 0.7; animation: drift-b 95s ease-in-out infinite alternate; }
+.smoke .s3 { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0045' numOctaves='5' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.2 0 0 0 0 0.33 2.2 0 0 0 -0.85'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); left: 18%; bottom: -560px; opacity: 0.5; animation: drift-c 110s ease-in-out infinite alternate; }
+.smoke .s4 { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900'%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0045' numOctaves='5' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 0.2 0 0 0 0 0.33 2.2 0 0 0 -0.85'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); right: -480px; top: 38%; opacity: 0.38; animation: drift-a 125s ease-in-out infinite alternate-reverse; }
+@keyframes drift-a { from { transform: translate(0, 0) rotate(0deg) scale(1); } to { transform: translate(14vw, 10vh) rotate(18deg) scale(1.12); } }
+@keyframes drift-b { from { transform: translate(0, 0) rotate(0deg) scale(1.05); } to { transform: translate(-16vw, 12vh) rotate(-22deg) scale(0.95); } }
+@keyframes drift-c { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(-10vw, -14vh) rotate(30deg); } }
+
+/* Rules */
+.rules-toc { display: flex; flex-wrap: wrap; gap: 8px 10px; }
+.rules-toc a {
+  text-decoration: none; border: 1px solid var(--line-2); padding: 4px 14px; font-weight: 600; font-size: 14px;
+  color: var(--soft); transform: skewX(-10deg); display: inline-block; background: rgba(15, 19, 29, 0.7);
+}
+.rules-toc a > span { display: inline-block; transform: skewX(10deg); }
+.rules-toc a:hover { border-color: var(--ally); color: var(--ink); }
+.r-sec { display: grid; gap: 16px; scroll-margin-top: 80px; }
+.r-part { font-size: 12px; font-weight: 600; letter-spacing: 0.16em; color: var(--muted); text-transform: uppercase; }
+.r-sec h3 { font-size: 24px; }
+.r-sec h3 b { color: var(--ally); font-weight: 400; margin-right: 10px; }
+.r-intro { margin: 0; color: var(--soft); }
+.r-group { display: grid; gap: 6px; }
+.r-group h4 { margin: 0; font-size: 15px; font-weight: 600; color: var(--soft); letter-spacing: 0.03em; }
+.r-item {
+  display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 12px; padding: 11px 16px;
+  background: rgba(15, 19, 29, 0.88); border: 1px solid var(--line); scroll-margin-top: 110px;
+}
+.r-item .no { font-family: var(--f-display); color: var(--ally); }
+.r-item ul { margin: 6px 0 0; padding-left: 18px; color: var(--soft); display: grid; gap: 2px; }
+.r-item.hl { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 0 30px rgba(255, 201, 74, 0.25); animation: hl 1.4s ease-out 2; }
+@keyframes hl { 0% { background: rgba(255, 201, 74, 0.2); } 100% { background: rgba(15, 19, 29, 0.88); } }
+.rule-link { color: inherit; text-decoration: underline dotted; text-underline-offset: 3px; }
+.rule-link:hover { color: var(--gold); }
+.pen { min-width: 640px; display: grid; }
+.pen-row { display: grid; grid-template-columns: 96px 150px minmax(0, 1fr) minmax(0, 1.3fr) 80px; gap: 14px; align-items: center; padding: 10px 16px; border-top: 1px solid var(--line); }
+.pen-row.head { border-top: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: var(--muted); padding-block: 8px; }
+.pen-row .what { color: var(--loss); }
+
+/* 1 vs 1 */
+.cmp-pick { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 14px; align-items: end; }
+.cmp-pick label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: var(--muted); min-width: 0; }
+.cmp-pick select {
+  font: inherit; font-size: 16px; font-weight: 600; color: var(--ink); background: var(--panel);
+  border: 1px solid var(--line-2); padding: 10px 12px; width: 100%;
+}
+.cmp-pick select:focus-visible { outline: 2px solid var(--ally); outline-offset: 2px; }
+.cmp-pick .mid { font-family: var(--f-display); color: var(--muted); padding-bottom: 10px; }
+.cmp-table { display: grid; }
+.cmp-row { display: grid; grid-template-columns: minmax(0, 1fr) 160px minmax(0, 1fr); gap: 12px; align-items: center; padding: 10px 16px; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.cmp-row:first-child { border-top: 0; }
+.cmp-row .l { text-align: right; }
+.cmp-row .k { text-align: center; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
+.cmp-row .v { font-family: var(--f-display); font-size: 18px; color: var(--soft); }
+.cmp-row .v.better { color: var(--gold); text-shadow: 0 0 14px rgba(255, 201, 74, 0.35); }
+.h2h { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+
 @media (max-width: 600px) {
   main.gutter { padding-block: 28px 56px; gap: 36px; }
   .vs .side { padding: 12px 20px; }
   .vs .sc { font-size: 40px; }
   .vs .nm { font-size: 18px; }
   .logo span { display: none; }
+  .cmp-row { grid-template-columns: minmax(0, 1fr) 110px minmax(0, 1fr); padding-inline: 10px; }
+  .r-item { grid-template-columns: 44px minmax(0, 1fr); padding-inline: 12px; }
 }
-@media (prefers-reduced-motion: reduce) { .pcard { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .pcard { transition: none; } .smoke i { animation: none; } .r-item.hl { animation: none; } }
 </style>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -288,6 +351,8 @@ img { max-width: 100%; }
 </head>
 <body>
 
+<div class="smoke" aria-hidden="true"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i></div>
+
 <nav class="top" aria-label="Разделы">
   <div class="gutter top-in">
     <a class="logo" href="#table" data-go="table">IMMORTAL<span>NARUTO LEGEND 3.0</span></a>
@@ -295,7 +360,9 @@ img { max-width: 100%; }
       <a href="#table" data-go="table" data-tab="table">Таблица</a>
       <a href="#matches" data-go="matches" data-tab="matches">Матчи</a>
       <a href="#players" data-go="players" data-tab="players">Игроки</a>
+      <a href="#vs" data-go="vs" data-tab="vs">1 на 1</a>
       <a href="#records" data-go="records" data-tab="records">Рекорды</a>
+      <a href="#rules" data-go="rules" data-tab="rules">Правила</a>
     </div>
   </div>
 </nav>
@@ -344,6 +411,27 @@ img { max-width: 100%; }
       <h2>НАЧИСЛЕНИЕ ОЧКОВ</h2>
       <div class="rules" id="rules"></div>
     </div>
+  </section>
+
+  <section class="sec" id="view-vs" hidden aria-labelledby="h-vs">
+    <div class="sec-head"><h2 id="h-vs">1 НА 1</h2><span class="note">выбери двух игроков</span></div>
+    <div class="cmp-pick">
+      <label for="cmp-a">ИГРОК 1<select id="cmp-a"></select></label>
+      <span class="mid">VS</span>
+      <label for="cmp-b">ИГРОК 2<select id="cmp-b"></select></label>
+    </div>
+    <div id="cmp-out" class="sec" style="gap:18px"></div>
+  </section>
+
+  <section class="sec" id="view-rules" hidden aria-labelledby="h-rules">
+    <div class="sec-head"><h2 id="h-rules">ПРАВИЛА</h2><span class="note" id="rules-note"></span></div>
+    <nav class="rules-toc" id="rules-toc" aria-label="Разделы правил"></nav>
+    <div class="sec" style="gap:12px" id="pen-wrap">
+      <h3>ЖУРНАЛ НАКАЗАНИЙ</h3>
+      <div class="panel scroll-x"><div class="pen" id="penalties"></div></div>
+      <p class="note" style="margin:0">Нажми на причину — откроется пункт правил, по которому выдано наказание.</p>
+    </div>
+    <div class="sec" style="gap:40px" id="rules-body"></div>
   </section>
 
   <section class="sec" id="view-player" hidden aria-live="polite"></section>
@@ -460,7 +548,8 @@ img { max-width: 100%; }
         {
           "p": "Inesska",
           "d": -20,
-          "note": "лив, бан на 24 часа"
+          "note": "лив, бан на 24 часа",
+          "rule": "2.3"
         },
         {
           "p": "SAND",
@@ -475,7 +564,9 @@ img { max-width: 100%; }
           "d": -10
         }
       ],
-      "note": "Из-за лива Акацуки потеряли по 10 очков вместо 20."
+      "note": "Из-за лива Акацуки потеряли по 10 очков вместо 20.",
+      "card": "cards/game-1.png",
+      "noteRule": "2.2"
     },
     {
       "n": 2,
@@ -614,7 +705,8 @@ img { max-width: 100%; }
       "kills": [
         36,
         16
-      ]
+      ],
+      "card": "cards/game-2.png"
     },
     {
       "n": 3,
@@ -753,7 +845,8 @@ img { max-width: 100%; }
       "kills": [
         34,
         35
-      ]
+      ],
+      "card": "cards/game-3.png"
     },
     {
       "n": 4,
@@ -892,10 +985,611 @@ img { max-width: 100%; }
       "kills": [
         19,
         31
-      ]
+      ],
+      "card": "cards/game-4.png"
     }
   ],
-  "adjustments": []
+  "adjustments": [],
+  "penalties": [
+    {
+      "date": "2026-10-22",
+      "p": "Inesska",
+      "what": "Бан на 24 часа, −20",
+      "reason": "Лив из игры",
+      "rule": "2.3",
+      "match": 1
+    }
+  ]
+}
+</script>
+
+<script type="application/json" id="rules-data">
+{
+  "source": "канал #правила в разделе рейтинговых игр на Discord-сервере Naruto Legend 3.0",
+  "updated": "2026-10-23",
+  "sections": [
+    {
+      "id": "1",
+      "title": "Общие положения",
+      "groups": [
+        {
+          "title": "Регистрация и аккаунты",
+          "items": [
+            {
+              "id": "1.1",
+              "text": "Участник может записать на игру другого игрока — но только одного."
+            },
+            {
+              "id": "1.2",
+              "text": "Запрещено иметь больше одного аккаунта, играть под другим никнеймом или с «фейка».",
+              "sub": [
+                "Если заблокированный игрок пойман на игре с другого аккаунта — блокировка на 7 дней (168 ч) и −10 очков основному аккаунту."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Лобби и чат",
+          "items": [
+            {
+              "id": "1.3",
+              "text": "На вход в лобби даётся 10 минут с момента его создания (организатор может продлить это время до дополнительных 10 минут сверху).",
+              "sub": [
+                "Не успел — замена и блокировка на сутки (очки не снимаются, в таблицу не идёт)."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Выбор героя",
+          "items": [
+            {
+              "id": "1.4",
+              "text": "Героя, выбранного до рестарта, менять нельзя — если состав игроков не изменился."
+            }
+          ]
+        },
+        {
+          "title": "Паузы",
+          "items": [
+            {
+              "id": "1.5",
+              "text": "У каждой команды 4 паузы общей длительностью до 10 минут."
+            },
+            {
+              "id": "1.6",
+              "text": "Таймер паузы останавливается, когда поставившая её команда сообщила о готовности."
+            },
+            {
+              "id": "1.7",
+              "text": "Снять паузу можно с согласия хотя бы одного игрока из каждой команды."
+            }
+          ]
+        },
+        {
+          "title": "Сдача",
+          "items": [
+            {
+              "id": "1.8",
+              "text": "Чтобы сдаться, каждый игрок команды пишет в общий чат «GG» (гг, -FF)."
+            }
+          ]
+        },
+        {
+          "title": "Апелляции",
+          "items": [
+            {
+              "id": "1.9",
+              "text": "Если игрок не согласен с действиями организатора в отношении себя, он может подать апелляцию. Её рассматривает главная администрация проекта: Libe, SAND."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Вылеты, хост и блокировки",
+      "groups": [
+        {
+          "title": "Вылет до конца выбора героев",
+          "items": [
+            {
+              "id": "2.1",
+              "text": "Игроку даётся ещё 2 рехоста.",
+              "sub": [
+                "При повторных вылетах — блокировка и замена."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Вылет после 10-й минуты",
+          "items": [
+            {
+              "id": "2.2",
+              "text": "Команда вылетевшего: при поражении −10, при победе +30."
+            },
+            {
+              "id": "2.3",
+              "text": "Вылетевший, ливнувший или отказавшийся играть получает блокировку и −20 очков."
+            },
+            {
+              "id": "2.4",
+              "text": "Краш: если сразу после него игрок скинет логи, скрин ошибки или включит демку в Discord (чтобы была видна ошибка) — блокировки нет, только −1 очко.",
+              "sub": [
+                "За обман — двойное наказание."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Latency",
+          "items": [
+            {
+              "id": "2.5",
+              "text": "Хост может менять latency, но не ниже 40.",
+              "sub": [
+                "Поставил ниже — предупреждение.",
+                "Начал игру с latency ниже 40 — блокировка и замена.",
+                "Если хост — организатор: предупреждение, игра не идёт в таблицу."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Срок блокировки",
+          "items": [
+            {
+              "id": "2.6",
+              "text": "1 день × номер блокировки (1-я — 1 день, 2-я — 2 дня и т. д.)."
+            },
+            {
+              "id": "2.7",
+              "text": "Счётчик блокировок обнуляется каждые 50 игр."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "part": "Игровые режимы",
+      "title": "High Skill 4×4",
+      "intro": "Доступны все герои, режим полностью переработан.",
+      "groups": [
+        {
+          "title": "Выбор капитанов",
+          "items": [
+            {
+              "id": "3.1",
+              "text": "Организатор или хост прописывает !sp. Капитанами становятся игроки на 2-м и 8-м слотах (синий и розовый)."
+            },
+            {
+              "id": "3.2",
+              "text": "Капитаном не может быть игрок с самым низким рейтингом в таблице. Если он всё же стал капитаном, делается ре-сп, который не учитывается в лимите."
+            },
+            {
+              "id": "3.3",
+              "text": "!sp можно использовать 3 раза (включая первый). Ре-сп решается голосованием:",
+              "sub": [
+                "лобби на 8 человек — 4/8",
+                "лобби на 9 человек — 5/9",
+                "лобби на 10 человек — 6/10"
+              ]
+            },
+            {
+              "id": "3.4",
+              "text": "Размер лобби организатор определяет до начала распика игроков."
+            }
+          ]
+        },
+        {
+          "title": "Невыбранные игроки",
+          "items": [
+            {
+              "id": "3.5",
+              "text": "Могут остаться зрителями или выйти. Если невыбранный игрок вышел из зрителей — наказаний нет ни ему, ни организатору."
+            },
+            {
+              "id": "3.6",
+              "text": "Невыбранный организатор обязан остаться в игре и после неё опубликовать результаты.",
+              "sub": [
+                "Ушёл, но опубликовал результаты по присланному скрину — предупреждение.",
+                "Игра прошла без него, и результатов нет в течение суток — снятие с поста."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Распик игроков",
+          "items": [
+            {
+              "id": "3.7",
+              "text": "Alliance → Akatsuki → Alliance → Akatsuki → Akatsuki → Alliance"
+            }
+          ]
+        },
+        {
+          "title": "Баны и пики героев",
+          "items": [
+            {
+              "id": "3.8",
+              "text": "По 5 банов на команду, на каждое действие — 1 минута.",
+              "sub": [
+                "Баны: Alliance → Akatsuki → Alliance → Akatsuki → Alliance → Akatsuki",
+                "Пики: Akatsuki → Alliance → Akatsuki → Alliance",
+                "Баны: Akatsuki → Alliance → Alliance → Akatsuki",
+                "Пики: Alliance → Akatsuki → Akatsuki → Alliance"
+              ]
+            },
+            {
+              "id": "3.9",
+              "text": "Порядок распика игроков и героев может меняться."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "part": "Игровые режимы",
+      "title": "Captains Mode 4×4",
+      "intro": "Вводится после 100-й рейтинговой игры.",
+      "groups": [
+        {
+          "title": "Запрещено",
+          "items": [
+            {
+              "id": "4.1",
+              "text": "Нагато (Риннэ Тэнсэй), скины Сасори, Дейдары, Итачи и Тобирамы."
+            }
+          ]
+        },
+        {
+          "title": "Регистрация",
+          "items": [
+            {
+              "id": "4.2",
+              "text": "Длится 15 минут. Кроме никнейма нужно указать свои очки из рейтинговой таблицы, например: PobeditelTurnira [8]"
+            },
+            {
+              "id": "4.3",
+              "text": "Играют 8 игроков с наибольшим количеством очков."
+            },
+            {
+              "id": "4.4",
+              "text": "Двое лучших по очкам автоматически становятся капитанами и набирают команды:",
+              "sub": [
+                "Alliance → Akatsuki → Alliance → Akatsuki → Akatsuki → Alliance"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Жеребьёвка",
+          "items": [
+            {
+              "id": "4.5",
+              "text": "Капитаны выбирают число 1 или 2. Победитель рандома выбирает сторону (Alliance / Akatsuki) или очерёдность (First / Second Pick), второй пункт остаётся другому капитану."
+            }
+          ]
+        },
+        {
+          "title": "Драфт",
+          "items": [
+            {
+              "id": "4.6",
+              "text": "1 — команда с First Pick, 2 — с Second Pick:",
+              "sub": [
+                "Баны: 1 → 2 → 1 → 2 → 1 → 2 → 2",
+                "Пики: 1 → 2",
+                "Баны: 2 → 1 → 1 → 2 → 1",
+                "Пики: 1 → 2 → 2 → 1",
+                "Баны: 2 → 1",
+                "Пики: 1 → 2"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Тайминги",
+          "items": [
+            {
+              "id": "4.7",
+              "text": "На бан или пик — 60 секунд."
+            },
+            {
+              "id": "4.8",
+              "text": "Не забанил вовремя — бан сгорает."
+            },
+            {
+              "id": "4.9",
+              "text": "Не выбрал героя — добавляется 30 секунд ЕДИНОРАЗОВО. Не успел и за них — капитан получает блокировку за бездействие."
+            }
+          ]
+        },
+        {
+          "title": "Очки",
+          "items": [
+            {
+              "id": "4.10",
+              "text": "Победа: капитан +100, игроки +80."
+            },
+            {
+              "id": "4.11",
+              "text": "Поражение: капитан −40, игроки −20."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "part": "Игровые режимы",
+      "title": "High Skill 5×5",
+      "intro": "Правила те же, что в High Skill 4×4, — изменён только выбор игроков и героев.",
+      "groups": [
+        {
+          "title": "Распик игроков",
+          "items": [
+            {
+              "id": "5.1",
+              "text": "1 → 2 → 2 → 1 → 1 → 2 → 1 → 2 → 2 → 1"
+            }
+          ]
+        },
+        {
+          "title": "Распик героев",
+          "items": [
+            {
+              "id": "5.2",
+              "text": "Капитаны по очереди банят по 3 героя (начинает 1-я команда), затем игроки выбирают героев в тавернах."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "title": "Запреты",
+      "groups": [
+        {
+          "title": "Игровые нарушения",
+          "items": [
+            {
+              "id": "6.1",
+              "text": "Намеренное использование багов — блокировка сразу."
+            },
+            {
+              "id": "6.2",
+              "text": "Использование «spellbook» — блокировка.",
+              "sub": [
+                "Если игрок его не использовал, он может подать апелляцию с таймингами применения способности. При невиновности бан снимается."
+              ]
+            },
+            {
+              "id": "6.3",
+              "text": "Порча и кража артефактов союзников."
+            },
+            {
+              "id": "6.4",
+              "text": "Намеренный слив игры (бездействие, АФК).",
+              "sub": [
+                "Если команде не нравится игра конкретного игрока, можно подать жалобу главному администратору — нужно 2/3 игроков. Если вина подтверждена — бан / −50 очков."
+              ]
+            },
+            {
+              "id": "6.5",
+              "text": "Выход из игры после 5-й минуты (отключение света, фатал, интернет) — блокировка сразу."
+            },
+            {
+              "id": "6.6",
+              "text": "Выход из лобби после команды !sp."
+            },
+            {
+              "id": "6.7",
+              "text": "Голосование за преждевременный кик лагающего игрока, если его кикнули — предупреждение, затем блокировка."
+            }
+          ]
+        },
+        {
+          "title": "Поведение",
+          "items": [
+            {
+              "id": "6.8",
+              "text": "Оскорбления и провокации игроков — предупреждение, затем блокировка и мут до конца игры."
+            },
+            {
+              "id": "6.9",
+              "text": "Оскорбление организатора — блокировка сразу."
+            },
+            {
+              "id": "6.10",
+              "text": "Флуд во время банов и пиков (High Skill) — предупреждение → предупреждение → блокировка, кик и замена."
+            },
+            {
+              "id": "6.11",
+              "text": "Зритель, вышедший из игры без веской причины, больше не допускается к просмотру без разрешения главного организатора. Если он всё же зашёл без ведома — организатор этой игры получает несгораемое предупреждение."
+            },
+            {
+              "id": "6.12",
+              "text": "Капитан не может передать права капитана без согласия команды."
+            },
+            {
+              "id": "6.13",
+              "text": "Команду -ban использует только организатор — и только на героев, победивших в прошлой турнирной игре."
+            }
+          ]
+        },
+        {
+          "title": "Герои и предметы",
+          "items": [
+            {
+              "id": "6.14",
+              "text": "Запрещённые скины: Дейдара (Акацуки), Мадара (Nanaya), Итачи (некликабельный), Хидан (Боруто), Тобирама (-tobirama), Сасори (-sasori)."
+            },
+            {
+              "id": "6.15",
+              "text": "Нагато: Риннэ Тэнсэй — не больше 1 раза за игру."
+            },
+            {
+              "id": "6.16",
+              "text": "Нельзя собирать «Титановый щит» и «Опустошитель» одновременно."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "title": "Для организаторов",
+      "groups": [
+        {
+          "title": "Обязанности",
+          "items": [
+            {
+              "id": "7.1",
+              "text": "Указывать номер игры, которую провёл."
+            },
+            {
+              "id": "7.2",
+              "text": "Прописывать ники игроков и стороны, за которые они играли."
+            },
+            {
+              "id": "7.3",
+              "text": "Прописывать баны в игре."
+            },
+            {
+              "id": "7.4",
+              "text": "После команды !sp отменять игру нельзя."
+            }
+          ]
+        },
+        {
+          "title": "Права",
+          "items": [
+            {
+              "id": "7.5",
+              "text": "Заменить игрока до 5-й минуты, если его пинг мешает остальным (окно лагов всплыло не менее 5 раз). Заменённый получает блокировку на 24 часа, в таблицу она не идёт."
+            },
+            {
+              "id": "7.6",
+              "text": "Удалить комментарий без никнейма игрока — в течение одной минуты."
+            },
+            {
+              "id": "7.7",
+              "text": "Впускать зрителей."
+            },
+            {
+              "id": "7.8",
+              "text": "Менять игровые правила во время игры — изменения вступают в силу со следующего лобби."
+            },
+            {
+              "id": "7.9",
+              "text": "Блокировка организатора не может длиться дольше 24 часов (от снятия очков это не освобождает)."
+            }
+          ]
+        },
+        {
+          "title": "Предупреждения",
+          "items": [
+            {
+              "id": "7.10",
+              "text": "У организатора 3 предупреждения, они обнуляются каждые 5 дней."
+            }
+          ]
+        },
+        {
+          "title": "Главный организатор",
+          "items": [
+            {
+              "id": "7.11",
+              "text": "Может снимать блокировки, не идущие в таблицу, чтобы игрок мог зайти в лобби."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "title": "Очки и поощрения",
+      "groups": [
+        {
+          "title": "Серии",
+          "items": [
+            {
+              "id": "8.1",
+              "text": "Винстрик от 5 побед подряд — +5 за каждую следующую победу."
+            },
+            {
+              "id": "8.2",
+              "text": "Лузстрик от 5 поражений подряд — −5 за каждое следующее поражение."
+            }
+          ]
+        },
+        {
+          "title": "Герои «круга» и «позора»",
+          "items": [
+            {
+              "id": "8.3",
+              "text": "Каждые 10 игр организаторы выбирают героев «круга» по винрейту или пикрейту. За них: победа +30, поражение −10. Их нельзя банить. Действует с 30-й игры сезона.",
+              "sub": [
+                "Если герой достался рандомом, дополнительные очки не начисляются."
+              ]
+            },
+            {
+              "id": "8.4",
+              "text": "Герои «позора» находятся в бане 10 игр — до следующего круга."
+            }
+          ]
+        },
+        {
+          "title": "Штрафы",
+          "items": [
+            {
+              "id": "8.5",
+              "text": "За блокировку — −20 очков."
+            }
+          ]
+        },
+        {
+          "title": "Ошибка в подсчёте очков",
+          "items": [
+            {
+              "id": "8.6",
+              "text": "Если игроку неправильно посчитали очки, он может сообщить об этом главному организатору.",
+              "sub": [
+                "Ошибка подтвердилась — +20 очков.",
+                "Ошибки не было — −100 очков."
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Сброс и никнейм",
+          "items": [
+            {
+              "id": "8.7",
+              "text": "Очки рейтингового сезона можно обнулить 1 раз за 50 сыгранных игр. Статистика обнуляется полностью."
+            },
+            {
+              "id": "8.8",
+              "text": "Сменить никнейм в таблице можно всегда. Главное вписать старый никнейм рядом с новым."
+            }
+          ]
+        },
+        {
+          "title": "РМК (пересоздание лобби)",
+          "items": [
+            {
+              "id": "8.9",
+              "text": "Пересоздание лобби по техническим причинам или из-за замены считается продолжением текущего матча. Игрок обязан оставаться в игре, пока организатор официально не объявит матч отменённым."
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
 </script>
 
@@ -906,6 +1600,8 @@ img { max-width: 100%; }
   var SIDES = ['alliance', 'akatsuki'];
   var SIDE = { alliance: 'Альянс', akatsuki: 'Акацуки' };
   var SIDE_UP = { alliance: 'АЛЬЯНС', akatsuki: 'АКАЦУКИ' };
+  var WIN_LABEL = { alliance: 'ПОБЕДА АЛЬЯНСА', akatsuki: 'ПОБЕДА АКАЦУКИ' };
+  var rulesData = JSON.parse(document.getElementById('rules-data').textContent);
   var ADJ = {
     challenge: { label: 'Круг / челлендж', sign: 1 },
     streak: { label: 'Стрик / бонус', sign: 1 },
@@ -953,6 +1649,12 @@ img { max-width: 100%; }
     if (a === 'MVP') return ' <span class="award mvp" title="Лучший игрок победителей">MVP</span>';
     if (a === 'SVP') return ' <span class="award svp" title="Лучший игрок проигравших">SVP</span>';
     return '';
+  }
+  function ruleToken(rule) { return 'r-' + String(rule).replace(/\./g, '-'); }
+  function ruleLink(text, rule) {
+    if (!rule) return esc(text);
+    var t = ruleToken(rule);
+    return '<a class="rule-link" href="#' + t + '" data-go="' + t + '" title="Пункт ' + esc(rule) + ' правил">' + esc(text) + '</a>';
   }
   function chip(r) { return '<span class="chip ' + r + '" title="' + (r === 'w' ? 'Победа' : 'Поражение') + '">' + (r === 'w' ? 'В' : 'П') + '</span>'; }
 
@@ -1080,7 +1782,7 @@ img { max-width: 100%; }
       var kills = m.kills ? ' · ' + m.kills[0] + ' : ' + m.kills[1] : '';
       html += '<article class="panel match" id="match-' + m.n + '">' +
         '<div class="m-head"><div class="m-title"><span class="m-no">ИГРА #' + m.n + '</span><span class="m-meta">' + meta + '</span></div>' +
-        '<span class="result ' + m.winner + '"><span>ПОБЕДА ' + SIDE_UP[m.winner] + kills + '</span></span></div>';
+        '<span class="result ' + m.winner + '"><span>' + WIN_LABEL[m.winner] + kills + '</span></span></div>';
       html += '<div class="teams">';
       SIDES.forEach(function (side, si) {
         var won = m.winner === side;
@@ -1089,14 +1791,14 @@ img { max-width: 100%; }
           '<span class="t-sub">' + (won ? 'ПОБЕДА' : 'ПОРАЖЕНИЕ') + (m.kills ? ' · ' + m.kills[si] + ' УБ.' : '') + '</span></div>';
         m[side].forEach(function (x) {
           html += '<div class="pl"><span class="who"><span>' + plink(x.p) + awardTag(x.award) + '</span>' +
-            '<span class="hero-n">' + (x.hero ? esc(x.hero) : '') + (x.note ? (x.hero ? ' · ' : '') + esc(x.note) : '') + '</span></span>' +
+            '<span class="hero-n">' + (x.hero ? esc(x.hero) : '') + (x.note ? (x.hero ? ' · ' : '') + ruleLink(x.note, x.rule) : '') + '</span></span>' +
             '<span class="kda">' + (x.kda ? kdaStr(x.kda) : '') + '</span>' +
             '<span class="d ' + pcls(x.d) + '">' + signed(x.d) + '</span></div>';
         });
         html += '</div>';
       });
       html += '</div>';
-      if (m.note) html += '<div class="m-note">' + esc(m.note) + '</div>';
+      if (m.note) html += '<div class="m-note">' + ruleLink(m.note, m.noteRule) + '</div>';
       if (m.bans && m.bans.length) {
         html += '<div class="bans"><span class="lbl">Бан на следующие игры:</span>' +
           m.bans.map(function (b) { return '<span class="tag"><span>' + esc(b) + '</span></span>'; }).join('') + '</div>';
@@ -1107,6 +1809,7 @@ img { max-width: 100%; }
           '<span class="hint">Открыть</span></button>';
       }
       var foot = [];
+      if (m.card) foot.push('<a href="' + esc(m.card) + '" target="_blank" rel="noopener" download="immortal-game-' + m.n + '.png">Карточка итогов ↓</a>');
       if (m.src) foot.push('<a href="https://ac.narutolegend.dog/match/' + encodeURIComponent(m.src) + '" target="_blank" rel="noopener">Матч #' + esc(m.src) + ' на narutolegend.dog ↗</a>');
       if (!SIDES.some(function (side) { return m[side].some(function (x) { return x.kda; }); })) foot.push('<span>Статистики по этой игре нет</span>');
       if (foot.length) html += '<div class="m-foot">' + foot.join('') + '</div>';
@@ -1238,7 +1941,10 @@ img { max-width: 100%; }
       tiles.push(['KDA', s.ratio.toFixed(2).replace('.', ','), '(убийства + помощь) / смерти']);
       tiles.push(['Ср. урон', fmt(s.dmg / s.sg), 'всего ' + fmt(s.dmg)]);
     }
-    var html = '<a class="back" href="#players" data-go="players">← Все игроки</a>' +
+    var other = rows.filter(function (r) { return r.name !== s.name; })[0];
+    var cmpTok = other ? 'vs~' + slugFor(s.name) + '~' + slugFor(other.name) : 'vs';
+    var html = '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px"><a class="back" href="#players" data-go="players">← Все игроки</a>' +
+      '<a class="back" href="#' + cmpTok + '" data-go="' + cmpTok + '">Сравнить 1 на 1 →</a></div>' +
       '<div class="prof-head"><h2 class="prof-name">' + esc(s.name) + '</h2>' +
       '<div class="prof-line"><span class="rk' + (s.place === 1 ? ' gold' : '') + '">' + s.place + '</span>' +
       '<span class="form">' + s.form.slice(-10).map(chip).join('') + '</span>' +
@@ -1269,6 +1975,12 @@ img { max-width: 100%; }
       }).join('') + '</div></div>';
     html += '</div>';
 
+    var pens = (data.penalties || []).filter(function (p) { return p.p === s.name; });
+    if (pens.length) {
+      html += '<div class="sec" style="gap:10px"><h3>НАКАЗАНИЯ</h3><div class="panel list">' + pens.map(function (p) {
+        return '<div class="list-row"><span style="min-width:0">' + ruleLink(p.reason, p.rule) + '</span><span class="meta">' + esc(dmy(p.date)) + '</span><span style="color:var(--loss)">' + esc(p.what) + '</span></div>';
+      }).join('') + '</div></div>';
+    }
     // history
     html += '<div class="sec" style="gap:10px"><h3>ИСТОРИЯ МАТЧЕЙ</h3><div class="panel scroll-x"><div class="hist">' +
       '<div class="hist-row head"><span>ИГРА</span><span>СТОРОНА</span><span>ИТОГ</span><span>ГЕРОЙ</span><span>У / С / П</span><span class="r">УРОН</span><span class="r">ОЧКИ</span><span></span></div>' +
@@ -1276,7 +1988,7 @@ img { max-width: 100%; }
         return '<div class="hist-row"><span><a href="#match-' + g.m.n + '" data-go="match-' + g.m.n + '">Игра #' + g.m.n + '</a></span>' +
           '<span class="' + (g.side === 'alliance' ? 'side-a' : 'side-k') + '">' + SIDE[g.side] + '</span>' +
           '<span>' + chip(g.won ? 'w' : 'l') + '</span>' +
-          '<span style="min-width:0">' + (g.x.hero ? esc(g.x.hero) : '<span class="muted">—</span>') + (g.x.note ? ' <span class="muted" style="font-size:13px">· ' + esc(g.x.note) + '</span>' : '') + '</span>' +
+          '<span style="min-width:0">' + (g.x.hero ? esc(g.x.hero) : '<span class="muted">—</span>') + (g.x.note ? ' <span class="muted" style="font-size:13px">· ' + ruleLink(g.x.note, g.x.rule) + '</span>' : '') + '</span>' +
           '<span>' + (g.x.kda ? kdaStr(g.x.kda) : '<span class="muted">—</span>') + '</span>' +
           '<span class="r">' + (g.x.dmg ? fmt(g.x.dmg) : '<span class="muted">—</span>') + '</span>' +
           '<span class="r ' + pcls(g.x.d) + '">' + signed(g.x.d) + '</span>' +
@@ -1285,12 +1997,114 @@ img { max-width: 100%; }
     view.innerHTML = html;
   }
 
+  // ---------- Rules ----------
+  (function () {
+    var ud = String(rulesData.updated).split('-');
+    document.getElementById('rules-note').textContent = 'из Discord, обновлены ' + ud[2] + '.' + ud[1] + '.' + ud[0];
+    var toc = '', body = '', lastPart = '';
+    rulesData.sections.forEach(function (sec) {
+      toc += '<a href="#rs-' + sec.id + '" data-go="rs-' + sec.id + '"><span>' + esc(sec.id + '. ' + sec.title) + '</span></a>';
+      body += '<section class="r-sec" id="rs-' + sec.id + '">';
+      if (sec.part && sec.part !== lastPart) body += '<div class="r-part">' + esc(sec.part) + '</div>';
+      lastPart = sec.part || '';
+      body += '<h3><b>' + esc(sec.id) + '</b>' + esc(sec.title.toUpperCase()) + '</h3>';
+      if (sec.intro) body += '<p class="r-intro">' + esc(sec.intro) + '</p>';
+      sec.groups.forEach(function (g) {
+        body += '<div class="r-group">' + (g.title ? '<h4>' + esc(g.title) + '</h4>' : '');
+        g.items.forEach(function (it) {
+          body += '<div class="r-item" id="' + ruleToken(it.id) + '"><span class="no">' + esc(it.id) + '</span><div>' + esc(it.text) +
+            (it.sub && it.sub.length ? '<ul>' + it.sub.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : '') + '</div></div>';
+        });
+        body += '</div>';
+      });
+      body += '</section>';
+    });
+    document.getElementById('rules-toc').innerHTML = toc;
+    document.getElementById('rules-body').innerHTML = body;
+    var pens = (data.penalties || []).slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
+    if (!pens.length) { document.getElementById('pen-wrap').hidden = true; return; }
+    document.getElementById('penalties').innerHTML =
+      '<div class="pen-row head"><span>ДАТА</span><span>ИГРОК</span><span>НАКАЗАНИЕ</span><span>ПРИЧИНА · ПУНКТ</span><span>ИГРА</span></div>' +
+      pens.map(function (p) {
+        return '<div class="pen-row"><span class="muted">' + esc(dmy(p.date)) + '</span><span style="min-width:0">' + plink(p.p) + '</span>' +
+          '<span class="what">' + esc(p.what) + '</span><span>' + ruleLink(p.reason, p.rule) + (p.rule ? ' <span class="muted">· ' + esc(p.rule) + '</span>' : '') + '</span>' +
+          '<span>' + (p.match ? '<a href="#match-' + p.match + '" data-go="match-' + p.match + '" style="color:var(--soft)">#' + p.match + '</a>' : '<span class="muted">—</span>') + '</span></div>';
+      }).join('');
+  })();
+
+  // ---------- 1 vs 1 ----------
+  var cmpA = document.getElementById('cmp-a'), cmpB = document.getElementById('cmp-b');
+  (function () {
+    var opts = rows.map(function (s) { return '<option value="' + slugFor(s.name) + '">' + s.place + '. ' + esc(s.name) + '</option>'; }).join('');
+    cmpA.innerHTML = opts; cmpB.innerHTML = opts;
+    function changed() { go('vs~' + cmpA.value + '~' + cmpB.value); }
+    cmpA.addEventListener('change', changed);
+    cmpB.addEventListener('change', changed);
+  })();
+  function renderCompare(an, bn) {
+    var A = stats[an], B = stats[bn];
+    cmpA.value = slugFor(an); cmpB.value = slugFor(bn);
+    var out = document.getElementById('cmp-out');
+    if (!A || !B) { out.innerHTML = ''; return; }
+    if (an === bn) { out.innerHTML = '<p class="muted" style="margin:0">Выбери двух разных игроков.</p>'; return; }
+    function avg(s, i) { return s.sg ? [s.k, s.d, s.a][i] / s.sg : null; }
+    function f1(v) { return v === null ? '—' : v.toFixed(1).replace('.', ','); }
+    var lines = [
+      ['Очки', A.pts, B.pts, 1, signed],
+      ['Место', A.place, B.place, -1, String],
+      ['Игры', A.g, B.g, 0, String],
+      ['Победы', A.w, B.w, 1, String],
+      ['Винрейт', A.g ? A.w / A.g : null, B.g ? B.w / B.g : null, 1, function (v) { return v === null ? '—' : Math.round(v * 100) + '%'; }],
+      ['MVP', A.mvp, B.mvp, 1, String],
+      ['SVP', A.svp, B.svp, 1, String],
+      ['Ср. убийства', avg(A, 0), avg(B, 0), 1, f1],
+      ['Ср. смерти', avg(A, 1), avg(B, 1), -1, f1],
+      ['Ср. помощь', avg(A, 2), avg(B, 2), 1, f1],
+      ['KDA', A.sg ? A.ratio : null, B.sg ? B.ratio : null, 1, function (v) { return v === null ? '—' : v.toFixed(2).replace('.', ','); }],
+      ['Ср. урон', A.sg ? A.dmg / A.sg : null, B.sg ? B.dmg / B.sg : null, 1, function (v) { return v === null ? '—' : fmt(v); }],
+      ['Лучшая серия', A.bestStreak, B.bestStreak, 1, String]
+    ];
+    var table = lines.map(function (l) {
+      var a = l[1], b = l[2], dir = l[3], ca = '', cb = '';
+      if (dir && a !== null && b !== null && a !== b) {
+        var aBetter = dir > 0 ? a > b : a < b;
+        ca = aBetter ? ' better' : ''; cb = aBetter ? '' : ' better';
+      }
+      return '<div class="cmp-row"><span class="v l' + ca + '">' + l[4](a) + '</span><span class="k">' + l[0] + '</span><span class="v' + cb + '">' + l[4](b) + '</span></div>';
+    }).join('');
+    var together = { g: 0, w: 0, list: [] }, against = { g: 0, a: 0, b: 0, list: [] };
+    matches.forEach(function (m) {
+      var sa = null, sb = null;
+      SIDES.forEach(function (side) {
+        m[side].forEach(function (x) { if (x.p === an) sa = side; if (x.p === bn) sb = side; });
+      });
+      if (!sa || !sb) return;
+      if (sa === sb) { together.g++; if (m.winner === sa) together.w++; together.list.push(m); }
+      else { against.g++; if (m.winner === sa) against.a++; else against.b++; against.list.push(m); }
+    });
+    function mlinks(list) {
+      return list.length ? list.map(function (m) { return '<a href="#match-' + m.n + '" data-go="match-' + m.n + '" style="color:var(--soft)">#' + m.n + '</a>'; }).join(', ') : 'пока нет';
+    }
+    var html = '<div class="vs" aria-label="Игроки">' +
+      '<div class="side a"><div><span class="nm" style="overflow-wrap:anywhere">' + esc(an) + '</span><span class="sc ' + '">' + signed(A.pts) + '</span></div></div>' +
+      '<div class="mid">VS</div>' +
+      '<div class="side k"><div><span class="sc">' + signed(B.pts) + '</span><span class="nm" style="overflow-wrap:anywhere">' + esc(bn) + '</span></div></div></div>';
+    html += '<div class="h2h">' +
+      '<div class="tile"><span class="k">Друг против друга</span><span class="v">' + against.a + ' : ' + against.b + '</span><span class="s">' +
+        (against.g ? 'побед ' + esc(an) + ' : ' + esc(bn) + ' · игры ' + mlinks(against.list) : 'ещё не встречались') + '</span></div>' +
+      '<div class="tile"><span class="k">В одной команде</span><span class="v">' + together.w + ' – ' + (together.g - together.w) + '</span><span class="s">' +
+        (together.g ? 'победы – поражения · игры ' + mlinks(together.list) : 'ещё не играли вместе') + '</span></div></div>';
+    html += '<div class="panel cmp-table">' + table + '</div>';
+    if (!A.sg || !B.sg) html += '<p class="note" style="margin:0">K/D/A и урон есть только по играм со статистикой.</p>';
+    out.innerHTML = html;
+  }
+
   // ---------- Routing ----------
-  var VIEWS = ['table', 'matches', 'players', 'records', 'player'];
+  var VIEWS = ['table', 'matches', 'players', 'records', 'player', 'vs', 'rules'];
   var current = 'table';
   function show(view) {
     VIEWS.forEach(function (v) { document.getElementById('view-' + v).hidden = v !== view; });
-    document.getElementById('hero').hidden = view === 'player';
+    document.getElementById('hero').hidden = view === 'player' || view === 'vs' || view === 'rules';
     var tab = view === 'player' ? 'players' : view;
     document.querySelectorAll('[data-tab]').forEach(function (a) {
       if (a.getAttribute('data-tab') === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
@@ -1307,6 +2121,23 @@ img { max-width: 100%; }
       return;
     }
     document.title = 'Рейтинг Immortal';
+    if (t === 'vs' || t.indexOf('vs~') === 0) {
+      var parts = t.split('~');
+      var a = nameOf[parts[1]] || (rows[0] && rows[0].name);
+      var b = nameOf[parts[2]] || (rows[1] && rows[1].name) || a;
+      renderCompare(a, b); show('vs'); window.scrollTo(0, 0);
+      return;
+    }
+    if (t.indexOf('r-') === 0 || t.indexOf('rs-') === 0) {
+      show('rules');
+      document.querySelectorAll('.r-item.hl').forEach(function (e) { e.classList.remove('hl'); });
+      var el = document.getElementById(t);
+      if (el) {
+        if (t.indexOf('r-') === 0) el.classList.add('hl');
+        el.scrollIntoView({ block: t.indexOf('r-') === 0 ? 'center' : 'start' });
+      }
+      return;
+    }
     if (t.indexOf('match-') === 0) {
       show('matches');
       var card = document.getElementById(t);

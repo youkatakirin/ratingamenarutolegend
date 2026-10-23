@@ -5,6 +5,8 @@
 - `index.html` — весь сайт: таблица лидеров, матчи, профили игроков, рекорды и герои сезона. Данные сезона лежат внутри него в блоке `<script type="application/json" id="season-data">`, всё остальное считается из списка матчей.
 - У игрока в матче могут быть поля `hero`, `kda` [убийства, смерти, помощь], `cs`, `gold`, `dmg`, `lvl` (с ac.narutolegend.dog) и `award` (MVP/SVP со скриншота). У матча — `src` (номер матча на ac.narutolegend.dog), `duration`, `kills` [Альянс, Акацуки].
 - `shots/game-N.jpg` — скриншоты итогов матчей.
+- `cards/game-N.png` — карточки итогов матча для Discord и соцсетей: `python3 tools/make_card.py index.html N` рисует карточку и ставит матчу поле `card` (шрифты в `tools/fonts`, лицензия SIL OFL).
+- Правила рейтинга лежат в блоке `<script type="application/json" id="rules-data">`, у каждого пункта свой номер (например `2.3`). Наказания — список `penalties` в данных сезона: `{date, p, what, reason, rule, match}`; у игрока в матче и у самого матча можно указать `rule` / `noteRule`, чтобы пометка вела на пункт правил.
 - `tools/season.py` — достать данные из страницы или записать их обратно.
 - `netlify.toml` — настройки Netlify, сборка не нужна.
 
