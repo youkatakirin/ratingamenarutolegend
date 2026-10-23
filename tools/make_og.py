@@ -287,7 +287,7 @@ def main(out):
     d = ImageDraw.Draw(img)
     line1 = "Таблица лидеров · матчи · игроки · рекорды · правила"
     d.text(((W - d.textlength(line1, font=foot)) / 2, 492 * S), line1, font=foot, fill=(206, 200, 226))
-    url = "nlrating.netlify.app"
+    url = "youkatakirin.github.io/ratingamenarutolegend"
     d.text(((W - d.textlength(url, font=url_f)) / 2, 532 * S), url, font=url_f, fill=(255, 190, 120))
 
     final = img.convert("RGB").resize((1200, 630), Image.LANCZOS)

@@ -16,6 +16,7 @@
 - Бан вне матча — запись в `penalties`: `{date, p, reason, rule}` (+ `days` / `points` при необходимости).
 - Герои круга и позора (пункт 8.3) — `circle: [{fromGame, heroes: [...], shame: [...]}]`.
 - `og.jpg` — картинка для превью ссылки, рисуется `python3 tools/make_og.py og.jpg`.
-- `netlify.toml` — настройки Netlify, сборка не нужна.
+- Сайт публикует GitHub Pages: https://youkatakirin.github.io/ratingamenarutolegend/ — обновляется сам после каждого push в main. `.nojekyll` отключает обработку Jekyll.
+- `netlify.toml` — старый адрес nlrating.netlify.app переадресует на GitHub Pages; сборки на Netlify пропускаются, если этот файл не менялся.
 
 Очки: победа +20, поражение −20, круг/челлендж +10, стрик/бонус +10, позор/пред −10, бан −20.

@@ -266,7 +266,7 @@ def draw_card(m, out_path, eff=None):
     d.line([(M, fy), (s(W) - M, fy)], fill=LINE, width=S)
     bans = m.get("bans") or []
     left = ("Бан на следующие игры: " + " · ".join(bans)) if bans else (m.get("note") or "")
-    url = "nlrating.netlify.app"
+    url = "youkatakirin.github.io/ratingamenarutolegend"
     uw = d.textlength(url, font=F_SMALL)
     d.text((M, fy + s(24)), fit(d, left, F_SMALL, s(W) - 2 * M - uw - s(30)), font=F_SMALL, fill=SOFT)
     d.text((s(W) - M - uw, fy + s(24)), url, font=F_SMALL, fill=MUTED)

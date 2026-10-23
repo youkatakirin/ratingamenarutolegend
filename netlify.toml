@@ -1,13 +1,13 @@
+# The site moved to GitHub Pages (free, updates cost nothing).
+# Netlify only keeps the old address working: every path redirects to the same path on the new site.
 [build]
   publish = "."
   command = ""
+  # Skip Netlify builds unless this file changes, so data updates do not spend Netlify credits.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- netlify.toml"
 
-[[headers]]
-  for = "/index.html"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
-
-[[headers]]
-  for = "/shots/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+[[redirects]]
+  from = "/*"
+  to = "https://youkatakirin.github.io/ratingamenarutolegend/:splat"
+  status = 301
+  force = true
