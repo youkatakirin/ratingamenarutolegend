@@ -1709,12 +1709,14 @@ img { max-width: 100%; }
     return stats[name];
   }
   var singleGames = [];
-  // Rule 8.5: every block costs points; rule 2.6: block length = its number, counter resets every 50 games
+  // Rule 8.5: every block costs points; rule 2.6: block length = its number.
+  // The counter is per player and resets after every 50 games that player has played (season start = first reset).
   var BAN_PTS = data.points.ban || 20;
   var penaltyLog = [], blockCount = {}, gameOf = {};
   function daysText(n) { return n + ' ' + plural(n, 'день', 'дня', 'дней'); }
-  function giveBlock(name, gameNo, info) {
-    var key = name + '|' + Math.floor((Math.max(1, gameNo) - 1) / 50);
+  function blockKey(name, played) { return name + '|' + Math.floor((Math.max(1, played) - 1) / 50); }
+  function giveBlock(name, played, info) {
+    var key = blockKey(name, played);
     var no = (blockCount[key] || 0) + 1;
     blockCount[key] = no;
     var e = {
@@ -1731,7 +1733,8 @@ img { max-width: 100%; }
   function flushPens(beforeDate) {
     while (penIdx < extraPens.length && (beforeDate === null || extraPens[penIdx].date < beforeDate)) {
       var p = extraPens[penIdx++];
-      giveBlock(p.p, p.match || lastN || 1, p);
+      var ps = st(p.p);
+      giveBlock(p.p, ps.w + ps.l, p);
     }
   }
   matches.forEach(function (m) {
@@ -1751,7 +1754,7 @@ img { max-width: 100%; }
         s.pts += x.d + bonus; s.bonus += bonus;
         s.sides[side].g++; if (won) s.sides[side].w++;
         var g = { m: m, side: side, won: won, x: x, bonus: bonus, pen: null };
-        if (x.ban) g.pen = giveBlock(x.p, m.n, { date: m.date.slice(0, 10), reason: x.ban.reason, rule: x.ban.rule, match: m.n, days: x.ban.days, points: x.ban.points });
+        if (x.ban) g.pen = giveBlock(x.p, s.w + s.l, { date: m.date.slice(0, 10), reason: x.ban.reason, rule: x.ban.rule, match: m.n, days: x.ban.days, points: x.ban.points });
         g.total = x.d + bonus + (g.pen ? g.pen.pts : 0);
         gameOf[m.n + '|' + x.p] = g;
         s.games.push(g);
@@ -2151,7 +2154,7 @@ img { max-width: 100%; }
     if (pens.length) {
       html += '<div class="sec" style="gap:10px"><h3>НАКАЗАНИЯ</h3><div class="panel list">' + pens.map(function (p) {
         return '<div class="list-row"><span style="min-width:0">' + ruleLink(p.reason, p.rule) + (p.match ? ' <span class="muted">· игра #' + p.match + '</span>' : '') + '</span><span class="meta">' + esc(dmy(p.date)) + '</span><span style="color:var(--loss)">' + esc(penText(p)) + '</span></div>';
-      }).join('') + '</div><p class="note" style="margin:0">Следующая блокировка — ' + daysText((blockCount[s.name + '|' + Math.floor((Math.max(1, lastN) - 1) / 50)] || 0) + 1) + ' (' + ruleLink('пункт 2.6', '2.6') + ', счётчик обнуляется каждые 50 игр).</p></div>';
+      }).join('') + '</div><p class="note" style="margin:0">Следующая блокировка — ' + daysText((blockCount[blockKey(s.name, s.g + 1)] || 0) + 1) + ' (' + ruleLink('пункт 2.6', '2.6') + '). Счётчик обнулится через ' + (50 - s.g % 50) + ' ' + plural(50 - s.g % 50, 'игру', 'игры', 'игр') + ' — каждые 50 сыгранных игр.</p></div>';
     }
     html += '<div class="sec" style="gap:10px"><h3>ДОСТИЖЕНИЯ</h3><div class="achs">' + ACH.map(function (a) {
       var c = achCount(a, s);

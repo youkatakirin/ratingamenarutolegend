@@ -118,12 +118,13 @@ def plural(n, one, few, many):
 def effects(data):
     """Same point rules as the page: streak bonus (rule 8.1) and automatic blocks (rules 8.5, 2.6)."""
     ban_pts = data.get("points", {}).get("ban", 20)
-    out, streak, lstreak, blocks = {}, {}, {}, {}
+    out, streak, lstreak, blocks, played = {}, {}, {}, {}, {}
     extra = sorted(data.get("penalties") or [], key=lambda p: p["date"])
     i, last_n = 0, 0
 
-    def block(name, game_no, info):
-        key = (name, (max(1, game_no) - 1) // 50)
+    def block(name, games_played, info):
+        # per player: counter resets after every 50 games that player has played
+        key = (name, (max(1, games_played) - 1) // 50)
         blocks[key] = blocks.get(key, 0) + 1
         pts = info.get("points")
         return {"days": info.get("days") or blocks[key], "pts": pts if isinstance(pts, int) else -ban_pts,
@@ -131,17 +132,18 @@ def effects(data):
 
     for m in sorted(data["matches"], key=lambda m: m["n"]):
         while i < len(extra) and extra[i]["date"] < m["date"][:10]:
-            block(extra[i]["p"], extra[i].get("match") or last_n or 1, extra[i])
+            block(extra[i]["p"], played.get(extra[i]["p"], 0), extra[i])
             i += 1
         last_n = m["n"]
         for side in ("alliance", "akatsuki"):
             won = m["winner"] == side
             for x in m.get(side, []):
                 p = x["p"]
+                played[p] = played.get(p, 0) + 1
                 streak[p] = streak.get(p, 0) + 1 if won else 0
                 lstreak[p] = 0 if won else lstreak.get(p, 0) + 1
                 bonus = (5 if streak[p] > 5 else 0) if won else (-5 if lstreak[p] > 5 else 0)
-                pen = block(p, m["n"], x["ban"]) if x.get("ban") else None
+                pen = block(p, played[p], x["ban"]) if x.get("ban") else None
                 out[(m["n"], p)] = {"total": x["d"] + bonus + (pen["pts"] if pen else 0), "bonus": bonus, "pen": pen}
     return out
 
