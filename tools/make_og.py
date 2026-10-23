@@ -160,8 +160,16 @@ def skew_panel(img, x0, y0, x1, y1, c0, c1, glow_col):
     for x in range(int(x0), int(x1 + off) + 1):
         t = (x - x0) / max(1, (x1 + off - x0))
         gd.line([(x, y0), (x, y1)], fill=tuple(int(c0[i] + (c1[i] - c0[i]) * t) for i in range(3)) + (255,))
+    # smooth (anti-aliased) edges: rasterise the parallelogram at 6x inside its box, then downscale
+    k = 6
+    bx0, by0 = int(x0) - 2, int(y0) - 2
+    bx1, by1 = int(x1 + off) + 3, int(y1) + 3
+    big = Image.new("L", ((bx1 - bx0) * k, (by1 - by0) * k), 0)
+    pts = [(x0 + off, y0), (x1 + off, y0), (x1, y1), (x0, y1)]
+    ImageDraw.Draw(big).polygon([((x - bx0) * k, (y - by0) * k) for x, y in pts], fill=255)
+    small = big.resize((bx1 - bx0, by1 - by0), Image.LANCZOS)
     mask = Image.new("L", img.size, 0)
-    ImageDraw.Draw(mask).polygon([(x0 + off, y0), (x1 + off, y0), (x1, y1), (x0, y1)], fill=255)
+    mask.paste(small, (bx0, by0))
     img.paste(grad, (0, 0), mask)
     return off
 
@@ -236,7 +244,7 @@ def main(out):
     eyebrow = font("Exo2-SemiBold.ttf", 23)
     title = font("RussoOne.ttf", 168)
     panel_f = font("RussoOne.ttf", 46)
-    vs_f = font("RussoOne.ttf", 34)
+    vs_f = font("RussoOne.ttf", 30)
     foot = font("Exo2-SemiBold.ttf", 22)
     url_f = font("Exo2-SemiBold.ttf", 24)
 
@@ -253,18 +261,19 @@ def main(out):
     d.text((tx, ty), "IMMORTAL", font=title, fill=(244, 242, 250))
 
     y0, y1 = 318 * S, 410 * S
-    off = skew_panel(img, 214 * S, y0, 566 * S, y1, (19, 94, 168), (47, 155, 255), (47, 155, 255))
+    off = skew_panel(img, 204 * S, y0, 552 * S, y1, (19, 94, 168), (47, 155, 255), (47, 155, 255))
     d = ImageDraw.Draw(img)
     bb = d.textbbox((0, 0), "АЛЬЯНС", font=panel_f)
-    d.text((214 * S + off / 2 + 30 * S, y0 + (y1 - y0 - (bb[3] - bb[1])) / 2 - bb[1]), "АЛЬЯНС", font=panel_f, fill=(255, 255, 255))
-    off2 = skew_panel(img, 634 * S - off, y0, 986 * S - off, y1, (255, 58, 92), (158, 22, 48), (255, 58, 92))
+    d.text((204 * S + off / 2 + 30 * S, y0 + (y1 - y0 - (bb[3] - bb[1])) / 2 - bb[1]), "АЛЬЯНС", font=panel_f, fill=(255, 255, 255))
+    off2 = skew_panel(img, 648 * S - off, y0, 996 * S - off, y1, (255, 58, 92), (158, 22, 48), (255, 58, 92))
     d = ImageDraw.Draw(img)
     lab = "АКАЦУКИ"
     lw = d.textlength(lab, font=panel_f)
-    d.text((986 * S - off + off2 / 2 - 30 * S - lw, y0 + (y1 - y0 - (bb[3] - bb[1])) / 2 - bb[1]), lab, font=panel_f, fill=(255, 255, 255))
+    d.text((996 * S - off + off2 / 2 - 30 * S - lw, y0 + (y1 - y0 - (bb[3] - bb[1])) / 2 - bb[1]), lab, font=panel_f, fill=(255, 255, 255))
     vw = d.textlength("VS", font=vs_f)
     vb = d.textbbox((0, 0), "VS", font=vs_f)
-    d.text((600 * S - vw / 2 + off / 2 - 6 * S, y0 + (y1 - y0 - (vb[3] - vb[1])) / 2 - vb[1]), "VS", font=vs_f, fill=(170, 162, 200))
+    # gap centre at mid-height: left panel edge 552+off/2, right panel edge 648-off/2 -> exactly 600
+    d.text((600 * S - vw / 2 - vb[0], y0 + (y1 - y0 - (vb[3] - vb[1])) / 2 - vb[1]), "VS", font=vs_f, fill=(170, 162, 200))
 
     # ornament divider
     oy = 468 * S
