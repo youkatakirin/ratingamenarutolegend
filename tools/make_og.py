@@ -1,6 +1,6 @@
-"""Draw the link-preview image (og.png, 1200x630) in the site's night-shinobi style.
+"""Draw the link-preview image (og.jpg, 1200x630) in the site's night-shinobi style.
 
-    python3 tools/make_og.py og.png
+    python3 tools/make_og.py og.jpg
 
 Everything is procedural: value-noise mist, geometric seals, rooftop silhouettes,
 embers and grain. No outside images or franchise symbols. Needs Pillow and numpy.
@@ -290,9 +290,13 @@ def main(out):
     url = "nlrating.netlify.app"
     d.text(((W - d.textlength(url, font=url_f)) / 2, 532 * S), url, font=url_f, fill=(255, 190, 120))
 
-    img.convert("RGB").resize((1200, 630), Image.LANCZOS).save(out, optimize=True)
+    final = img.convert("RGB").resize((1200, 630), Image.LANCZOS)
+    if out.lower().endswith((".jpg", ".jpeg")):
+        final.save(out, quality=90, optimize=True, progressive=True)
+    else:
+        final.save(out, optimize=True)
     print("saved", out)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "og.png")
+    main(sys.argv[1] if len(sys.argv) > 1 else "og.jpg")
