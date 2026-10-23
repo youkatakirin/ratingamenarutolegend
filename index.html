@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Таблица лидеров и история матчей рейтинга Immortal на сервере Naruto Legend 3.0.">
+<meta property="og:title" content="Рейтинг Immortal · Naruto Legend 3.0">
+<meta property="og:description" content="Таблица лидеров, все матчи сезона и скриншоты итогов.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0f1118">
+<title>Рейтинг Immortal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Unbounded:wght@600;800&display=swap">
+<style>
+/* Layout: one narrow column — season header with faction tally, leaderboard, match log, scoring rules */
+:root {
+  --bg: #eceef3;
+  --surface: #f8f9fb;
+  --ink: #161922;
+  --muted: #5b6172;
+  --line: #d3d7e0;
+  --alliance: #2a5b9b;
+  --akatsuki: #a3213a;
+  --gain: #1c7c52;
+  --loss: #a94a37;
+  --gold: #9a7218;
+  --f-display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --f-body: "Golos Text", "Segoe UI", system-ui, sans-serif;
+  --f-data: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1118; --surface: #171a24; --ink: #e5e7ee; --muted: #9a9fb1; --line: #2a2e3c;
+    --alliance: #74a0e3; --akatsuki: #e0596f; --gain: #4fc08c; --loss: #e38a73; --gold: #d8b15a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1118; --surface: #171a24; --ink: #e5e7ee; --muted: #9a9fb1; --line: #2a2e3c;
+  --alliance: #74a0e3; --akatsuki: #e0596f; --gain: #4fc08c; --loss: #e38a73; --gold: #d8b15a;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 56px;
+  display: grid;
+  gap: 48px;
+}
+h1, h2 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+.eyebrow {
+  font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); font-weight: 600;
+}
+.num { font-family: var(--f-data); font-variant-numeric: tabular-nums; }
+
+/* Header */
+header { display: grid; gap: 20px; }
+h1 {
+  font-weight: 800;
+  font-size: clamp(40px, 9vw, 76px);
+  line-height: .95;
+  letter-spacing: -.01em;
+}
+.sub { color: var(--muted); max-width: 60ch; }
+.tally { display: grid; gap: 10px; }
+.tally-row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  font-family: var(--f-display); font-weight: 600; font-size: 15px;
+}
+.tally-row .a { color: var(--alliance); }
+.tally-row .k { color: var(--akatsuki); }
+.tally-row b { font-family: var(--f-data); font-size: 28px; font-weight: 700; margin-inline: 6px; }
+.split { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--line); }
+.split span { display: block; height: 100%; }
+.split .a { background: var(--alliance); }
+.split .k { background: var(--akatsuki); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 24px; color: var(--muted); font-size: 14px; }
+.facts strong { color: var(--ink); font-weight: 600; }
+
+/* Sections */
+section { display: grid; gap: 16px; }
+.sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+h2 { font-size: 20px; font-weight: 600; }
+
+/* Leaderboard */
+.board-scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 560px; }
+th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+th { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+td.r, th.r { text-align: right; }
+.rank { font-family: var(--f-data); color: var(--muted); width: 3ch; }
+tr.top1 .rank { color: var(--gold); font-weight: 700; }
+.player { font-weight: 600; }
+.pts { font-family: var(--f-data); font-weight: 700; font-size: 16px; }
+.pos { color: var(--gain); }
+.neg { color: var(--loss); }
+.zero { color: var(--muted); }
+.wl { font-family: var(--f-data); color: var(--muted); }
+.wl b { color: var(--ink); font-weight: 500; }
+.wr { display: flex; align-items: center; gap: 10px; }
+.wr .bar { width: 64px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.wr .bar i { display: block; height: 100%; background: var(--ink); opacity: .7; }
+.wr .num { min-width: 4ch; text-align: right; color: var(--muted); }
+.form { display: flex; gap: 4px; }
+.form span {
+  width: 22px; height: 22px; display: grid; place-items: center;
+  font-family: var(--f-data); font-size: 11px; font-weight: 700; border-radius: 4px;
+}
+.form .w { background: color-mix(in srgb, var(--gain) 18%, transparent); color: var(--gain); }
+.form .l { background: color-mix(in srgb, var(--loss) 16%, transparent); color: var(--loss); }
+
+details.bench { color: var(--muted); font-size: 14px; }
+details.bench summary { cursor: pointer; width: fit-content; }
+details.bench summary:focus-visible { outline: 2px solid var(--alliance); outline-offset: 2px; border-radius: 3px; }
+.bench-list { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+
+/* Matches */
+.matches { display: grid; gap: 16px; }
+.match { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 16px; }
+.m-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; }
+.m-no { font-family: var(--f-display); font-weight: 800; font-size: 22px; }
+.m-meta { color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+.m-meta strong { color: var(--ink); font-weight: 500; }
+.teams { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.team { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.team.won.alliance { border-color: var(--alliance); }
+.team.won.akatsuki { border-color: var(--akatsuki); }
+.t-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.t-name { font-family: var(--f-display); font-weight: 600; font-size: 14px; }
+.alliance .t-name { color: var(--alliance); }
+.akatsuki .t-name { color: var(--akatsuki); }
+.badge {
+  font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600;
+  padding: 2px 8px; border-radius: 99px; color: var(--bg);
+}
+.alliance .badge { background: var(--alliance); }
+.akatsuki .badge { background: var(--akatsuki); }
+.roster { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.roster li { display: flex; justify-content: space-between; gap: 10px; }
+.roster .nm { min-width: 0; overflow-wrap: anywhere; }
+.roster .note { display: block; font-size: 12px; color: var(--muted); }
+.bans { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; }
+.bans .lbl { color: var(--muted); margin-right: 4px; }
+.chip { border: 1px solid var(--line); border-radius: 99px; padding: 2px 10px; }
+.m-note { font-size: 13px; color: var(--muted); }
+.shot {
+  display: block; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 8px;
+  overflow: hidden; background: #0e1117; cursor: zoom-in; position: relative;
+}
+.shot img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+.shot .hint {
+  position: absolute; right: 8px; bottom: 8px; font-size: 12px; padding: 3px 9px; border-radius: 99px;
+  background: rgba(10, 12, 18, .78); color: #e5e7ee;
+}
+.shot:focus-visible { outline: 2px solid var(--alliance); outline-offset: 2px; }
+.lightbox {
+  position: fixed; inset: 0; z-index: 50; background: rgba(6, 8, 12, .92);
+  display: grid; grid-template-rows: auto 1fr;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+}
+.lb-bar {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 10px max(16px, env(safe-area-inset-left, 0px)); color: #e5e7ee; font-size: 14px;
+}
+.lb-bar button {
+  font: inherit; color: #e5e7ee; background: transparent; border: 1px solid rgba(229, 231, 238, .35);
+  border-radius: 6px; padding: 5px 12px; cursor: pointer;
+}
+.lb-bar button:focus-visible { outline: 2px solid #74a0e3; outline-offset: 2px; }
+.lb-view { overflow: auto; display: grid; place-items: center; min-height: 0; }
+.lb-view img { max-width: 100%; max-height: 100%; cursor: zoom-in; }
+.lb-view.full { place-items: start; }
+.lb-view.full img { max-width: none; max-height: none; cursor: zoom-out; }
+
+/* Rules */
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.rule { padding: 14px 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; gap: 2px; margin: 0 -1px -1px 0; }
+.rule .v { font-family: var(--f-data); font-weight: 700; font-size: 18px; }
+.rule .k { color: var(--muted); font-size: 13px; }
+.hot { display: flex; flex-wrap: wrap; gap: 6px; }
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; }
+
+@media (max-width: 560px) {
+  .teams { grid-template-columns: 1fr; }
+  .wrap { padding-block: 28px 40px; gap: 40px; }
+}
+</style>
+<style>
+/* Base reset (same as the Claude artifact skeleton) */
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Naruto Legend 3.0 · рейтинговые игры</div>
+    <h1>Immortal</h1>
+    <p class="sub" id="season-sub">Таблица лидеров и все матчи сезона.</p>
+    <div class="tally" aria-label="Победы сторон">
+      <div class="tally-row">
+        <span class="a">Альянс<b id="t-a">0</b></span>
+        <span class="k"><b id="t-k">0</b>Акацуки</span>
+      </div>
+      <div class="split"><span class="a" id="split-a" style="width:50%"></span><span class="k" id="split-k" style="width:50%"></span></div>
+    </div>
+    <div class="facts" id="facts"></div>
+  </header>
+
+  <section aria-labelledby="h-board">
+    <div class="sec-head">
+      <h2 id="h-board">Таблица лидеров</h2>
+      <span class="eyebrow" id="board-count"></span>
+    </div>
+    <div class="board-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Игрок</th><th class="r">Очки</th><th>Поб. – Пор.</th><th>% побед</th><th>Последние игры</th>
+          </tr>
+        </thead>
+        <tbody id="board"></tbody>
+      </table>
+    </div>
+    <details class="bench" id="bench">
+      <summary id="bench-sum">Ещё не играли</summary>
+      <div class="bench-list" id="bench-list"></div>
+    </details>
+  </section>
+
+  <section aria-labelledby="h-matches">
+    <div class="sec-head">
+      <h2 id="h-matches">Матчи</h2>
+      <span class="eyebrow">сначала новые</span>
+    </div>
+    <div class="matches" id="matches"></div>
+  </section>
+
+  <section aria-labelledby="h-bans">
+    <h2 id="h-bans">Чаще всего банят</h2>
+    <div class="hot" id="hot-bans"></div>
+  </section>
+
+  <section aria-labelledby="h-rules">
+    <h2 id="h-rules">Начисление очков</h2>
+    <div class="rules" id="rules"></div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-labelledby="lb-title">
+  <div class="lb-bar">
+    <span id="lb-title">Итоги матча</span>
+    <span style="display:flex;gap:8px">
+      <button type="button" id="lb-zoom">Реальный размер</button>
+      <button type="button" id="lb-close">Закрыть</button>
+    </span>
+  </div>
+  <div class="lb-view" id="lb-view"><img id="lb-img" alt=""></div>
+</div>
+
+<script type="application/json" id="season-data">
+{
+  "seasonStart": "2026-10-22",
+  "updated": "2026-10-23",
+  "points": {
+    "win": 20,
+    "lose": 20,
+    "challenge": 10,
+    "streak": 10,
+    "shame": 10,
+    "ban": 20
+  },
+  "roster": [
+    "KimEtsu_No",
+    "black_reaper",
+    "Anteyli",
+    "Myamm",
+    "ByGbIGA",
+    "Inesska",
+    "[YVN-KXX]",
+    "milancore",
+    "SAND",
+    "Sutafokkusu",
+    "qwil",
+    "Delorane",
+    "Initio",
+    "Dominating.",
+    "letan",
+    "Panda95",
+    "Levi_",
+    "Master.Qf",
+    "ShikiNanaya",
+    "Warrior77",
+    "nekt0",
+    "Mond",
+    "Margylis",
+    "Hatake_kakashi",
+    "Architect",
+    "Sixty",
+    "lil17th",
+    "AztecRUS",
+    "optekum",
+    "Electro_Dan",
+    "Xypma7772",
+    "kanori",
+    "Lil_Happy",
+    "hxliwss",
+    "6yp9I",
+    "Onetake",
+    "Neverxve",
+    "Lanc_",
+    "Kuuhaku",
+    "Magistor",
+    "paos",
+    "Letsueki",
+    "SorryImPhilya",
+    "GoNext",
+    "SasukeUchiha_",
+    "sasavot",
+    "ZXC1X9",
+    "black_penguin"
+  ],
+  "matches": [
+    {
+      "n": 1,
+      "msg": "1562879179823775747",
+      "date": "2026-10-22T22:23",
+      "org": "SAND",
+      "firstPick": "alliance",
+      "winner": "alliance",
+      "bans": [
+        "Гаара",
+        "Хаширама",
+        "Асума",
+        "Хирузен"
+      ],
+      "alliance": [
+        {
+          "p": "Initio",
+          "d": 20
+        },
+        {
+          "p": "ByGbIGA",
+          "d": 20
+        },
+        {
+          "p": "[YVN-KXX]",
+          "d": 20
+        },
+        {
+          "p": "Dominating.",
+          "d": 20
+        }
+      ],
+      "akatsuki": [
+        {
+          "p": "Inesska",
+          "d": -20,
+          "note": "лив, бан на 24 часа"
+        },
+        {
+          "p": "SAND",
+          "d": -10
+        },
+        {
+          "p": "letan",
+          "d": -10
+        },
+        {
+          "p": "qwil",
+          "d": -10
+        }
+      ],
+      "note": "Из-за лива Акацуки потеряли по 10 очков вместо 20."
+    },
+    {
+      "n": 2,
+      "msg": "1562900097963008071",
+      "date": "2026-10-22T23:47",
+      "org": "SAND",
+      "firstPick": "akatsuki",
+      "winner": "alliance",
+      "shot": "shots/game-2.jpg",
+      "bans": [
+        "Ринго",
+        "Оноки",
+        "Кисаме",
+        "Мадара"
+      ],
+      "alliance": [
+        {
+          "p": "SAND",
+          "d": 20
+        },
+        {
+          "p": "Myamm",
+          "d": 20
+        },
+        {
+          "p": "Initio",
+          "d": 20
+        },
+        {
+          "p": "Dominating.",
+          "d": 20
+        }
+      ],
+      "akatsuki": [
+        {
+          "p": "Sutafokkusu",
+          "d": -20
+        },
+        {
+          "p": "Delorane",
+          "d": -20
+        },
+        {
+          "p": "ByGbIGA",
+          "d": -20
+        },
+        {
+          "p": "qwil",
+          "d": -20
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "msg": "1562929853735501895",
+      "date": "2026-10-23T01:45",
+      "org": "SAND",
+      "firstPick": "alliance",
+      "winner": "alliance",
+      "shot": "shots/game-3.jpg",
+      "bans": [
+        "Орочимару",
+        "Асума",
+        "Шино",
+        "Хирузен"
+      ],
+      "alliance": [
+        {
+          "p": "Sutafokkusu",
+          "d": 20
+        },
+        {
+          "p": "Panda95",
+          "d": 20
+        },
+        {
+          "p": "letan",
+          "d": 20
+        },
+        {
+          "p": "ByGbIGA",
+          "d": 20
+        }
+      ],
+      "akatsuki": [
+        {
+          "p": "Delorane",
+          "d": -20
+        },
+        {
+          "p": "SAND",
+          "d": -20
+        },
+        {
+          "p": "Dominating.",
+          "d": -20
+        },
+        {
+          "p": "KimEtsu_No",
+          "d": -20
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "msg": "1562947786545172500",
+      "date": "2026-10-23T02:56",
+      "org": "milancore",
+      "firstPick": "akatsuki",
+      "winner": "akatsuki",
+      "shot": "shots/game-4.jpg",
+      "bans": [
+        "Ринго",
+        "Минато",
+        "Джирайя",
+        "Ханзо"
+      ],
+      "alliance": [
+        {
+          "p": "Levi_",
+          "d": -20
+        },
+        {
+          "p": "black_reaper",
+          "d": -20
+        },
+        {
+          "p": "Anteyli",
+          "d": -20
+        },
+        {
+          "p": "KimEtsu_No",
+          "d": -20
+        }
+      ],
+      "akatsuki": [
+        {
+          "p": "SAND",
+          "d": 20
+        },
+        {
+          "p": "milancore",
+          "d": 20
+        },
+        {
+          "p": "letan",
+          "d": 20
+        },
+        {
+          "p": "Initio",
+          "d": 20
+        }
+      ]
+    }
+  ],
+  "adjustments": []
+}
+</script>
+
+<script>
+(function () {
+  var data = JSON.parse(document.getElementById('season-data').textContent);
+  var SIDE = { alliance: 'Альянс', akatsuki: 'Акацуки' };
+  var ADJ = {
+    challenge: { label: 'Круг / челлендж', sign: 1 },
+    streak: { label: 'Стрик / бонус', sign: 1 },
+    shame: { label: 'Позор / пред', sign: -1 },
+    ban: { label: 'Бан', sign: -1 }
+  };
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function signed(n) { return n > 0 ? '+' + n : n < 0 ? '−' + Math.abs(n) : '0'; }
+  function ptsClass(n) { return n > 0 ? 'pos' : n < 0 ? 'neg' : 'zero'; }
+  function fmtDate(iso) {
+    var p = iso.split('T'), d = p[0].split('-');
+    return d[2] + '.' + d[1] + '.' + d[0] + (p[1] ? ', ' + p[1] : '');
+  }
+
+  // Standings
+  var matches = data.matches.slice().sort(function (a, b) { return a.n - b.n; });
+  var stats = {};
+  function st(name) {
+    if (!stats[name]) stats[name] = { name: name, pts: 0, w: 0, l: 0, form: [] };
+    return stats[name];
+  }
+  matches.forEach(function (m) {
+    ['alliance', 'akatsuki'].forEach(function (side) {
+      m[side].forEach(function (x) {
+        var s = st(x.p), won = m.winner === side;
+        s.pts += x.d;
+        if (won) s.w++; else s.l++;
+        s.form.push(won ? 'w' : 'l');
+      });
+    });
+  });
+  (data.adjustments || []).forEach(function (a) {
+    var rule = ADJ[a.kind];
+    if (!rule) return;
+    st(a.p).pts += rule.sign * data.points[a.kind] * (a.count || 1);
+  });
+
+  var rows = Object.keys(stats).map(function (k) { return stats[k]; })
+    .filter(function (s) { return s.w + s.l > 0 || s.pts !== 0; });
+  rows.forEach(function (s) { s.g = s.w + s.l; s.wr = s.g ? s.w / s.g : 0; });
+  rows.sort(function (a, b) {
+    return b.pts - a.pts || b.wr - a.wr || b.g - a.g || a.name.localeCompare(b.name);
+  });
+
+  var board = document.getElementById('board');
+  var place = 0, prev = null;
+  rows.forEach(function (s, i) {
+    if (prev === null || s.pts !== prev) { place = i + 1; prev = s.pts; }
+    var tr = el('tr', place === 1 ? 'top1' : '');
+    tr.appendChild(el('td', 'rank', String(place)));
+    tr.appendChild(el('td', 'player', s.name));
+    tr.appendChild(el('td', 'r pts ' + ptsClass(s.pts), signed(s.pts)));
+    var wl = el('td', 'wl');
+    var bw = el('b', null, String(s.w));
+    var bl = el('b', null, String(s.l));
+    wl.appendChild(bw); wl.appendChild(document.createTextNode(' – ')); wl.appendChild(bl);
+    tr.appendChild(wl);
+    var wrTd = el('td');
+    var wr = el('div', 'wr');
+    var bar = el('div', 'bar'); var fill = el('i'); fill.style.width = Math.round(s.wr * 100) + '%';
+    bar.appendChild(fill); wr.appendChild(bar);
+    wr.appendChild(el('span', 'num', Math.round(s.wr * 100) + '%'));
+    wrTd.appendChild(wr); tr.appendChild(wrTd);
+    var fTd = el('td'); var form = el('div', 'form');
+    s.form.slice(-5).forEach(function (r) {
+      var c = el('span', r, r === 'w' ? 'В' : 'П');
+      c.title = r === 'w' ? 'Победа' : 'Поражение';
+      form.appendChild(c);
+    });
+    fTd.appendChild(form); tr.appendChild(fTd);
+    board.appendChild(tr);
+  });
+  document.getElementById('board-count').textContent = rows.length + ' игроков';
+
+  // Bench
+  var played = {}; rows.forEach(function (s) { played[s.name] = true; });
+  var bench = (data.roster || []).filter(function (n) { return !played[n]; });
+  if (bench.length) {
+    document.getElementById('bench-sum').textContent = 'Ещё не играли в этом сезоне: ' + bench.length;
+    var bl2 = document.getElementById('bench-list');
+    bench.forEach(function (n) { bl2.appendChild(el('span', null, n)); });
+  } else {
+    document.getElementById('bench').hidden = true;
+  }
+
+  // Header numbers
+  var aw = matches.filter(function (m) { return m.winner === 'alliance'; }).length;
+  var kw = matches.length - aw;
+  document.getElementById('t-a').textContent = aw;
+  document.getElementById('t-k').textContent = kw;
+  var pa = matches.length ? (aw / matches.length) * 100 : 50;
+  document.getElementById('split-a').style.width = pa + '%';
+  document.getElementById('split-k').style.width = (100 - pa) + '%';
+  var fp = matches.filter(function (m) { return m.firstPick === m.winner; }).length;
+  var sd = data.seasonStart.split('-');
+  document.getElementById('season-sub').textContent =
+    'Сезон с ' + sd[2] + '.' + sd[1] + '.' + sd[0] + '. Таблица лидеров и все сыгранные матчи.';
+  var facts = document.getElementById('facts');
+  [['Матчей', matches.length], ['Игроков', rows.length], ['Первый пик победил', fp + ' из ' + matches.length]]
+    .forEach(function (f) {
+      var s = el('span', null, f[0] + ': ');
+      s.appendChild(el('strong', null, String(f[1])));
+      facts.appendChild(s);
+    });
+
+  // Matches
+  var list = document.getElementById('matches');
+  matches.slice().reverse().forEach(function (m) {
+    var card = el('article', 'match');
+    var head = el('div', 'm-head');
+    head.appendChild(el('span', 'm-no', 'Игра #' + m.n));
+    var meta = el('div', 'm-meta');
+    meta.appendChild(el('span', null, fmtDate(m.date)));
+    var org = el('span', null, 'Организатор: '); org.appendChild(el('strong', null, m.org)); meta.appendChild(org);
+    var fpk = el('span', null, 'Первый пик: '); fpk.appendChild(el('strong', null, SIDE[m.firstPick])); meta.appendChild(fpk);
+    head.appendChild(meta);
+    card.appendChild(head);
+
+    var teams = el('div', 'teams');
+    ['alliance', 'akatsuki'].forEach(function (side) {
+      var won = m.winner === side;
+      var t = el('div', 'team ' + side + (won ? ' won' : ''));
+      var th = el('div', 't-head');
+      th.appendChild(el('span', 't-name', SIDE[side]));
+      if (won) th.appendChild(el('span', 'badge', 'Победа'));
+      t.appendChild(th);
+      var ul = el('ul', 'roster');
+      m[side].forEach(function (x) {
+        var li = el('li');
+        var nm = el('span', 'nm', x.p);
+        if (x.note) nm.appendChild(el('span', 'note', x.note));
+        li.appendChild(nm);
+        li.appendChild(el('span', 'num ' + ptsClass(x.d), signed(x.d)));
+        ul.appendChild(li);
+      });
+      t.appendChild(ul);
+      teams.appendChild(t);
+    });
+    card.appendChild(teams);
+
+    if (m.bans && m.bans.length) {
+      var bans = el('div', 'bans');
+      bans.appendChild(el('span', 'lbl', 'Баны:'));
+      m.bans.forEach(function (b) { bans.appendChild(el('span', 'chip', b)); });
+      card.appendChild(bans);
+    }
+    if (m.note) card.appendChild(el('div', 'm-note', m.note));
+    if (m.shot) {
+      var btn = el('button', 'shot');
+      btn.type = 'button';
+      btn.setAttribute('aria-label', 'Открыть скриншот итогов игры #' + m.n);
+      var img = el('img');
+      img.src = m.shot; img.alt = 'Итоги матча, игра #' + m.n; img.loading = 'lazy';
+      img.width = 1920; img.height = 1080;
+      btn.appendChild(img);
+      btn.appendChild(el('span', 'hint', 'Открыть'));
+      btn.addEventListener('click', function () { openShot(m, btn); });
+      card.appendChild(btn);
+    }
+    list.appendChild(card);
+  });
+
+  // Screenshot viewer
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lb-img');
+  var lbView = document.getElementById('lb-view');
+  var lbZoom = document.getElementById('lb-zoom');
+  var lbClose = document.getElementById('lb-close');
+  var lastFocus = null;
+  function setFull(on) {
+    lbView.classList.toggle('full', on);
+    lbZoom.textContent = on ? 'Вписать в экран' : 'Реальный размер';
+  }
+  function openShot(m, from) {
+    lastFocus = from;
+    lbImg.src = m.shot;
+    lbImg.alt = 'Итоги матча, игра #' + m.n;
+    document.getElementById('lb-title').textContent = 'Игра #' + m.n + ' · итоги матча';
+    setFull(false);
+    lb.hidden = false;
+    document.body.style.overflow = 'hidden';
+    lbClose.focus();
+  }
+  function closeShot() {
+    lb.hidden = true;
+    document.body.style.overflow = '';
+    if (lastFocus) lastFocus.focus();
+  }
+  lbClose.addEventListener('click', closeShot);
+  lbZoom.addEventListener('click', function () { setFull(!lbView.classList.contains('full')); });
+  lbImg.addEventListener('click', function (e) { e.stopPropagation(); setFull(!lbView.classList.contains('full')); });
+  lbView.addEventListener('click', function (e) { if (e.target === lbView) closeShot(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lb.hidden) closeShot(); });
+
+  // Ban frequency
+  var bc = {};
+  matches.forEach(function (m) { (m.bans || []).forEach(function (b) { bc[b] = (bc[b] || 0) + 1; }); });
+  var hot = Object.keys(bc).sort(function (a, b) { return bc[b] - bc[a] || a.localeCompare(b); });
+  var hotEl = document.getElementById('hot-bans');
+  hot.forEach(function (b) { hotEl.appendChild(el('span', 'chip', b + ' × ' + bc[b])); });
+
+  // Rules
+  var rules = document.getElementById('rules');
+  [['+' + data.points.win, 'Победа'], ['−' + data.points.lose, 'Поражение'],
+   ['+' + data.points.challenge, 'Круг / челлендж'], ['+' + data.points.streak, 'Стрик / бонус'],
+   ['−' + data.points.shame, 'Позор / пред'], ['−' + data.points.ban, 'Бан']]
+    .forEach(function (r) {
+      var d = el('div', 'rule');
+      d.appendChild(el('span', 'v', r[0]));
+      d.appendChild(el('span', 'k', r[1]));
+      rules.appendChild(d);
+    });
+
+  var ud = data.updated.split('-');
+  document.getElementById('foot').textContent =
+    'Обновлено ' + ud[2] + '.' + ud[1] + '.' + ud[0] + ' · данные из канала #результаты-immortal на сервере Naruto Legend 3.0';
+})();
+</script>
+</body>
+</html>
