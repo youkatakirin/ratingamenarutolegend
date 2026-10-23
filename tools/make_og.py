@@ -150,28 +150,27 @@ def spaced_center(d, y, text, f, fill, tracking):
         x += w + tracking
 
 
-def skew_panel(img, x0, y0, x1, y1, c0, c1, glow_col):
-    off = (y1 - y0) * math.tan(math.radians(10))
+def round_panel(img, x0, y0, x1, y1, c0, c1, glow_col, radius):
+    """Rounded, anti-aliased panel with a horizontal gradient and a soft coloured glow."""
     sh = Image.new("RGBA", img.size, (0, 0, 0, 0))
-    ImageDraw.Draw(sh).polygon([(x0 + off, y0), (x1 + off, y0), (x1, y1), (x0, y1)], fill=glow_col + (150,))
+    ImageDraw.Draw(sh).rounded_rectangle([x0, y0, x1, y1], radius=radius, fill=glow_col + (150,))
     img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(24 * S)))
     grad = Image.new("RGBA", img.size, (0, 0, 0, 0))
     gd = ImageDraw.Draw(grad)
-    for x in range(int(x0), int(x1 + off) + 1):
-        t = (x - x0) / max(1, (x1 + off - x0))
+    for x in range(int(x0), int(x1) + 1):
+        t = (x - x0) / max(1, (x1 - x0))
         gd.line([(x, y0), (x, y1)], fill=tuple(int(c0[i] + (c1[i] - c0[i]) * t) for i in range(3)) + (255,))
-    # smooth (anti-aliased) edges: rasterise the parallelogram at 6x inside its box, then downscale
-    k = 6
-    bx0, by0 = int(x0) - 2, int(y0) - 2
-    bx1, by1 = int(x1 + off) + 3, int(y1) + 3
+    k = 6  # draw the shape 6x bigger inside its box, then downscale -> smooth edges
+    bx0, by0, bx1, by1 = int(x0) - 2, int(y0) - 2, int(x1) + 3, int(y1) + 3
     big = Image.new("L", ((bx1 - bx0) * k, (by1 - by0) * k), 0)
-    pts = [(x0 + off, y0), (x1 + off, y0), (x1, y1), (x0, y1)]
-    ImageDraw.Draw(big).polygon([((x - bx0) * k, (y - by0) * k) for x, y in pts], fill=255)
-    small = big.resize((bx1 - bx0, by1 - by0), Image.LANCZOS)
+    ImageDraw.Draw(big).rounded_rectangle([(x0 - bx0) * k, (y0 - by0) * k, (x1 - bx0) * k, (y1 - by0) * k], radius=radius * k, fill=255)
     mask = Image.new("L", img.size, 0)
-    mask.paste(small, (bx0, by0))
+    mask.paste(big.resize((bx1 - bx0, by1 - by0), Image.LANCZOS), (bx0, by0))
     img.paste(grad, (0, 0), mask)
-    return off
+    # thin light edge on top for a polished look
+    hl = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    ImageDraw.Draw(hl).rounded_rectangle([x0, y0, x1, y1], radius=radius, outline=(255, 255, 255, 46), width=max(1, S))
+    img.alpha_composite(hl)
 
 
 def main(out):
@@ -261,19 +260,16 @@ def main(out):
     d.text((tx, ty), "IMMORTAL", font=title, fill=(244, 242, 250))
 
     y0, y1 = 318 * S, 410 * S
-    off = skew_panel(img, 204 * S, y0, 552 * S, y1, (19, 94, 168), (47, 155, 255), (47, 155, 255))
+    r = 30 * S
+    lx0, lx1, rx0, rx1 = 212 * S, 562 * S, 638 * S, 988 * S   # equal panels, 76 px gap centred on 600
+    round_panel(img, lx0, y0, lx1, y1, (19, 94, 168), (47, 155, 255), (47, 155, 255), r)
+    round_panel(img, rx0, y0, rx1, y1, (255, 58, 92), (158, 22, 48), (255, 58, 92), r)
     d = ImageDraw.Draw(img)
-    bb = d.textbbox((0, 0), "АЛЬЯНС", font=panel_f)
-    d.text((204 * S + off / 2 + 30 * S, y0 + (y1 - y0 - (bb[3] - bb[1])) / 2 - bb[1]), "АЛЬЯНС", font=panel_f, fill=(255, 255, 255))
-    off2 = skew_panel(img, 648 * S - off, y0, 996 * S - off, y1, (255, 58, 92), (158, 22, 48), (255, 58, 92))
-    d = ImageDraw.Draw(img)
-    lab = "АКАЦУКИ"
-    lw = d.textlength(lab, font=panel_f)
-    d.text((996 * S - off + off2 / 2 - 30 * S - lw, y0 + (y1 - y0 - (bb[3] - bb[1])) / 2 - bb[1]), lab, font=panel_f, fill=(255, 255, 255))
-    vw = d.textlength("VS", font=vs_f)
+    for label, a, b in (("АЛЬЯНС", lx0, lx1), ("АКАЦУКИ", rx0, rx1)):
+        bb = d.textbbox((0, 0), label, font=panel_f)
+        d.text(((a + b) / 2 - (bb[2] - bb[0]) / 2 - bb[0], (y0 + y1) / 2 - (bb[3] - bb[1]) / 2 - bb[1]), label, font=panel_f, fill=(255, 255, 255))
     vb = d.textbbox((0, 0), "VS", font=vs_f)
-    # gap centre at mid-height: left panel edge 552+off/2, right panel edge 648-off/2 -> exactly 600
-    d.text((600 * S - vw / 2 - vb[0], y0 + (y1 - y0 - (vb[3] - vb[1])) / 2 - vb[1]), "VS", font=vs_f, fill=(170, 162, 200))
+    d.text((600 * S - (vb[2] - vb[0]) / 2 - vb[0], (y0 + y1) / 2 - (vb[3] - vb[1]) / 2 - vb[1]), "VS", font=vs_f, fill=(170, 162, 200))
 
     # ornament divider
     oy = 468 * S
