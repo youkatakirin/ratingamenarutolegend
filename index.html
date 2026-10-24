@@ -2611,7 +2611,7 @@ img { max-width: 100%; }
     if (!stats[name]) {
       stats[name] = {
         name: name, pts: 0, w: 0, l: 0, form: [], games: [], sg: 0, k: 0, d: 0, a: 0, dmg: 0, cs: 0,
-        mvp: 0, svp: 0, streak: 0, lstreak: 0, bestStreak: 0, bonus: 0, blocks: 0, taken: 0, tdmg: 0, tg: 0,
+        gold: 0, gg: 0, mvp: 0, svp: 0, streak: 0, lstreak: 0, bestStreak: 0, bonus: 0, blocks: 0, taken: 0, tdmg: 0, tg: 0,
         sides: { alliance: { g: 0, w: 0 }, akatsuki: { g: 0, w: 0 } }, heroes: {}, mates: {}
       };
     }
@@ -2673,6 +2673,7 @@ img { max-width: 100%; }
         if (x.kda) {
           s.sg++; s.k += x.kda[0]; s.d += x.kda[1]; s.a += x.kda[2];
           s.dmg += x.dmg || 0; s.cs += x.cs || 0;
+          if (x.gold) { s.gold += x.gold; s.gg++; }
           singleGames.push(g);
         }
         // tower damage and damage taken come from the result screenshots
@@ -2893,26 +2894,31 @@ img { max-width: 100%; }
   var firstN = matches.length ? matches[0].n : 0;
   var maxDeaths = Math.max.apply(null, [0].concat(rows.filter(function (s) { return s.sg; }).map(function (s) { return s.d; })));
   var maxTaken = Math.max.apply(null, [0].concat(rows.map(function (s) { return s.taken; })));
-  function gamesWith(s, f) { return s.games.filter(function (g) { return g.x.kda && f(g.x); }).length; }
+  function gamesWith(s, f, wins) { return s.games.filter(function (g) { return g.x.kda && (!wins || g.won) && f(g.x); }).length; }
+  var maxCs = Math.max.apply(null, [0].concat(rows.filter(function (s) { return s.sg; }).map(function (s) { return s.cs; })));
+  function heroWins(s) { return Object.keys(s.heroes).filter(function (h) { return s.heroes[h].w > 0; }).length; }
   var ACH = [
     { name: 'Лидер сезона', desc: 'Сейчас на 1-м месте', rare: true, test: function (s) { return s.place === 1; } },
-    { name: 'Первая кровь', desc: 'Победа в первой игре сезона', test: function (s) { return s.games.some(function (g) { return g.m.n === firstN && g.won; }); } },
-    { name: 'MVP', desc: 'Лучший игрок победителей', rare: true, count: function (s) { return s.mvp; } },
-    { name: 'SVP', desc: 'Лучший игрок проигравших', count: function (s) { return s.svp; } },
-    { name: 'Серия', desc: '3 победы подряд', test: function (s) { return s.bestStreak >= 3; } },
-    { name: 'В огне', desc: '5 побед подряд', rare: true, test: function (s) { return s.bestStreak >= 5; } },
-    { name: 'Неудержимый', desc: '10 побед подряд', rare: true, test: function (s) { return s.bestStreak >= 10; } },
-    { name: 'Бессмертный', desc: 'Игра без единой смерти', rare: true, count: function (s) { return gamesWith(s, function (x) { return x.kda[1] === 0; }); } },
-    { name: 'Палач', desc: '12+ убийств за игру', count: function (s) { return gamesWith(s, function (x) { return x.kda[0] >= 12; }); } },
-    { name: 'Опора команды', desc: '15+ помощи за игру', count: function (s) { return gamesWith(s, function (x) { return x.kda[2] >= 15; }); } },
-    { name: 'Разрушитель', desc: '50 000+ урона за игру', count: function (s) { return gamesWith(s, function (x) { return (x.dmg || 0) >= 50000; }); } },
-    { name: 'Осадник', desc: '10 000+ урона по зданиям за игру', count: function (s) { return s.games.filter(function (g) { return (g.x.tdmg || 0) >= 10000; }).length; } },
-    { name: 'Обе стороны', desc: 'Победы и за Альянс, и за Акацуки', test: function (s) { return s.sides.alliance.w > 0 && s.sides.akatsuki.w > 0; } },
-    { name: 'Универсал', desc: '3 разных героя', test: function (s) { return Object.keys(s.heroes).length >= 3; } },
-    { name: 'Мастер героя', desc: '5 игр на одном герое', rare: true, test: function (s) { return Object.keys(s.heroes).some(function (h) { return s.heroes[h].g >= 5; }); } },
-    { name: 'Ветеран', desc: '10 игр в сезоне', test: function (s) { return s.g >= 10; } },
-    { name: 'Старожил', desc: '25 игр в сезоне', test: function (s) { return s.g >= 25; } },
-    { name: 'Легенда', desc: '50 игр в сезоне', rare: true, test: function (s) { return s.g >= 50; } },
+    { name: 'Звезда матча', desc: '3 MVP за сезон', test: function (s) { return s.mvp >= 3; } },
+    { name: 'Король арены', desc: '10 MVP за сезон', rare: true, test: function (s) { return s.mvp >= 10; } },
+    { name: 'Честь в поражении', desc: '3 SVP за сезон', test: function (s) { return s.svp >= 3; } },
+    { name: 'Серия', desc: '5 побед подряд', test: function (s) { return s.bestStreak >= 5; } },
+    { name: 'В огне', desc: '8 побед подряд', rare: true, test: function (s) { return s.bestStreak >= 8; } },
+    { name: 'Неудержимый', desc: '12 побед подряд', rare: true, test: function (s) { return s.bestStreak >= 12; } },
+    { name: 'Бессмертный', desc: 'Победа без единой смерти', rare: true, count: function (s) { return gamesWith(s, function (x) { return x.kda[1] === 0; }, true); } },
+    { name: 'Палач', desc: '15+ убийств за игру', count: function (s) { return gamesWith(s, function (x) { return x.kda[0] >= 15; }); } },
+    { name: 'Опора команды', desc: '20+ помощи за игру', count: function (s) { return gamesWith(s, function (x) { return x.kda[2] >= 20; }); } },
+    { name: 'Разрушитель', desc: '60 000+ урона по героям за игру', rare: true, count: function (s) { return gamesWith(s, function (x) { return (x.dmg || 0) >= 60000; }); } },
+    { name: 'Осадник', desc: '12 000+ урона по зданиям за игру', count: function (s) { return s.games.filter(function (g) { return (g.x.tdmg || 0) >= 12000; }).length; } },
+    { name: 'Фармила', desc: '350+ крипов за игру', count: function (s) { return gamesWith(s, function (x) { return (x.cs || 0) >= 350; }); } },
+    { name: 'Богач', desc: '35 000+ золота за игру', count: function (s) { return gamesWith(s, function (x) { return (x.gold || 0) >= 35000; }); } },
+    { name: 'Обе стороны', desc: 'По 3 победы за Альянс и за Акацуки', test: function (s) { return s.sides.alliance.w >= 3 && s.sides.akatsuki.w >= 3; } },
+    { name: 'Универсал', desc: 'Победы на 6 разных героях', test: function (s) { return heroWins(s) >= 6; } },
+    { name: 'Мастер героя', desc: '5 побед на одном герое', rare: true, test: function (s) { return Object.keys(s.heroes).some(function (h) { return s.heroes[h].w >= 5; }); } },
+    { name: 'Ветеран', desc: '25 игр в сезоне', test: function (s) { return s.g >= 25; } },
+    { name: 'Старожил', desc: '50 игр в сезоне', test: function (s) { return s.g >= 50; } },
+    { name: 'Легенда', desc: '100 игр в сезоне', rare: true, test: function (s) { return s.g >= 100; } },
+    { name: 'Фармер сезона', desc: 'Больше всех крипов за сезон', test: function (s) { return s.sg > 0 && maxCs > 0 && s.cs === maxCs; } },
     { name: 'Танк', desc: 'Больше всех полученного урона в сезоне', test: function (s) { return s.tg > 0 && maxTaken > 0 && s.taken === maxTaken; } },
     { name: 'Фидер сезона', desc: 'Больше всех смертей в сезоне', test: function (s) { return s.sg > 0 && maxDeaths > 0 && s.d === maxDeaths; } }
   ];
@@ -2946,6 +2952,9 @@ img { max-width: 100%; }
     add('Лучший KDA', best(statRows, function (s) { return Math.round(s.ratio * 100) / 100; }, function (s) { return s.sg >= 2; }),
       function (v) { return v.toFixed(2).replace('.', ','); }, '(убийства + помощь) / смерти, от 2 игр');
     add('Урон за сезон', best(statRows, function (s) { return s.dmg; }), fmt);
+    add('Крипы за сезон', best(statRows, function (s) { return s.cs; }), fmt);
+    add('Крипы в среднем', best(statRows, function (s) { return Math.round(s.cs / s.sg); }, function (s) { return s.sg >= 3; }), fmt, 'за игру, от 3 игр');
+    add('Золото в среднем', best(rows, function (s) { return s.gg ? Math.round(s.gold / s.gg) : 0; }, function (s) { return s.gg >= 3; }), fmt, 'за игру, от 3 игр');
     var tankRows = rows.filter(function (s) { return s.tg > 0; });
     add('Получено урона за сезон', best(tankRows, function (s) { return s.taken; }), fmt, 'танковал больше всех');
     add('Урон по зданиям за сезон', best(tankRows, function (s) { return s.tdmg; }), fmt);
@@ -2966,6 +2975,8 @@ img { max-width: 100%; }
       ['Урон за игру', bestGame(function (g) { return g.x.dmg || 0; }), fmt],
       ['Убийств за игру', bestGame(function (g) { return g.x.kda[0]; }), function (v) { return v; }],
       ['Помощи за игру', bestGame(function (g) { return g.x.kda[2]; }), function (v) { return v; }],
+      ['Крипы за игру', bestGame(function (g) { return g.x.cs || 0; }), fmt],
+      ['Золото за игру', bestGame(function (g) { return g.x.gold || 0; }), fmt],
       ['Урон по зданиям за игру', bestGame(function (g) { return g.x.tdmg || 0; }), fmt],
       ['Получено урона за игру', bestGame(function (g) { return g.x.taken || 0; }), fmt]
     ];
