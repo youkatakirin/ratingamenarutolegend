@@ -116,8 +116,10 @@ def plural(n, one, few, many):
 
 
 def effects(data):
-    """Same point rules as the page: streak bonus (rule 8.1) and automatic blocks (rules 8.5, 2.6)."""
+    """Same point rules as the page: streak bonus (rule 8.1), MVP/SVP bonus (rule 8.3) and automatic blocks (rules 8.5, 2.6)."""
     ban_pts = data.get("points", {}).get("ban", 20)
+    award_pts = data.get("points", {}).get("award", 0)
+    award_from = data.get("points", {}).get("awardFrom", 1)
     out, streak, lstreak, blocks, played = {}, {}, {}, {}, {}
     extra = sorted(data.get("penalties") or [], key=lambda p: p["date"])
     i, last_n = 0, 0
@@ -143,8 +145,9 @@ def effects(data):
                 streak[p] = streak.get(p, 0) + 1 if won else 0
                 lstreak[p] = 0 if won else lstreak.get(p, 0) + 1
                 bonus = (5 if streak[p] > 5 else 0) if won else (-5 if lstreak[p] > 5 else 0)
+                abon = award_pts if x.get("award") in ("MVP", "SVP") and m["n"] >= award_from else 0
                 pen = block(p, played[p], x["ban"]) if x.get("ban") else None
-                out[(m["n"], p)] = {"total": x["d"] + bonus + (pen["pts"] if pen else 0), "bonus": bonus, "pen": pen}
+                out[(m["n"], p)] = {"total": x["d"] + bonus + abon + (pen["pts"] if pen else 0), "bonus": bonus, "abon": abon, "pen": pen}
     return out
 
 
@@ -257,7 +260,8 @@ def draw_card(m, out_path, eff=None):
             pen = e["pen"]
             ban_t = f"бан {pen['days']} {plural(pen['days'], 'день', 'дня', 'дней')} · {pen['reason'].lower()}" if pen else ""
             bonus_t = (f"серия +{e['bonus']}" if e["bonus"] > 0 else f"серия –{abs(e['bonus'])}") if e["bonus"] else ""
-            sub = " · ".join(t for t in (x.get("hero"), ban_t, x.get("note"), bonus_t) if t)
+            abon_t = f"{x.get('award')} +{e['abon']}" if e.get("abon") else ""
+            sub = " · ".join(t for t in (x.get("hero"), ban_t, x.get("note"), abon_t, bonus_t) if t)
             if sub:
                 d.text((nx, ry + s(41)), fit(d, sub, F_HERO, name_max), font=F_HERO, fill=LOSS if (pen and not x.get("hero")) else MUTED)
 
