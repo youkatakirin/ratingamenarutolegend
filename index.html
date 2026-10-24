@@ -121,9 +121,9 @@ h3 { font-size: 18px; letter-spacing: 0.04em; }
 .rk.gold { background: var(--gold); border-color: var(--gold); color: #07090f; box-shadow: 0 0 18px rgba(255, 201, 74, 0.45); }
 .rk.silver { background: #d3dbe6; border-color: #d3dbe6; color: #07090f; box-shadow: 0 0 18px rgba(205, 218, 235, 0.42); }
 .rk.bronze { background: #dc8f4e; border-color: #dc8f4e; color: #07090f; box-shadow: 0 0 18px rgba(220, 143, 78, 0.45); }
-.plink.top1, .pcard-name.top1 { color: var(--gold); text-shadow: 0 0 10px rgba(255, 201, 74, 0.7), 0 0 24px rgba(255, 170, 40, 0.35); }
-.plink.top2, .pcard-name.top2 { color: #c8d6ea; text-shadow: 0 0 10px rgba(200, 220, 248, 0.75), 0 0 24px rgba(150, 185, 235, 0.4); }
-.plink.top3, .pcard-name.top3 { color: #f0a868; text-shadow: 0 0 10px rgba(240, 150, 80, 0.7), 0 0 24px rgba(220, 110, 40, 0.35); }
+.plink.top1, .pcard-name.top1, .tl-chip .top1 { color: var(--gold); text-shadow: 0 0 10px rgba(255, 201, 74, 0.7), 0 0 24px rgba(255, 170, 40, 0.35); }
+.plink.top2, .pcard-name.top2, .tl-chip .top2 { color: #c8d6ea; text-shadow: 0 0 10px rgba(200, 220, 248, 0.75), 0 0 24px rgba(150, 185, 235, 0.4); }
+.plink.top3, .pcard-name.top3, .tl-chip .top3 { color: #f0a868; text-shadow: 0 0 10px rgba(240, 150, 80, 0.7), 0 0 24px rgba(220, 110, 40, 0.35); }
 .aw-mvp { color: var(--gold); } .aw-svp { color: var(--svp); }
 .pos { color: var(--win); }
 .neg { color: var(--loss); }
@@ -450,6 +450,33 @@ footer .line { border-top: 1px solid var(--line); padding-top: 16px; display: fl
   .cmp-row { grid-template-columns: minmax(0, 1fr) 110px minmax(0, 1fr); padding-inline: 10px; }
   .r-item { grid-template-columns: 44px minmax(0, 1fr); padding-inline: 12px; }
 }
+/* Tier list */
+.tl-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.btn {
+  font: inherit; font-weight: 600; font-size: 14px; color: var(--ink); background: rgba(15, 19, 29, 0.8);
+  border: 1px solid var(--line-2); padding: 7px 16px; cursor: pointer; transform: skewX(-10deg);
+}
+.btn > span { display: inline-block; transform: skewX(10deg); }
+.btn:hover { border-color: var(--ally); }
+.btn.primary { background: var(--ally); border-color: var(--ally); color: #07090f; box-shadow: 0 0 18px rgba(47, 155, 255, 0.35); }
+.tl { display: grid; gap: 6px; }
+.tl-row { display: grid; grid-template-columns: 76px minmax(0, 1fr); background: rgba(15, 19, 29, 0.9); border: 1px solid var(--line); }
+.tl-lbl { display: grid; place-items: center; font-family: var(--f-display); font-size: 30px; color: #07090f; cursor: pointer; }
+.tl-zone { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; padding: 8px; min-height: 62px; }
+.tl-zone.over { background: rgba(47, 155, 255, 0.08); outline: 1px dashed var(--ally); outline-offset: -4px; }
+.tl-pool { min-height: 70px; }
+.tl-chip {
+  display: inline-flex; align-items: center; padding: 7px 13px; background: var(--panel-2); border: 1px solid var(--line-2);
+  font-weight: 600; cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; transform: skewX(-8deg);
+}
+.tl-chip > span { display: inline-block; transform: skewX(8deg); white-space: nowrap; }
+.tl-chip .pt { font-size: 12px; font-weight: 600; margin-left: 6px; }
+.tl-chip:hover { border-color: var(--ally); }
+.tl-chip.sel { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 0 16px rgba(255, 201, 74, 0.3); }
+.tl-chip.dragging { opacity: 0.3; }
+.tl-ghost { position: fixed; z-index: 60; pointer-events: none; margin: 0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); border-color: var(--ally); }
+.tl-url { width: 100%; font: inherit; font-size: 13px; color: var(--soft); background: var(--panel); border: 1px solid var(--line-2); padding: 8px 10px; }
+@media (max-width: 600px) { .tl-row { grid-template-columns: 52px minmax(0, 1fr); } .tl-lbl { font-size: 24px; } }
 @media (prefers-reduced-motion: reduce) { .pcard { transition: none; } .r-item.hl { animation: none; } .title { animation: none; } }
 </style>
 <style>
@@ -471,6 +498,7 @@ img { max-width: 100%; }
       <a href="#matches" data-go="matches" data-tab="matches">Матчи</a>
       <a href="#players" data-go="players" data-tab="players">Игроки</a>
       <a href="#vs" data-go="vs" data-tab="vs">1 на 1</a>
+      <a href="#tier" data-go="tier" data-tab="tier">Тир-лист</a>
       <a href="#records" data-go="records" data-tab="records">Рекорды</a>
       <a href="#rules" data-go="rules" data-tab="rules">Правила</a>
     </div>
@@ -537,6 +565,21 @@ img { max-width: 100%; }
       <label for="cmp-b">ИГРОК 2<select id="cmp-b"></select></label>
     </div>
     <div id="cmp-out" class="sec" style="gap:18px"></div>
+  </section>
+
+  <section class="sec" id="view-tier" hidden aria-labelledby="h-tier">
+    <div class="sec-head"><h2 id="h-tier">ТИР-ЛИСТ ИГРОКОВ</h2><span class="note">перетаскивай игроков по тирам · на телефоне: нажми на игрока, потом на тир</span></div>
+    <div class="tl-tools">
+      <button type="button" class="btn" id="tl-auto"><span>Заполнить по рейтингу</span></button>
+      <button type="button" class="btn" id="tl-clear"><span>Очистить</span></button>
+      <button type="button" class="btn" id="tl-link"><span>Ссылка на мой тир-лист</span></button>
+      <button type="button" class="btn primary" id="tl-png"><span>Скачать картинку</span></button>
+      <span class="note" id="tl-msg" role="status"></span>
+    </div>
+    <input class="tl-url" id="tl-url" readonly hidden aria-label="Ссылка на тир-лист">
+    <div class="tl" id="tl-board"></div>
+    <div class="sec" style="gap:8px"><h3>ИГРОКИ</h3><div class="panel tl-zone tl-pool" id="tl-pool" data-tier=""></div>
+      <p class="note" style="margin:0">Твой тир-лист сохраняется в этом браузере. Чтобы показать его другим — скопируй ссылку или скачай картинку.</p></div>
   </section>
 
   <section class="sec" id="view-rules" hidden aria-labelledby="h-rules">
@@ -3218,12 +3261,184 @@ img { max-width: 100%; }
     out.innerHTML = html;
   }
 
+  // ---------- Tier list (built by the visitor; kept in this browser, shared by link) ----------
+  var TIERS = [{ id: 'S', c: '#ff5470' }, { id: 'A', c: '#ff9f43' }, { id: 'B', c: '#ffd54a' }, { id: 'C', c: '#4fd18b' }, { id: 'D', c: '#5aa9ff' }];
+  var TL_KEY = 'immortal-tierlist', tierState = null, tierSel = null;
+  function tlEmpty() { var o = {}; TIERS.forEach(function (t) { o[t.id] = []; }); return o; }
+  function tlClean(st) {
+    var known = {}, seen = {}, o = tlEmpty();
+    rows.forEach(function (s) { known[s.name] = true; });
+    TIERS.forEach(function (t) {
+      ((st && st[t.id]) || []).forEach(function (n) { if (known[n] && !seen[n]) { seen[n] = true; o[t.id].push(n); } });
+    });
+    return o;
+  }
+  function tlEncode(st) {
+    try { return btoa(unescape(encodeURIComponent(JSON.stringify(st)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); } catch (e) { return ''; }
+  }
+  function tlDecode(str) {
+    try { str = str.replace(/-/g, '+').replace(/_/g, '/'); while (str.length % 4) str += '='; return JSON.parse(decodeURIComponent(escape(atob(str)))); } catch (e) { return null; }
+  }
+  function tlSave() { try { localStorage.setItem(TL_KEY, JSON.stringify(tierState)); } catch (e) {} }
+  function tlLoad() { try { return JSON.parse(localStorage.getItem(TL_KEY) || 'null'); } catch (e) { return null; } }
+  function tlAuto() {
+    var o = tlEmpty(), cut = [0.1, 0.3, 0.6, 0.85, 1], n = rows.length || 1;
+    rows.forEach(function (s) {
+      var q = s.place / n;
+      for (var k = 0; k < cut.length; k++) { if (q <= cut[k] + 1e-9) { o[TIERS[k].id].push(s.name); break; } }
+    });
+    return o;
+  }
+  function tlMsg(t) { var m = document.getElementById('tl-msg'); m.textContent = t; clearTimeout(tlMsg.t); tlMsg.t = setTimeout(function () { m.textContent = ''; }, 4000); }
+  function tlChip(name) {
+    var s = stats[name];
+    return '<span class="tl-chip' + (tierSel === name ? ' sel' : '') + '" data-p="' + esc(name) + '" title="' + esc(name) + ' · место ' + s.place + '"><span><b class="' + topCls(s.place) + '">' + esc(name) + '</b><span class="pt ' + pcls(s.pts) + '">' + signed(s.pts) + '</span></span></span>';
+  }
+  function renderTier() {
+    if (!tierState) tierState = tlClean(tlLoad());
+    var placed = {};
+    TIERS.forEach(function (t) { tierState[t.id].forEach(function (n) { placed[n] = true; }); });
+    document.getElementById('tl-board').innerHTML = TIERS.map(function (t) {
+      return '<div class="tl-row"><div class="tl-lbl" style="background:' + t.c + '" data-tier="' + t.id + '">' + t.id + '</div>' +
+        '<div class="tl-zone" data-tier="' + t.id + '">' + tierState[t.id].map(tlChip).join('') + '</div></div>';
+    }).join('');
+    var pool = rows.filter(function (s) { return !placed[s.name]; });
+    document.getElementById('tl-pool').innerHTML = pool.length ? pool.map(function (s) { return tlChip(s.name); }).join('') : '<span class="muted">Все игроки распределены</span>';
+  }
+  function tlMove(name, tier, before) {
+    TIERS.forEach(function (t) { var a = tierState[t.id], i = a.indexOf(name); if (i >= 0) a.splice(i, 1); });
+    if (tier) {
+      var a = tierState[tier], j = before ? a.indexOf(before) : -1;
+      if (j >= 0) a.splice(j, 0, name); else a.push(name);
+    }
+    tierSel = null; tlSave(); renderTier();
+  }
+  function tlImage() {
+    var W = 1200, PAD = 32, LBL = 96, GAP = 8, CH = 44;
+    var F = '"Exo 2", "Segoe UI", sans-serif', FD = '"Russo One", "Arial Black", sans-serif';
+    var cv = document.createElement('canvas'), x = cv.getContext('2d');
+    x.font = '600 20px ' + F;
+    var maxW = W - PAD * 2 - LBL - 24;
+    var lay = TIERS.map(function (t) {
+      var lines = [[]], lw = 0;
+      tierState[t.id].forEach(function (n) {
+        var w = x.measureText(n).width + 28;
+        if (lw + w > maxW && lines[lines.length - 1].length) { lines.push([]); lw = 0; }
+        lines[lines.length - 1].push({ n: n, w: w }); lw += w + GAP;
+      });
+      return { t: t, lines: lines, h: Math.max(76, lines.length * (CH + GAP) + 12) };
+    });
+    var H = 128 + lay.reduce(function (a, r) { return a + r.h + 6; }, 0) + 44;
+    cv.width = W; cv.height = H;
+    x.fillStyle = '#07090f'; x.fillRect(0, 0, W, H);
+    x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+    var g = x.createLinearGradient(PAD, 0, PAD + 520, 0);
+    g.addColorStop(0, '#2f9bff'); g.addColorStop(0.5, '#9a6bff'); g.addColorStop(1, '#ff3a5c');
+    x.font = '42px ' + FD; x.fillStyle = g; x.fillText('ТИР-ЛИСТ ИГРОКОВ', PAD, 72);
+    x.font = '600 16px ' + F; x.fillStyle = '#8a94aa'; x.fillText('IMMORTAL · NARUTO LEGEND 3.0 · после игры #' + lastN, PAD, 102);
+    var y = 124;
+    lay.forEach(function (r) {
+      x.fillStyle = '#0f131d'; x.fillRect(PAD, y, W - PAD * 2, r.h);
+      x.strokeStyle = '#1d2433'; x.lineWidth = 1; x.strokeRect(PAD + 0.5, y + 0.5, W - PAD * 2 - 1, r.h - 1);
+      x.fillStyle = r.t.c; x.fillRect(PAD, y, LBL, r.h);
+      x.textBaseline = 'middle'; x.textAlign = 'center'; x.font = '40px ' + FD; x.fillStyle = '#07090f';
+      x.fillText(r.t.id, PAD + LBL / 2, y + r.h / 2 + 2);
+      x.textAlign = 'left'; x.font = '600 20px ' + F;
+      r.lines.forEach(function (line, li) {
+        var cx = PAD + LBL + 12, cy = y + 10 + li * (CH + GAP);
+        line.forEach(function (c) {
+          var s = stats[c.n];
+          x.fillStyle = '#131826'; x.fillRect(cx, cy, c.w, CH);
+          x.strokeStyle = '#2c3549'; x.strokeRect(cx + 0.5, cy + 0.5, c.w - 1, CH - 1);
+          x.fillStyle = s.place === 1 ? '#ffc94a' : s.place === 2 ? '#c8d6ea' : s.place === 3 ? '#f0a868' : '#f2f4f8';
+          x.fillText(c.n, cx + 14, cy + CH / 2 + 1);
+          cx += c.w + GAP;
+        });
+      });
+      y += r.h + 6;
+    });
+    x.textBaseline = 'alphabetic'; x.textAlign = 'right'; x.font = '500 15px ' + F; x.fillStyle = '#8a94aa';
+    x.fillText('youkatakirin.github.io/ratingamenarutolegend', W - PAD, H - 18);
+    cv.toBlob(function (b) {
+      if (!b) { tlMsg('Не получилось сохранить картинку'); return; }
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(b); a.download = 'immortal-tier-list.png';
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+      tlMsg('Картинка сохранена');
+    });
+  }
+  (function () {
+    var view = document.getElementById('view-tier'), drag = null;
+    function clearOver() { view.querySelectorAll('.tl-zone.over').forEach(function (z) { z.classList.remove('over'); }); }
+    function zoneAt(px, py) {
+      var el = document.elementFromPoint(px, py);
+      if (!el) return null;
+      var lbl = el.closest('.tl-lbl');
+      if (lbl) return lbl.parentNode.querySelector('.tl-zone');
+      return el.closest('#view-tier .tl-zone');
+    }
+    view.addEventListener('pointerdown', function (e) {
+      var chip = e.target.closest('.tl-chip');
+      if (!chip || e.button > 0) return;
+      drag = { name: chip.getAttribute('data-p'), chip: chip, x: e.clientX, y: e.clientY, id: e.pointerId, ghost: null };
+    });
+    window.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      if (!drag.ghost) {
+        if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 6) return;
+        var r = drag.chip.getBoundingClientRect();
+        drag.dx = drag.x - r.left; drag.dy = drag.y - r.top;
+        drag.ghost = drag.chip.cloneNode(true); drag.ghost.classList.add('tl-ghost');
+        document.body.appendChild(drag.ghost);
+        drag.chip.classList.add('dragging');
+      }
+      e.preventDefault();
+      drag.ghost.style.left = (e.clientX - drag.dx) + 'px';
+      drag.ghost.style.top = (e.clientY - drag.dy) + 'px';
+      var z = zoneAt(e.clientX, e.clientY);
+      clearOver(); if (z) z.classList.add('over');
+    }, { passive: false });
+    function end(e, cancel) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var d = drag; drag = null; clearOver();
+      if (!d.ghost) {
+        if (!cancel) { tierSel = tierSel === d.name ? null : d.name; renderTier(); }
+        return;
+      }
+      d.ghost.remove();
+      var z = cancel ? null : zoneAt(e.clientX, e.clientY);
+      if (z) {
+        var el = document.elementFromPoint(e.clientX, e.clientY), b = el && el.closest('.tl-chip');
+        tlMove(d.name, z.getAttribute('data-tier'), b && b !== d.chip ? b.getAttribute('data-p') : null);
+      } else renderTier();
+    }
+    window.addEventListener('pointerup', function (e) { end(e, false); });
+    window.addEventListener('pointercancel', function (e) { end(e, true); });
+    view.addEventListener('click', function (e) {
+      if (!tierSel || e.target.closest('.tl-chip')) return;
+      var lbl = e.target.closest('.tl-lbl'), z = lbl ? lbl.parentNode.querySelector('.tl-zone') : e.target.closest('.tl-zone');
+      if (z) tlMove(tierSel, z.getAttribute('data-tier'), null);
+    });
+    document.getElementById('tl-auto').addEventListener('click', function () { tierState = tlAuto(); tierSel = null; tlSave(); renderTier(); tlMsg('Расставлено по местам в таблице — дальше двигай как хочешь'); });
+    document.getElementById('tl-clear').addEventListener('click', function () { tierState = tlEmpty(); tierSel = null; tlSave(); renderTier(); });
+    document.getElementById('tl-png').addEventListener('click', tlImage);
+    document.getElementById('tl-link').addEventListener('click', function () {
+      var url = String(location.href).split('#')[0] + '#tier~' + tlEncode(tierState);
+      var box = document.getElementById('tl-url');
+      function manual() { box.hidden = false; box.value = url; box.focus(); box.select(); tlMsg('Скопируй ссылку из поля ниже'); }
+      try {
+        navigator.clipboard.writeText(url).then(function () { box.hidden = true; tlMsg('Ссылка скопирована — отправь её друзьям'); }, manual);
+      } catch (e) { manual(); }
+    });
+  })();
+
   // ---------- Routing ----------
-  var VIEWS = ['table', 'matches', 'players', 'records', 'player', 'vs', 'rules'];
+  var VIEWS = ['table', 'matches', 'players', 'records', 'player', 'vs', 'rules', 'tier'];
   var current = 'table';
   function show(view) {
     VIEWS.forEach(function (v) { document.getElementById('view-' + v).hidden = v !== view; });
-    document.getElementById('hero').hidden = view === 'player' || view === 'vs' || view === 'rules';
+    document.getElementById('hero').hidden = view === 'player' || view === 'vs' || view === 'rules' || view === 'tier';
     var tab = view === 'player' ? 'players' : view;
     document.querySelectorAll('[data-tab]').forEach(function (a) {
       if (a.getAttribute('data-tab') === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
@@ -3255,6 +3470,16 @@ img { max-width: 100%; }
         if (t.indexOf('r-') === 0) el.classList.add('hl');
         el.scrollIntoView({ block: t.indexOf('r-') === 0 ? 'center' : 'start' });
       }
+      return;
+    }
+    if (t === 'tier' || t.indexOf('tier~') === 0) {
+      if (t.length > 5) {
+        var shared = tlDecode(t.slice(5));
+        if (shared) { tierState = tlClean(shared); tierSel = null; tlSave(); }
+        current = 'tier';
+        try { history.replaceState(null, '', '#tier'); } catch (e) {}
+      }
+      renderTier(); show('tier'); window.scrollTo(0, 0);
       return;
     }
     if (t.indexOf('match-') === 0) {
