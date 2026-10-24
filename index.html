@@ -93,7 +93,15 @@ h3 { font-size: 18px; letter-spacing: 0.04em; }
 
 /* Hero */
 .hero { display: grid; gap: 22px; }
-.title { font-size: clamp(46px, 8.5vw, 92px); line-height: 0.95; letter-spacing: 0.02em; }
+.title {
+  font-size: clamp(46px, 8.5vw, 92px); line-height: 0.95; letter-spacing: 0.02em;
+  background: linear-gradient(90deg, var(--ally) 0%, #9a6bff 25%, var(--aka) 50%, #9a6bff 75%, var(--ally) 100%);
+  background-size: 200% 100%; -webkit-background-clip: text; background-clip: text;
+  color: transparent; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 22px rgba(140, 110, 255, 0.28));
+  animation: title-flow 8s linear infinite;
+}
+@keyframes title-flow { from { background-position: 0% 0; } to { background-position: 200% 0; } }
 .vs { display: flex; flex-wrap: wrap; align-items: stretch; gap: 14px; padding-inline: 6px; }
 .vs .side { flex: 1 1 280px; transform: skewX(-10deg); padding: 14px 28px; }
 .vs .side > div { transform: skewX(10deg); display: flex; justify-content: space-between; align-items: center; gap: 16px; }
@@ -111,6 +119,12 @@ h3 { font-size: 18px; letter-spacing: 0.04em; }
   padding: 2px 11px; font-family: var(--f-display); font-size: 16px; color: var(--soft);
 }
 .rk.gold { background: var(--gold); border-color: var(--gold); color: #07090f; box-shadow: 0 0 18px rgba(255, 201, 74, 0.45); }
+.rk.silver { background: #d3dbe6; border-color: #d3dbe6; color: #07090f; box-shadow: 0 0 18px rgba(205, 218, 235, 0.42); }
+.rk.bronze { background: #dc8f4e; border-color: #dc8f4e; color: #07090f; box-shadow: 0 0 18px rgba(220, 143, 78, 0.45); }
+.plink.top1, .pcard-name.top1 { color: var(--gold); text-shadow: 0 0 10px rgba(255, 201, 74, 0.7), 0 0 24px rgba(255, 170, 40, 0.35); }
+.plink.top2, .pcard-name.top2 { color: #c8d6ea; text-shadow: 0 0 10px rgba(200, 220, 248, 0.75), 0 0 24px rgba(150, 185, 235, 0.4); }
+.plink.top3, .pcard-name.top3 { color: #f0a868; text-shadow: 0 0 10px rgba(240, 150, 80, 0.7), 0 0 24px rgba(220, 110, 40, 0.35); }
+.aw-mvp { color: var(--gold); } .aw-svp { color: var(--svp); }
 .pos { color: var(--win); }
 .neg { color: var(--loss); }
 .zero { color: var(--muted); }
@@ -135,9 +149,9 @@ h3 { font-size: 18px; letter-spacing: 0.04em; }
 .scroll-x { overflow-x: auto; }
 
 /* Leaderboard */
-.lb { min-width: 960px; display: grid; gap: 6px; }
+.lb { min-width: 1000px; display: grid; gap: 6px; }
 .lb-row {
-  display: grid; grid-template-columns: 56px minmax(190px, 1fr) 84px 76px 130px 120px 48px 130px;
+  display: grid; grid-template-columns: 56px minmax(190px, 1fr) 84px 76px 130px 120px 88px 130px;
   gap: 12px; align-items: center; padding: 11px 18px;
   background: var(--panel); border: 1px solid var(--line); font-variant-numeric: tabular-nums;
 }
@@ -436,7 +450,7 @@ footer .line { border-top: 1px solid var(--line); padding-top: 16px; display: fl
   .cmp-row { grid-template-columns: minmax(0, 1fr) 110px minmax(0, 1fr); padding-inline: 10px; }
   .r-item { grid-template-columns: 44px minmax(0, 1fr); padding-inline: 12px; }
 }
-@media (prefers-reduced-motion: reduce) { .pcard { transition: none; } .r-item.hl { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .pcard { transition: none; } .r-item.hl { animation: none; } .title { animation: none; } }
 </style>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -1920,8 +1934,7 @@ img { max-width: 100%; }
       "kills": [
         31,
         23
-      ],
-      "card": "cards/game-9.png"
+      ]
     }
   ],
   "adjustments": [],
@@ -2587,6 +2600,8 @@ img { max-width: 100%; }
     var t = ruleToken(rule);
     return '<a class="rule-link" href="#' + t + '" data-go="' + t + '" title="Пункт ' + esc(rule) + ' правил">' + esc(text) + '</a>';
   }
+  function rkCls(place) { return place === 1 ? ' gold' : place === 2 ? ' silver' : place === 3 ? ' bronze' : ''; }
+  function topCls(place) { return place <= 3 ? 'top' + place : ''; }
   function chip(r) { return '<span class="chip ' + r + '" title="' + (r === 'w' ? 'Победа' : 'Поражение') + '">' + (r === 'w' ? 'В' : 'П') + '</span>'; }
 
   // ---------- Stats ----------
@@ -2766,17 +2781,17 @@ img { max-width: 100%; }
 
   // ---------- Leaderboard ----------
   (function () {
-    var html = '<div class="lb-row head"><span>#</span><span>ИГРОК</span><span class="r">ОЧКИ</span><span>П – П</span><span>ВИНРЕЙТ</span><span>У / С / П</span><span>MVP</span><span>ПОСЛЕДНИЕ</span></div>';
+    var html = '<div class="lb-row head"><span>#</span><span>ИГРОК</span><span class="r">ОЧКИ</span><span>П – П</span><span>ВИНРЕЙТ</span><span>У / С / П</span><span>MVP / SVP</span><span>ПОСЛЕДНИЕ</span></div>';
     rows.forEach(function (s) {
       var w = Math.round(s.wr * 100);
       html += '<div class="lb-row">' +
-        '<span><span class="rk' + (s.place === 1 ? ' gold' : '') + '">' + s.place + '</span></span>' +
-        '<span class="name-cell">' + plink(s.name) + streakChip(s) + '</span>' +
+        '<span><span class="rk' + rkCls(s.place) + '">' + s.place + '</span></span>' +
+        '<span class="name-cell">' + plink(s.name, topCls(s.place)) + streakChip(s) + '</span>' +
         '<span class="pts ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' +
         '<span>' + s.w + ' – ' + s.l + '</span>' +
         '<span class="wr"><span class="bar"><i style="width:' + w + '%"></i></span><span class="v">' + w + '%</span></span>' +
         '<span style="color:var(--soft)">' + (s.sg ? s.k + ' / ' + s.d + ' / ' + s.a : '<span class="muted">нет данных</span>') + '</span>' +
-        '<span style="color:var(--gold)">' + (s.mvp || '—') + '</span>' +
+        '<span title="MVP / SVP">' + (s.mvp || s.svp ? '<b class="aw-mvp">' + s.mvp + '</b> <span class="muted">/</span> <b class="aw-svp">' + s.svp + '</b>' : '<span class="muted">—</span>') + '</span>' +
         '<span class="form">' + s.form.slice(-5).map(chip).join('') + '</span>' +
         '</div>';
     });
@@ -2801,8 +2816,8 @@ img { max-width: 100%; }
       '<div class="cm-bar"><i style="width:' + Math.min(100, lastNo) + '%"></i></div>' +
       '<div class="note">Если бы регистрация была сейчас: играют 8 лучших по очкам, двое первых — капитаны.' + (tie ? ' На 8-м месте ничья по очкам — решит регистрация.' : '') + '</div>' +
       '<div class="cm-list">' + top8.map(function (s, i) {
-        return '<div class="cm-item' + (i < 2 ? ' cap' : '') + '"><span class="rk' + (s.place === 1 ? ' gold' : '') + '">' + s.place + '</span>' +
-          '<span class="nm">' + plink(s.name) + '</span>' + (i < 2 ? '<span class="cap-tag">КАПИТАН</span>' : '') +
+        return '<div class="cm-item' + (i < 2 ? ' cap' : '') + '"><span class="rk' + rkCls(s.place) + '">' + s.place + '</span>' +
+          '<span class="nm">' + plink(s.name, topCls(s.place)) + '</span>' + (i < 2 ? '<span class="cap-tag">КАПИТАН</span>' : '') +
           '<span class="pt ' + pcls(s.pts) + '">' + signed(s.pts) + '</span></div>';
       }).join('') + '</div></div>';
     document.getElementById('cm-wrap').innerHTML = cm;
@@ -2864,7 +2879,7 @@ img { max-width: 100%; }
       if (s.mvp) sub += '<span>MVP <b>' + s.mvp + '</b></span>';
       if (s.achs) sub += '<span>Ачивки <b>' + s.achs + '</b></span>';
       return '<a class="pcard" href="#' + slugFor(s.name) + '" data-go="' + slugFor(s.name) + '">' +
-        '<span class="pcard-top"><span class="pcard-name">' + esc(s.name) + '</span><span class="rk' + (s.place === 1 ? ' gold' : '') + '">' + s.place + '</span></span>' +
+        '<span class="pcard-top"><span class="pcard-name ' + topCls(s.place) + '">' + esc(s.name) + '</span><span class="rk' + rkCls(s.place) + '">' + s.place + '</span></span>' +
         '<span class="pcard-pts ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' +
         '<span class="pcard-sub">' + sub + '</span></a>';
     }).join('');
@@ -3033,7 +3048,7 @@ img { max-width: 100%; }
     var html = '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px"><a class="back" href="#players" data-go="players">← Все игроки</a>' +
       '<a class="back" href="#' + cmpTok + '" data-go="' + cmpTok + '">Сравнить 1 на 1 →</a></div>' +
       '<div class="prof-head"><h2 class="prof-name">' + esc(s.name) + '</h2>' +
-      '<div class="prof-line"><span class="rk' + (s.place === 1 ? ' gold' : '') + '">' + s.place + '</span>' +
+      '<div class="prof-line"><span class="rk' + rkCls(s.place) + '">' + s.place + '</span>' +
       '<span class="form">' + s.form.slice(-10).map(chip).join('') + '</span>' +
       (s.mainHero ? '<span class="muted">чаще всего: <b style="color:var(--ink);font-weight:600">' + esc(s.mainHero) + '</b></span>' : '') + '</div></div>' +
       '<div class="tiles">' + tiles.map(function (t) { return '<div class="tile"><span class="k">' + t[0] + '</span><span class="v">' + t[1] + '</span><span class="s">' + esc(t[2]) + '</span></div>'; }).join('') + '</div>';
