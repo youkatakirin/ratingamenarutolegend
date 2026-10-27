@@ -483,6 +483,33 @@ footer .line { border-top: 1px solid var(--line); padding-top: 16px; display: fl
 .seg a[aria-current="true"] { background: var(--ally); color: #07090f; }
 a.btn { display: inline-block; text-decoration: none; }
 /* Heroes */
+.hi { display: inline-block; width: 28px; height: 28px; object-fit: cover; vertical-align: middle; background: #05070c; border: 1px solid var(--line-2); flex: none; }
+.hi.none { background: var(--panel-2); border-style: dashed; }
+.hi.tg { width: 20px; height: 20px; margin: -3px 7px -2px -5px; border: 0; vertical-align: -5px; }
+.hi.xs { width: 24px; height: 24px; margin: -4px 8px -4px -5px; border: 0; }
+.hi.sm { width: 24px; height: 24px; margin-right: 9px; vertical-align: -7px; }
+.hi.tbl { width: 30px; height: 30px; margin-right: 10px; }
+.hs td.nm .tb { vertical-align: middle; }
+.pl { grid-template-columns: 36px minmax(0, 1fr) auto auto; }
+.hi.pl-h { width: 36px; height: 36px; }
+.ava {
+  display: inline-grid; place-items: center; flex: none; width: 34px; height: 34px; overflow: hidden; vertical-align: middle;
+  background: var(--panel-2); border: 1px solid var(--line-2); font-family: var(--f-display); font-size: 15px; color: var(--muted);
+}
+.ava .hi { width: 100%; height: 100%; border: 0; }
+.ava.top1 { border-color: var(--gold); box-shadow: 0 0 12px rgba(255, 201, 74, 0.45); }
+.ava.top2 { border-color: #c8d6ea; box-shadow: 0 0 12px rgba(200, 220, 248, 0.4); }
+.ava.top3 { border-color: #f0a868; box-shadow: 0 0 12px rgba(240, 150, 80, 0.4); }
+.ava.xs { width: 24px; height: 24px; margin: -4px 8px -4px -5px; font-size: 12px; box-shadow: none; }
+.ava.lg { width: 84px; height: 84px; font-size: 36px; }
+.ava.vs-ava { width: 44px; height: 44px; font-size: 20px; border-color: rgba(255, 255, 255, 0.5); }
+.vs-nm { display: inline-flex; align-items: center; gap: 12px; min-width: 0; }
+.pcard-id { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.pcard .ava { width: 46px; height: 46px; font-size: 20px; }
+.prof-id { display: flex; align-items: center; gap: 20px; min-width: 0; }
+.list-row .hn { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.list-row .hn b { font-weight: 600; }
+.list-row .hn .hi { width: 32px; height: 32px; }
 .ht-chip {
   font: inherit; font-weight: 600; color: var(--ink); display: inline-flex; padding: 6px 12px; background: var(--panel-2);
   border: 1px solid var(--line-2); transform: skewX(-8deg); cursor: pointer;
@@ -524,7 +551,7 @@ a.btn { display: inline-block; text-decoration: none; }
 .hd .g { display: grid; grid-template-columns: 64px minmax(110px, 1fr) 26px 96px 84px; gap: 10px; align-items: center; padding: 3px 0; border-top: 1px solid var(--line); text-decoration: none; }
 .hd .g:hover { color: var(--ally); }
 .hd .g .r { text-align: right; }
-@media (max-width: 600px) { .tl-row { grid-template-columns: 52px minmax(0, 1fr); } .tl-lbl { font-size: 24px; } .hd .g { grid-template-columns: 44px minmax(90px, 1fr) 22px 84px; } .hd .g .dm { display: none; } }
+@media (max-width: 600px) { .tl-row { grid-template-columns: 52px minmax(0, 1fr); } .tl-lbl { font-size: 24px; } .ava.lg { width: 64px; height: 64px; } .ava.vs-ava { width: 34px; height: 34px; } .vs-nm { gap: 8px; } .hd .g { grid-template-columns: 44px minmax(90px, 1fr) 22px 84px; } .hd .g .dm { display: none; } }
 @media (prefers-reduced-motion: reduce) { .pcard { transition: none; } .r-item.hl { animation: none; } .title { animation: none; } }
 </style>
 <style>
@@ -3701,6 +3728,27 @@ img { max-width: 100%; }
   }
   function rkCls(place) { return place === 1 ? ' gold' : place === 2 ? ' silver' : place === 3 ? ' bronze' : ''; }
   function topCls(place) { return place <= 3 ? 'top' + place : ''; }
+  // Hero portraits live in heroes/ as <name in Latin letters>.webp (64×64): «Рок Ли» → heroes/rok-li.webp
+  var TRL = { 'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya' };
+  function heroSlug(name) {
+    return String(name).toLowerCase().split('').map(function (c) {
+      return Object.prototype.hasOwnProperty.call(TRL, c) ? TRL[c] : (c === ' ' || c === '-') ? '-' : /[a-z0-9]/.test(c) ? c : '';
+    }).join('').replace(/^-+|-+$/g, '');
+  }
+  var HERO_ICON = {};
+  (data.heroPool || []).forEach(function (n) { HERO_ICON[n] = 'heroes/' + heroSlug(n) + '.webp'; });
+  function heroImg(name, cls) {
+    return HERO_ICON[name] ? '<img class="hi' + (cls ? ' ' + cls : '') + '" src="' + HERO_ICON[name] + '" alt="" width="64" height="64" loading="lazy" decoding="async">' : '';
+  }
+  // same, but keeps an empty square when there is no portrait (for rows that need aligned columns)
+  function heroPic(name, cls) { return heroImg(name, cls) || '<span class="hi none' + (cls ? ' ' + cls : '') + '"></span>'; }
+  // a player's avatar is the portrait of the hero they play most often (first letter of the nick until there are heroes)
+  function avatar(s, cls) {
+    cls = 'ava' + (cls ? ' ' + cls : '');
+    if (s && HERO_ICON[s.mainHero]) return '<span class="' + cls + '" title="Чаще всего: ' + esc(s.mainHero) + '">' + heroImg(s.mainHero) + '</span>';
+    var n = s ? String(s.name || '').replace(/[^0-9A-Za-zА-Яа-яЁё]/g, '') : '';
+    return '<span class="' + cls + ' none" aria-hidden="true">' + esc((n.charAt(0) || '?').toUpperCase()) + '</span>';
+  }
   function chip(r) { return '<span class="chip ' + r + '" title="' + (r === 'w' ? 'Победа' : 'Поражение') + '">' + (r === 'w' ? 'В' : 'П') + '</span>'; }
 
   // ---------- Stats ----------
@@ -3872,7 +3920,7 @@ img { max-width: 100%; }
     var html = '';
     if (last.bans && last.bans.length) {
       html += '<div class="row"><span class="lbl">В БАНЕ НА <b>ИГРУ #' + (last.n + 1) + '</b></span>' +
-        last.bans.map(function (b) { return '<span class="tag ban"><span>' + esc(b) + '</span></span>'; }).join('') +
+        last.bans.map(function (b) { return '<span class="tag ban"><span>' + heroImg(b, 'tg') + esc(b) + '</span></span>'; }).join('') +
         '<span class="note">герои победителей игры #' + last.n + ' · ' + ruleLink('пункт 6.13', '6.13') + '</span></div>';
     }
     if (!html) { bar.hidden = true; return; }
@@ -3886,7 +3934,7 @@ img { max-width: 100%; }
       var w = Math.round(s.wr * 100);
       html += '<div class="lb-row">' +
         '<span><span class="rk' + rkCls(s.place) + '">' + s.place + '</span></span>' +
-        '<span class="name-cell">' + plink(s.name, topCls(s.place)) + streakChip(s) + '</span>' +
+        '<span class="name-cell">' + avatar(s, topCls(s.place)) + plink(s.name, topCls(s.place)) + streakChip(s) + '</span>' +
         '<span class="pts ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' +
         '<span>' + s.w + ' – ' + s.l + '</span>' +
         '<span class="wr"><span class="bar"><i style="width:' + w + '%"></i></span><span class="v">' + w + '%</span></span>' +
@@ -3942,7 +3990,7 @@ img { max-width: 100%; }
           '<span class="t-sub">' + (won ? 'ПОБЕДА' : 'ПОРАЖЕНИЕ') + (m.kills ? ' · ' + m.kills[si] + ' УБ.' : '') + '</span></div>';
         m[side].forEach(function (x) {
           var g = gameOf[m.n + '|' + x.p];
-          html += '<div class="pl"><span class="who"><span>' + plink(x.p) + awardTag(x.award) + '</span>' +
+          html += '<div class="pl">' + heroPic(x.hero, 'pl-h') + '<span class="who"><span>' + plink(x.p) + awardTag(x.award) + '</span>' +
             '<span class="hero-n">' + [x.hero ? esc(x.hero) : '', gameNote(g)].filter(Boolean).join(' · ') + '</span></span>' +
             '<span class="kda">' + (x.kda ? kdaStr(x.kda) : '') + '</span>' +
             '<span class="d ' + pcls(g.total) + '" title="' + esc(deltaTitle(g)) + '">' + signed(g.total) + '</span></div>';
@@ -3953,7 +4001,7 @@ img { max-width: 100%; }
       if (m.note) html += '<div class="m-note">' + ruleLink(m.note, m.noteRule) + '</div>';
       if (m.bans && m.bans.length) {
         html += '<div class="bans"><span class="lbl">Бан на следующие игры:</span>' +
-          m.bans.map(function (b) { return '<span class="tag"><span>' + esc(b) + '</span></span>'; }).join('') + '</div>';
+          m.bans.map(function (b) { return '<span class="tag"><span>' + heroImg(b, 'tg') + esc(b) + '</span></span>'; }).join('') + '</div>';
       }
       if (m.shot) {
         html += '<button type="button" class="shot" data-shot="' + m.n + '" aria-label="Открыть скриншот итогов игры #' + m.n + '">' +
@@ -3979,7 +4027,7 @@ img { max-width: 100%; }
       if (s.mvp) sub += '<span>MVP <b>' + s.mvp + '</b></span>';
       if (s.achs) sub += '<span>Ачивки <b>' + s.achs + '</b></span>';
       return '<a class="pcard" href="#' + slugFor(s.name) + '" data-go="' + slugFor(s.name) + '">' +
-        '<span class="pcard-top"><span class="pcard-name ' + topCls(s.place) + '">' + esc(s.name) + '</span><span class="rk' + rkCls(s.place) + '">' + s.place + '</span></span>' +
+        '<span class="pcard-top"><span class="pcard-id">' + avatar(s, topCls(s.place)) + '<span class="pcard-name ' + topCls(s.place) + '">' + esc(s.name) + '</span></span><span class="rk' + rkCls(s.place) + '">' + s.place + '</span></span>' +
         '<span class="pcard-pts ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' +
         '<span class="pcard-sub">' + sub + '</span></a>';
     }).join('');
@@ -4135,7 +4183,7 @@ img { max-width: 100%; }
     var cmpTok = other ? 'vs~' + slugFor(s.name) + '~' + slugFor(other.name) : 'vs';
     var html = '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px"><a class="back" href="#players" data-go="players">← Все игроки</a>' +
       '<a class="back" href="#' + cmpTok + '" data-go="' + cmpTok + '">Сравнить 1 на 1 →</a></div>' +
-      '<div class="prof-head"><h2 class="prof-name">' + esc(s.name) + '</h2>' +
+      '<div class="prof-head"><div class="prof-id">' + avatar(s, 'lg ' + topCls(s.place)) + '<h2 class="prof-name">' + esc(s.name) + '</h2></div>' +
       '<div class="prof-line"><span class="rk' + rkCls(s.place) + '">' + s.place + '</span>' +
       '<span class="form">' + s.form.slice(-10).map(chip).join('') + '</span>' +
       (s.mainHero ? '<span class="muted">чаще всего: <b style="color:var(--ink);font-weight:600">' + esc(s.mainHero) + '</b></span>' : '') + '</div></div>' +
@@ -4155,7 +4203,7 @@ img { max-width: 100%; }
     html += '<div class="sec" style="gap:10px"><h3>ГЕРОИ</h3><div class="panel list">' +
       (hs.length ? hs.map(function (h) {
         var x = s.heroes[h];
-        return '<div class="list-row"><span style="font-weight:600">' + esc(h) + '</span><span class="meta">' + x.g + ' ' + plural(x.g, 'игра', 'игры', 'игр') + '</span><span>' + x.w + ' – ' + (x.g - x.w) + '</span></div>';
+        return '<div class="list-row"><span class="hn">' + heroImg(h) + '<b>' + esc(h) + '</b></span><span class="meta">' + x.g + ' ' + plural(x.g, 'игра', 'игры', 'игр') + '</span><span>' + x.w + ' – ' + (x.g - x.w) + '</span></div>';
       }).join('') : '<div class="list-row"><span class="muted">нет данных</span><span></span><span></span></div>') + '</div></div>';
     var ms = Object.keys(s.mates).sort(function (a, b) { return s.mates[b].g - s.mates[a].g || s.mates[b].w - s.mates[a].w || a.localeCompare(b); }).slice(0, 6);
     html += '<div class="sec" style="gap:10px"><h3>ЧАЩЕ ВСЕГО В КОМАНДЕ С</h3><div class="panel list">' +
@@ -4182,7 +4230,7 @@ img { max-width: 100%; }
         return '<div class="hist-row"><span><a href="#match-' + g.m.n + '" data-go="match-' + g.m.n + '">Игра #' + g.m.n + '</a></span>' +
           '<span class="' + (g.side === 'alliance' ? 'side-a' : 'side-k') + '">' + SIDE[g.side] + '</span>' +
           '<span>' + chip(g.won ? 'w' : 'l') + '</span>' +
-          '<span style="min-width:0">' + (g.x.hero ? esc(g.x.hero) : '<span class="muted">—</span>') + (gameNote(g) ? ' <span class="muted" style="font-size:13px">· ' + gameNote(g) + '</span>' : '') + '</span>' +
+          '<span style="min-width:0">' + (g.x.hero ? heroImg(g.x.hero, 'sm') + esc(g.x.hero) : '<span class="muted">—</span>') + (gameNote(g) ? ' <span class="muted" style="font-size:13px">· ' + gameNote(g) + '</span>' : '') + '</span>' +
           '<span>' + (g.x.kda ? kdaStr(g.x.kda) : '<span class="muted">—</span>') + '</span>' +
           '<span class="r">' + (g.x.dmg ? fmt(g.x.dmg) : '<span class="muted">—</span>') + '</span>' +
           '<span class="r ' + pcls(g.total) + '" title="' + esc(deltaTitle(g)) + '">' + signed(g.total) + '</span>' +
@@ -4282,9 +4330,9 @@ img { max-width: 100%; }
       return list.length ? list.map(function (m) { return '<a href="#match-' + m.n + '" data-go="match-' + m.n + '" style="color:var(--soft)">#' + m.n + '</a>'; }).join(', ') : 'пока нет';
     }
     var html = '<div class="vs" aria-label="Игроки">' +
-      '<div class="side a"><div><span class="nm" style="overflow-wrap:anywhere">' + esc(an) + '</span><span class="sc ' + '">' + signed(A.pts) + '</span></div></div>' +
+      '<div class="side a"><div><span class="nm vs-nm" style="overflow-wrap:anywhere">' + avatar(A, 'vs-ava') + '<span>' + esc(an) + '</span></span><span class="sc ' + '">' + signed(A.pts) + '</span></div></div>' +
       '<div class="mid">VS</div>' +
-      '<div class="side k"><div><span class="sc">' + signed(B.pts) + '</span><span class="nm" style="overflow-wrap:anywhere">' + esc(bn) + '</span></div></div></div>';
+      '<div class="side k"><div><span class="sc">' + signed(B.pts) + '</span><span class="nm vs-nm" style="overflow-wrap:anywhere"><span>' + esc(bn) + '</span>' + avatar(B, 'vs-ava') + '</span></div></div></div>';
     html += '<div class="h2h">' +
       '<div class="tile"><span class="k">Друг против друга</span><span class="v">' + against.a + ' : ' + against.b + '</span><span class="s">' +
         (against.g ? 'побед ' + esc(an) + ' : ' + esc(bn) + ' · игры ' + mlinks(against.list) : 'ещё не встречались') + '</span></div>' +
@@ -4382,12 +4430,12 @@ img { max-width: 100%; }
   }
   function htChip(h) {
     return '<button type="button" class="ht-chip" data-h="' + esc(h.name) + '" title="Оценка ' + dec(h.score, 1) + ' · открыть статистику героя"><span>' +
-      esc(h.name) + '<span class="r">' + h.w + '–' + (h.g - h.w) + '</span></span></button>';
+      heroImg(h.name, 'xs') + esc(h.name) + '<span class="r">' + h.w + '–' + (h.g - h.w) + '</span></span></button>';
   }
   function avg(sum, n, digits) { return n ? (digits ? dec(sum / n, digits) : fmt(sum / n)) : '<span class="muted">—</span>'; }
   var HCOLS = [
     { k: 'name', t: 'ГЕРОЙ', cls: 'nm', asc: true, v: function (h) { return h.name; },
-      html: function (h) { return tierBadge(h.tier) + '<b>' + esc(h.name) + '</b>' + (bannedNow[h.name] ? '<span class="tag ban" title="В бане на следующую игру по пункту 6.13"><span>БАН</span></span>' : ''); } },
+      html: function (h) { return tierBadge(h.tier) + heroImg(h.name, 'tbl') + '<b>' + esc(h.name) + '</b>' + (bannedNow[h.name] ? '<span class="tag ban" title="В бане на следующую игру по пункту 6.13"><span>БАН</span></span>' : ''); } },
     { k: 'score', t: 'ОЦЕНКА', v: function (h) { return h.score; }, html: function (h) { return dec(h.score, 1); } },
     { k: 'g', t: 'ИГРЫ', v: function (h) { return h.g; }, html: function (h) { return h.g; } },
     { k: 'w', t: 'П – П', v: function (h) { return h.w * 1000 - (h.g - h.w); }, html: function (h) { return h.w + ' – ' + (h.g - h.w); } },
@@ -4509,8 +4557,9 @@ img { max-width: 100%; }
       items: function () { return rows.map(function (s) { return s.name; }); },
       chip: function (name) {
         var s = stats[name];
-        return { title: name + ' · место ' + s.place, html: '<b class="' + topCls(s.place) + '">' + esc(name) + '</b><span class="pt ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' };
+        return { title: name + ' · место ' + s.place, html: avatar(s, 'xs') + '<b class="' + topCls(s.place) + '">' + esc(name) + '</b><span class="pt ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' };
       },
+      icon: function (name) { var s = stats[name]; return (s && HERO_ICON[s.mainHero]) || null; },
       color: function (name) { var s = stats[name]; return s.place === 1 ? '#ffc94a' : s.place === 2 ? '#c8d6ea' : s.place === 3 ? '#f0a868' : '#f2f4f8'; },
       auto: function () {
         var o = tlEmpty(), cut = [0.1, 0.3, 0.6, 0.85, 1], n = rows.length || 1;
@@ -4529,9 +4578,10 @@ img { max-width: 100%; }
         var h = heroMap[name];
         return {
           title: name + (h ? ' · ' + h.w + '–' + (h.g - h.w) + ' в сезоне' + (h.tier ? ', тир ' + h.tier + ' по статистике' : '') : ' · в этом сезоне не брали'),
-          html: '<b>' + esc(name) + '</b>' + (h ? '<span class="pt muted">' + h.w + '–' + (h.g - h.w) + '</span>' : '')
+          html: heroImg(name, 'xs') + '<b>' + esc(name) + '</b>' + (h ? '<span class="pt muted">' + h.w + '–' + (h.g - h.w) + '</span>' : '')
         };
       },
+      icon: function (name) { return HERO_ICON[name] || null; },
       color: function () { return '#f2f4f8'; },
       auto: function () { var o = tlEmpty(); heroList.forEach(function (h) { if (h.tier) o[h.tier].push(h.name); }); return o; }
     }
@@ -4591,7 +4641,19 @@ img { max-width: 100%; }
     tierSel = null; tlSave(); renderTier();
   }
   function tlImage() {
-    var cfg = tlCfg();
+    // portraits are loaded first: same-origin files, so the canvas stays exportable
+    var cfg = tlCfg(), want = {}, imgs = {};
+    TIERS.forEach(function (t) { tierState[t.id].forEach(function (n) { var u = cfg.icon(n); if (u) want[n] = u; }); });
+    Promise.all(Object.keys(want).map(function (n) {
+      return new Promise(function (done) {
+        var im = new Image();
+        im.onload = function () { imgs[n] = im; done(); };
+        im.onerror = function () { done(); };
+        im.src = want[n];
+      });
+    })).then(function () { tlDraw(cfg, imgs); });
+  }
+  function tlDraw(cfg, imgs) {
     var W = 1200, PAD = 32, LBL = 96, GAP = 8, CH = 44;
     var F = '"Exo 2", "Segoe UI", sans-serif', FD = '"Russo One", "Arial Black", sans-serif';
     var cv = document.createElement('canvas'), x = cv.getContext('2d');
@@ -4600,7 +4662,7 @@ img { max-width: 100%; }
     var lay = TIERS.map(function (t) {
       var lines = [[]], lw = 0;
       tierState[t.id].forEach(function (n) {
-        var w = x.measureText(n).width + 28;
+        var w = x.measureText(n).width + 28 + (imgs[n] ? CH - 2 : 0);
         if (lw + w > maxW && lines[lines.length - 1].length) { lines.push([]); lw = 0; }
         lines[lines.length - 1].push({ n: n, w: w }); lw += w + GAP;
       });
@@ -4627,8 +4689,10 @@ img { max-width: 100%; }
         line.forEach(function (c) {
           x.fillStyle = '#131826'; x.fillRect(cx, cy, c.w, CH);
           x.strokeStyle = '#2c3549'; x.strokeRect(cx + 0.5, cy + 0.5, c.w - 1, CH - 1);
+          var tx = cx + 14;
+          if (imgs[c.n]) { x.drawImage(imgs[c.n], cx + 4, cy + 4, CH - 8, CH - 8); tx = cx + CH + 6; }
           x.fillStyle = cfg.color(c.n);
-          x.fillText(c.n, cx + 14, cy + CH / 2 + 1);
+          x.fillText(c.n, tx, cy + CH / 2 + 1);
           cx += c.w + GAP;
         });
       });
