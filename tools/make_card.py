@@ -130,7 +130,7 @@ def effects(data):
         blocks[key] = blocks.get(key, 0) + 1
         pts = info.get("points")
         return {"days": info.get("days") or blocks[key], "pts": pts if isinstance(pts, int) else -ban_pts,
-                "reason": info.get("reason") or "Блокировка"}
+                "reason": info.get("reason") or "Штраф"}
 
     for m in sorted(data["matches"], key=lambda m: m["n"]):
         while i < len(extra) and extra[i]["date"] < m["date"][:10]:
@@ -258,7 +258,7 @@ def draw_card(m, out_path, eff=None):
                 d.polygon([(ax + o, ay0), (ax + aw + o, ay0), (ax + aw, ay1), (ax, ay1)], outline=ac, width=S)
                 d.text((ax + o / 2 + s(8), ay0 + (ay1 - ay0 - (ab[3] - ab[1])) / 2 - ab[1]), award, font=F_AWARD, fill=ac)
             pen = e["pen"]
-            ban_t = f"бан {pen['days']} {plural(pen['days'], 'день', 'дня', 'дней')} · {pen['reason'].lower()}" if pen else ""
+            ban_t = f"штраф –{abs(pen['pts'])}" if pen else ""
             bonus_t = (f"серия +{e['bonus']}" if e["bonus"] > 0 else f"серия –{abs(e['bonus'])}") if e["bonus"] else ""
             abon_t = f"{x.get('award')} +{e['abon']}" if e.get("abon") else ""
             sub = " · ".join(t for t in (x.get("hero"), ban_t, x.get("note"), abon_t, bonus_t) if t)
