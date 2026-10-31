@@ -565,6 +565,7 @@ a.btn { display: inline-block; text-decoration: none; }
 img { max-width: 100%; }
 [hidden] { display: none !important; }
 </style>
+<link rel="stylesheet" href="night-shinobi.css">
 </head>
 <body>
 
@@ -590,10 +591,10 @@ img { max-width: 100%; }
 
 <main class="gutter">
   <header class="hero" id="hero">
-    <div style="display:grid;gap:6px">
+    <div class="season-heading"><span class="season-mark" aria-hidden="true">✦</span><div style="display:grid;gap:10px">
       <div class="eyebrow" id="season-line">Naruto Legend 3.0 · рейтинговый сезон</div>
       <h1 class="title">IMMORTAL</h1>
-    </div>
+    </div></div>
     <div class="vs" aria-label="Победы сторон">
       <div class="side a"><div><span class="nm">АЛЬЯНС</span><span class="sc" id="t-a">0</span></div></div>
       <div class="mid">VS</div>
@@ -605,7 +606,13 @@ img { max-width: 100%; }
 
   <section class="sec" id="view-table" aria-labelledby="h-table">
     <div class="sec-head"><h2 id="h-table">ТАБЛИЦА ЛИДЕРОВ</h2><span class="note">нажми на ник — откроется профиль игрока</span></div>
-    <div class="scroll-x"><div class="lb" id="board"></div></div>
+    <div class="board-tools">
+      <label class="board-search"><span>Поиск игрока</span><input id="board-search" type="search" placeholder="Введите ник…" autocomplete="off"></label>
+      <label class="board-sort"><span>Сортировка</span><select id="board-sort"><option value="rank">По месту в рейтинге</option><option value="wr">По винрейту</option><option value="games">По числу игр</option><option value="mvp">По MVP</option></select></label>
+      <span class="note" id="board-count" role="status" aria-live="polite"></span>
+    </div>
+    <div class="scroll-x board-shell" tabindex="0" aria-label="Таблица рейтинга, дополнительные показатели доступны при горизонтальной прокрутке"><div class="lb" id="board"></div></div>
+    <p id="board-empty" class="board-empty" hidden>Игрок не найден. Попробуйте другой ник.</p>
     <details class="bench" id="bench"><summary id="bench-sum">Ещё не играли</summary><div class="bench-list" id="bench-list"></div></details>
     <div class="sec" style="gap:14px;margin-top:24px" id="cm-wrap"></div>
   </section>
@@ -6858,8 +6865,16 @@ img { max-width: 100%; }
 
   // ---------- Leaderboard ----------
   (function () {
+    function renderBoard() {
+    var query = document.getElementById('board-search').value.trim().toLocaleLowerCase('ru');
+    var sort = document.getElementById('board-sort').value;
+    var visibleRows = rows.filter(function (s) { return s.name.toLocaleLowerCase('ru').includes(query); });
+    visibleRows.sort(function (a, b) {
+      var delta = sort === 'wr' ? b.wr - a.wr : sort === 'games' ? (b.w + b.l) - (a.w + a.l) : sort === 'mvp' ? b.mvp - a.mvp : 0;
+      return delta || a.place - b.place;
+    });
     var html = '<div class="lb-row head"><span>#</span><span>ИГРОК</span><span class="r">ОЧКИ</span><span>П – П</span><span>ВИНРЕЙТ</span><span>У / С / П</span><span>MVP / SVP</span><span>ПОСЛЕДНИЕ</span></div>';
-    rows.forEach(function (s) {
+    visibleRows.forEach(function (s) {
       var w = Math.round(s.wr * 100);
       html += '<div class="lb-row">' +
         '<span><span class="rk' + rkCls(s.place) + '">' + s.place + '</span></span>' +
@@ -6873,6 +6888,12 @@ img { max-width: 100%; }
         '</div>';
     });
     document.getElementById('board').innerHTML = html;
+    document.getElementById('board-count').textContent = 'Игроков: ' + visibleRows.length + ' / ' + rows.length;
+    document.getElementById('board-empty').hidden = visibleRows.length !== 0;
+    }
+    renderBoard();
+    document.getElementById('board-search').addEventListener('input', renderBoard);
+    document.getElementById('board-sort').addEventListener('change', renderBoard);
     var played = {};
     rows.forEach(function (s) { played[s.name] = true; });
     var bench = (data.roster || []).filter(function (n) { return !played[n]; });
