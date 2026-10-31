@@ -5562,7 +5562,8 @@ img { max-width: 100%; }
             1
           ],
           "cs": 197,
-          "dmg": 19712,
+          "gold": 20606,
+          "dmg": 19711,
           "lvl": 29,
           "tdmg": 0,
           "taken": 35512
@@ -5577,6 +5578,7 @@ img { max-width: 100%; }
             4
           ],
           "cs": 130,
+          "gold": 13087,
           "dmg": 30859,
           "lvl": 25,
           "award": "SVP",
@@ -5593,6 +5595,7 @@ img { max-width: 100%; }
             2
           ],
           "cs": 48,
+          "gold": 12819,
           "dmg": 14340,
           "lvl": 22,
           "tdmg": 0,
@@ -5608,6 +5611,7 @@ img { max-width: 100%; }
             2
           ],
           "cs": 48,
+          "gold": 10560,
           "dmg": 7745,
           "lvl": 19,
           "tdmg": 0,
@@ -5625,7 +5629,8 @@ img { max-width: 100%; }
             16
           ],
           "cs": 188,
-          "dmg": 40496,
+          "gold": 25678,
+          "dmg": 40495,
           "lvl": 30,
           "award": "MVP",
           "tdmg": 6138,
@@ -5641,6 +5646,7 @@ img { max-width: 100%; }
             9
           ],
           "cs": 61,
+          "gold": 16373,
           "dmg": 15873,
           "lvl": 28,
           "tdmg": 1905,
@@ -5656,7 +5662,8 @@ img { max-width: 100%; }
             16
           ],
           "cs": 173,
-          "dmg": 23831,
+          "gold": 23219,
+          "dmg": 23830,
           "lvl": 30,
           "tdmg": 8724,
           "taken": 14844
@@ -5671,19 +5678,21 @@ img { max-width: 100%; }
             15
           ],
           "cs": 96,
+          "gold": 20777,
           "dmg": 20127,
           "lvl": 30,
           "tdmg": 15046,
           "taken": 16742
         }
       ],
-      "src": 7418,
+      "src": 7422,
       "kills": [
         12,
         39
       ],
       "shot": "shots/game-32.jpg",
-      "card": "cards/game-32.png"
+      "card": "cards/game-32.png",
+      "duration": "41:36"
     }
   ],
   "adjustments": [],
@@ -5789,7 +5798,7 @@ img { max-width: 100%; }
       "date": "2026-10-31",
       "kind": "note",
       "match": 32,
-      "text": "На ac.narutolegend.dog реплей обрывается на 9-й минуте — статистика со скриншота итогов (игра шла 41:30). На скриншоте Margylis подписан как Lirik_Nivs (герой Раса совпадает)."
+      "text": "Повторно загруженный реплей на ac.narutolegend.dog (матч 7422) — статистика оттуда; урон по зданиям и полученный урон со скриншота. На скриншоте Margylis подписан как Lirik_Nivs."
     },
     {
       "date": "2026-10-31",
@@ -7089,6 +7098,99 @@ img { max-width: 100%; }
   })();
 
   // ---------- Player profile ----------
+  // ---------- Player dossier: first/second pick split and a short auto-written summary ----------
+  function pickStats(s) {
+    var r = { fp: { g: 0, w: 0 }, sp: { g: 0, w: 0 } };
+    s.games.forEach(function (g) { var k = g.m.firstPick === g.side ? 'fp' : 'sp'; r[k].g++; if (g.won) r[k].w++; });
+    return r;
+  }
+  var leagueCache = null;
+  function leagueAvg() {
+    if (leagueCache) return leagueCache;
+    var n = 0, k = 0, d = 0, a = 0, cs = 0, sh = 0, tn = 0, td = 0, tk = 0;
+    matches.forEach(function (m) {
+      SIDES.forEach(function (side) {
+        var team = m[side] || [];
+        var tot = team.reduce(function (t, x) { return t + (x.dmg || 0); }, 0);
+        team.forEach(function (x) {
+          if (!x.kda) return;
+          n++; k += x.kda[0]; d += x.kda[1]; a += x.kda[2]; cs += x.cs || 0; if (tot) sh += (x.dmg || 0) / tot;
+          if (typeof x.tdmg === 'number') { tn++; td += x.tdmg; tk += x.taken || 0; }
+        });
+      });
+    });
+    n = n || 1;
+    leagueCache = { k: k / n, d: d / n, a: a / n, cs: cs / n, share: sh / n, td: tn ? td / tn : 0, tk: tn ? tk / tn : 0 };
+    return leagueCache;
+  }
+  function num1(x) { return x.toFixed(1).replace('.', ','); }
+  function wl(x) { return x.w + '–' + (x.g - x.w); }
+  function dossier(s) {
+    var L = leagueAvg(), ps = pickStats(s), out = [];
+    var wr = s.g ? Math.round(s.w / s.g * 100) : 0;
+    out.push(s.place + '-е место из ' + rows.length + ' с ' + signed(s.pts) + ' ' + plural(Math.abs(s.pts), 'очком', 'очками', 'очками') + ': ' +
+      s.w + ' ' + plural(s.w, 'победа', 'победы', 'побед') + ' и ' + s.l + ' ' + plural(s.l, 'поражение', 'поражения', 'поражений') +
+      ' за ' + s.g + ' ' + plural(s.g, 'игру', 'игры', 'игр') + ', винрейт ' + wr + '%.');
+    var last = s.form.slice(-5), lw = last.filter(function (f) { return f === 'w'; }).length;
+    var tail = s.streak >= 3 ? ' — сейчас идёт серия из ' + s.streak + ' побед подряд' : s.lstreak >= 3 ? ' — сейчас ' + s.lstreak + ' ' + plural(s.lstreak, 'поражение', 'поражения', 'поражений') + ' подряд' : '';
+    if (s.g > 1) out.push((last.length >= 5 ? 'Форма в последних 5 играх: ' : 'Форма: ') + lw + '–' + (last.length - lw) + tail + '.');
+    // play style from per-game averages against the league average
+    var sg = 0, k = 0, d = 0, a = 0, cs = 0, sh = 0, tn = 0, td = 0, tk = 0;
+    s.games.forEach(function (g) {
+      var x = g.x; if (!x.kda) return;
+      var tot = (g.m[g.side] || []).reduce(function (t, y) { return t + (y.dmg || 0); }, 0);
+      sg++; k += x.kda[0]; d += x.kda[1]; a += x.kda[2]; cs += x.cs || 0; if (tot) sh += (x.dmg || 0) / tot;
+      if (typeof x.tdmg === 'number') { tn++; td += x.tdmg; tk += x.taken || 0; }
+    });
+    if (sg >= 2) {
+      k /= sg; d /= sg; a /= sg; cs /= sg; sh /= sg; if (tn) { td /= tn; tk /= tn; }
+      var tr = [];
+      function add(ratio, hi, lo, textHi, textLo) {
+        if (ratio >= hi) tr.push([ratio - 1, textHi]); else if (lo && ratio <= lo) tr.push([1 - ratio, textLo]);
+      }
+      add(sh / L.share, 1.15, 0.85, 'берёт на себя основной урон команды (в среднем ' + Math.round(sh * 100) + '% урона по героям)', 'наносит меньше урона, чем средний игрок (' + Math.round(sh * 100) + '% урона команды)');
+      add(k / L.k, 1.25, 0.7, 'много убивает (' + num1(k) + ' за игру)', 'редко добивает сам (' + num1(k) + ' убийства за игру)');
+      add(a / L.a, 1.2, 0, 'постоянно участвует в драках (' + num1(a) + ' помощи за игру)');
+      add(L.d / Math.max(d, 0.1), 1.25, 0.8, 'редко умирает (' + num1(d) + ' смерти за игру)', 'часто умирает (' + num1(d) + ' смерти за игру)');
+      add(cs / L.cs, 1.2, 0.75, 'хорошо фармит (' + Math.round(cs) + ' крипов за игру)', 'мало фармит (' + Math.round(cs) + ' крипов)');
+      if (tn && L.td) add(td / L.td, 1.3, 0, 'активно сносит здания (' + fmt(Math.round(td)) + ' урона по зданиям за игру)');
+      if (tn && L.tk) add(tk / L.tk, 1.2, 0, 'принимает на себя много урона (' + fmt(Math.round(tk)) + ' за игру)');
+      tr.sort(function (x, y) { return y[0] - x[0]; });
+      tr = tr.slice(0, 3).map(function (t) { return t[1]; });
+      out.push(tr.length ? 'По стилю ' + (tr.length > 1 ? tr.slice(0, -1).join(', ') + ' и ' + tr[tr.length - 1] : tr[0]) + '.' :
+        'Статистика близка к средней по лиге — ровный игрок без явного перекоса в урон, фарм или помощь.');
+    }
+    var hs = Object.keys(s.heroes).sort(function (x, y) { return s.heroes[y].g - s.heroes[x].g || s.heroes[y].w - s.heroes[x].w; });
+    if (hs.length) {
+      var mh = hs[0], best = hs.filter(function (h) { return h !== mh && s.heroes[h].g >= 2 && s.heroes[h].w / s.heroes[h].g >= 0.6; })[0];
+      out.push('Чаще всего играет на ' + mh + ' (' + s.heroes[mh].g + ' ' + plural(s.heroes[mh].g, 'игра', 'игры', 'игр') + ', ' + wl(s.heroes[mh]) + ')' +
+        (hs.length > 1 ? ', всего в пуле ' + hs.length + ' ' + plural(hs.length, 'герой', 'героя', 'героев') : '') +
+        (best ? '; лучший результат — на ' + best + ' (' + wl(s.heroes[best]) + ')' : '') + '.');
+    }
+    var pickTxt = 'За Альянс ' + wl(s.sides.alliance) + ', за Акацуки ' + wl(s.sides.akatsuki) + '; с первым пиком ' + wl(ps.fp) + ', со вторым ' + wl(ps.sp);
+    if (ps.fp.g >= 2 && ps.sp.g >= 2) {
+      var dfp = ps.fp.w / ps.fp.g - ps.sp.w / ps.sp.g;
+      if (Math.abs(dfp) >= 0.25) pickTxt += ' — заметно сильнее ' + (dfp > 0 ? 'с первым пиком' : 'со второго пика');
+    }
+    out.push(pickTxt + '.');
+    var ms = Object.keys(s.mates).filter(function (n) { return s.mates[n].g >= 2; });
+    var mates = '';
+    if (ms.length) {
+      ms.sort(function (x, y) { return s.mates[y].w / s.mates[y].g - s.mates[x].w / s.mates[x].g || s.mates[y].g - s.mates[x].g; });
+      var bm = ms[0], wm = ms[ms.length - 1];
+      mates = 'Лучшая связка — с ' + bm + ' (' + wl(s.mates[bm]) + ')';
+      if (wm !== bm && s.mates[wm].w / s.mates[wm].g < 0.5) mates += ', хуже всего получается с ' + wm + ' (' + wl(s.mates[wm]) + ')';
+      mates += '.';
+    }
+    var pens = penaltyLog.filter(function (p) { return p.p === s.name; });
+    var penPts = pens.reduce(function (t, p) { return t + (p.pts || 0); }, 0);
+    var fin = (s.mvp || s.svp ? 'На счету ' + s.mvp + ' MVP и ' + s.svp + ' SVP' : 'Наград MVP/SVP пока нет') +
+      (pens.length ? ', ' + pens.length + ' ' + plural(pens.length, 'штраф', 'штрафа', 'штрафов') + ' (' + signed(penPts) + ')' : ', без штрафов') + '.';
+    if (s.g < 5) fin += ' Игр пока мало — выводы предварительные.';
+    out.push(mates ? mates + ' ' + fin : fin);
+    return out.join(' ');
+  }
+
   function renderPlayer(name) {
     var s = stats[name];
     var view = document.getElementById('view-player');
@@ -7099,6 +7201,9 @@ img { max-width: 100%; }
       ['Винрейт', pct(s.w, s.g), 'лучшая серия: ' + s.bestStreak + (s.streak >= 2 ? ', сейчас ' + s.streak + ' подряд' : '')],
       ['MVP / SVP', s.mvp + ' / ' + s.svp, 'награды за матчи']
     ];
+    var ps = pickStats(s);
+    tiles.push(['Первый пик', ps.fp.w + ' – ' + (ps.fp.g - ps.fp.w), ps.fp.g ? 'винрейт ' + pct(ps.fp.w, ps.fp.g) + ' · ' + ps.fp.g + ' ' + plural(ps.fp.g, 'игра', 'игры', 'игр') : 'игр не было']);
+    tiles.push(['Второй пик', ps.sp.w + ' – ' + (ps.sp.g - ps.sp.w), ps.sp.g ? 'винрейт ' + pct(ps.sp.w, ps.sp.g) + ' · ' + ps.sp.g + ' ' + plural(ps.sp.g, 'игра', 'игры', 'игр') : 'игр не было']);
     if (s.sg) {
       tiles.push(['Ср. K / D / A', (s.k / s.sg).toFixed(1).replace('.', ',') + ' / ' + (s.d / s.sg).toFixed(1).replace('.', ',') + ' / ' + (s.a / s.sg).toFixed(1).replace('.', ','), 'всего ' + s.k + ' / ' + s.d + ' / ' + s.a]);
       tiles.push(['KDA', s.ratio.toFixed(2).replace('.', ','), '(убийства + помощь) / смерти']);
@@ -7117,6 +7222,7 @@ img { max-width: 100%; }
       '<span class="form">' + s.form.slice(-10).map(chip).join('') + '</span>' +
       (s.mainHero ? '<span class="muted">чаще всего: <b style="color:var(--ink);font-weight:600">' + esc(s.mainHero) + '</b></span>' : '') + '</div></div>' +
       '<div class="tiles">' + tiles.map(function (t) { return '<div class="tile"><span class="k">' + t[0] + '</span><span class="v">' + t[1] + '</span><span class="s">' + esc(t[2]) + '</span></div>'; }).join('') + '</div>';
+    html += '<div class="sec" style="gap:10px"><h3>ДОСЬЕ</h3><div class="panel" style="padding:14px 16px"><p style="margin:0;line-height:1.65">' + esc(dossier(s)) + '</p></div></div>';
     if (s.sg < s.g) html += '<p class="note" style="margin:0">K/D/A и урон посчитаны по ' + s.sg + ' из ' + s.g + ' ' + plural(s.g, 'игры', 'игр', 'игр') + ': для остальных статистики нет.</p>';
 
     // sides + heroes + mates
