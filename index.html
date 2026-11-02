@@ -728,7 +728,7 @@ img { max-width: 100%; }
     "awardFrom": 1,
     "streak": 5,
     "ban": 20,
-    "lossStreakPlusFrom": 47
+    "lossStreakPlusFrom": 1
   },
   "roster": [
     "KimEtsu_No",
@@ -8069,7 +8069,7 @@ img { max-width: 100%; }
       "date": "2026-11-03",
       "kind": "rules",
       "rule": "11.3",
-      "text": "Лузстрик теперь плюсовой: с 6-го поражения подряд каждое следующее даёт +5 вместо −5. Действует с 47-й игры."
+      "text": "Лузстрик теперь плюсовой: с 6-го поражения подряд каждое следующее даёт +5 вместо −5. Действует с первой игры сезона."
     },
     {
       "date": "2026-11-03",
@@ -8693,7 +8693,7 @@ img { max-width: 100%; }
               "id": "11.3",
               "text": "Лузстрик от 5 поражений подряд — +5 за каждое следующее поражение.",
               "sub": [
-                "Действует с 47-й игры, раньше было −5."
+                "Действует с первой игры сезона."
               ]
             }
           ]
@@ -9027,7 +9027,7 @@ img { max-width: 100%; }
         s.streak = won ? s.streak + 1 : 0;
         s.lstreak = won ? 0 : s.lstreak + 1;
         if (s.streak > s.bestStreak) s.bestStreak = s.streak;
-        // Rules 11.2–11.3: from the 6th win (loss) in a row, +5 for each; losses gave −5 before game LOSS_PLUS_FROM
+        // Rules 11.2–11.3: from the 6th win (loss) in a row, +5 for each; points.lossStreakPlusFrom = first game where losses give +5
         var bonus = won ? (s.streak > 5 ? 5 : 0) : (s.lstreak > 5 ? (m.n >= LOSS_PLUS_FROM ? 5 : -5) : 0);
         var abon = (x.award === 'MVP' || x.award === 'SVP') && m.n >= AWARD_FROM ? AWARD_PTS : 0;
         s.pts += x.d + bonus + abon; s.bonus += bonus;
