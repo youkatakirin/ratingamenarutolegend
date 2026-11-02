@@ -13,8 +13,8 @@
 3. Статистика: https://ac.narutolegend.dog/matches. Время там — конец матча по Москве ≈ время сообщения − 2 ч.
    `fetch('/match/ID')` + DOMParser, строки `tr`/`td`: ник, герой (первые 2 буквы — значок, отрезать), У/С/П, крипы, голд, урон, уровень.
    Матч засчитывается, только если совпали все 8 ников. Нет матча — героев/KDA/урон/крипы/уровень/убийства команд можно взять
-   со скриншота (без gold, src, duration), а когда матч появится — дописать оттуда.
-4. Скриншот итогов нужен для SVP (MVP есть и на ac.narutolegend.dog), `tdmg` (урон по башням) и `taken` (полученный урон).
+   со скриншота (без gold, src), а когда матч появится — дописать оттуда.
+4. Скриншот итогов нужен для SVP (MVP есть и на ac.narutolegend.dog), `tdmg` (урон по башням), `taken` (полученный урон) и `duration` («Время игры» вверху справа, 1:25:23 пишем как 85:23; с ac длительность не берём — там она бывает завышена).
    Шелл не качает с Discord: открой картинку через media.discordapp.net, замени body на div с background-image (W×H картинки),
    добавь внизу метку `POS x,y`, двигай div и снимай `zoom` по тайлам (перед каждым — холостой zoom scale 0.1; проверяй метку,
    снимки бывают на кадр позже — тогда сними тайл ещё раз). Если панель браузера скрыта (innerWidth = 0) — `resize_window`.
@@ -24,7 +24,8 @@
 5. Формат матча и правила очков — в README.md (бонусы серий, MVP/SVP +5 и штрафы (поле `ban`) сайт считает сам; в `d` только очки команды).
    Ники приводить к `roster`: Inneska→Inesska, YVNKXX→[YVN-KXX], letan_→letan, Panda_95→Panda95, Kimetsu_No→KimEtsu_No,
    Black_Reaper→black_reaper, Milancore→milancore, adsasd→Adsasd, Kuuhaku→Kuhakuu, Frieren→Sutafokkusu.
-   На скриншоте ники бывают подменены (спуфер): PRO100_SANYA = Magistor, akuma = nekt0 — пиши ники из Discord,
+   Itadori#289→KimEtsu_No, Nanaya→ShikiNanaya, Lirik_Nivs→Margylis. Пустые пятые слоты на скриншоте — зрители.
+   На скриншоте и на ac ники бывают подменены (спуфер): PRO100_SANYA = Magistor, akuma = nekt0, kanzensaimin и Jackson- = KimEtsu_No — пиши ники из Discord,
    а строки сопоставляй по героям с ac.narutolegend.dog. Пометка [Leave] на скриншоте — не штраф; штраф только если он написан в сообщении (блокировок с 30.10 нет — только очки).
    Решения организатора и исправления результатов записывай в `log` (вкладка «Логи»).
 6. Запись: `python3 tools/season.py set index.html season.json`; карточки `python3 tools/make_card.py index.html N`;

@@ -120,6 +120,7 @@ def effects(data):
     ban_pts = data.get("points", {}).get("ban", 20)
     award_pts = data.get("points", {}).get("award", 0)
     award_from = data.get("points", {}).get("awardFrom", 1)
+    loss_plus_from = data.get("points", {}).get("lossStreakPlusFrom", float("inf"))
     out, streak, lstreak, blocks, played = {}, {}, {}, {}, {}
     extra = sorted(data.get("penalties") or [], key=lambda p: p["date"])
     i, last_n = 0, 0
@@ -144,7 +145,7 @@ def effects(data):
                 played[p] = played.get(p, 0) + 1
                 streak[p] = streak.get(p, 0) + 1 if won else 0
                 lstreak[p] = 0 if won else lstreak.get(p, 0) + 1
-                bonus = (5 if streak[p] > 5 else 0) if won else (-5 if lstreak[p] > 5 else 0)
+                bonus = (5 if streak[p] > 5 else 0) if won else ((5 if m["n"] >= loss_plus_from else -5) if lstreak[p] > 5 else 0)
                 abon = award_pts if x.get("award") in ("MVP", "SVP") and m["n"] >= award_from else 0
                 pen = block(p, played[p], x["ban"]) if x.get("ban") else None
                 out[(m["n"], p)] = {"total": x["d"] + bonus + abon + (pen["pts"] if pen else 0), "bonus": bonus, "abon": abon, "pen": pen}
