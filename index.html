@@ -11722,9 +11722,10 @@ img { max-width: 100%; }
       $('fm-msg').textContent = '';
       return text;
     }
+    var fmNext = 0;
     function reset() {
-      $('fm-n').value = lastN + 1;
-      $('fm-n-note').textContent = 'На сайте последняя игра #' + lastN + '. Если после неё уже были игры, поправь номер.';
+      $('fm-n').value = fmNext || lastN + 1;
+      $('fm-n-note').textContent = fmNext ? 'Номер взят из канала результатов: на сайте пока есть игры по #' + lastN + '.' : 'На сайте последняя игра #' + lastN + '. Если после неё уже были игры, поправь номер.';
       var saved = ''; try { saved = localStorage.getItem('immortal-form-org') || ''; } catch (e) {}
       $('fm-org').value = saved;
       form.querySelectorAll('[data-side], [data-ban], #fm-note').forEach(function (i) { i.value = ''; });
@@ -11761,6 +11762,18 @@ img { max-width: 100%; }
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(fine, manual); else manual();
     });
     reset();
+    // The bot counts the channel, so the number is right even before the site is updated.
+    if (window.fetch) fetch('https://raw.githubusercontent.com/youkatakirin/ratingamenarutolegend/main/discord/next.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!j || !(j.next > lastN + 1)) return;
+        var untouched = +$('fm-n').value === lastN + 1;
+        fmNext = j.next;
+        if (untouched) $('fm-n').value = fmNext;
+        $('fm-n-note').textContent = 'Номер взят из канала результатов: на сайте пока есть игры по #' + lastN + '.';
+        draw();
+      })
+      .catch(function () {});
   })();
 
   // ---------- Motion ----------
