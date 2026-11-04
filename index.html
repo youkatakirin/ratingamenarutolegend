@@ -559,6 +559,43 @@ a.btn { display: inline-block; text-decoration: none; }
 .hd .g .r { text-align: right; }
 @media (max-width: 600px) { .tl-row { grid-template-columns: 52px minmax(0, 1fr); } .tl-lbl { font-size: 24px; } .ava.lg { width: 64px; height: 64px; } .ava.vs-ava { width: 34px; height: 34px; } .vs-nm { gap: 8px; } .hd .g { grid-template-columns: 44px minmax(90px, 1fr) 22px 84px; } .hd .g .dm { display: none; } }
 @media (prefers-reduced-motion: reduce) { .pcard { transition: none; } .r-item.hl { animation: none; } .title { animation: none; } }
+/* Motion: everything below answers a click or a tap, nothing runs on its own.
+   Signature: the chakra spiral at the point of the click (fxSeal) and the wipe between tabs (fxEnter). */
+.tabs { position: relative; }
+.tabs.has-ink a[aria-current="page"] { border-bottom-color: transparent; }
+.tab-ink { position: absolute; left: 0; top: 0; width: 1px; height: 2px; background: var(--ally); box-shadow: 0 0 10px var(--ally); pointer-events: none; }
+.tab-ink[hidden] { display: none; }
+.fx-seal { position: fixed; z-index: 60; width: 76px; height: 76px; margin: -38px 0 0 -38px; color: var(--ally); pointer-events: none; }
+.fx-seal.aka { color: var(--aka); }
+.fx-seal svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.fx-seal path { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; }
+.fx-seal circle { fill: none; stroke: currentColor; stroke-width: 1.5; transform-box: fill-box; transform-origin: center; }
+.fx-sweep { position: fixed; inset: 0; z-index: 19; overflow: hidden; pointer-events: none; }
+.fx-sweep[hidden] { display: none; }
+.fx-sweep i {
+  position: absolute; top: -10%; bottom: -10%; left: 0; width: 42vw;
+  background: linear-gradient(90deg, transparent, rgba(47, 155, 255, 0.2) 42%, rgba(255, 58, 92, 0.2) 58%, transparent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tab-ink.go { transition: transform 0.3s cubic-bezier(0.3, 1.3, 0.5, 1), width 0.3s cubic-bezier(0.3, 1.3, 0.5, 1); }
+  .tabs a { transition: color 0.15s, transform 0.1s; }
+  .tabs a:active { transform: translateY(1px); }
+  .pcard { transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s; }
+  .pcard:active, .shot:active { transform: scale(0.985); }
+  .shot { transition: transform 0.1s; }
+  .btn, .seg { transition: transform 0.1s, border-color 0.15s; }
+  .ht-chip, .tl-chip { transition: transform 0.1s, border-color 0.15s; }
+  .btn:active { transform: skewX(-10deg) scale(0.95); }
+  .ht-chip:active, .tl-chip:active { transform: skewX(-8deg) scale(0.95); }
+  .seg a { transition: background-color 0.18s, color 0.18s; }
+  .lb-bar button { transition: transform 0.1s, border-color 0.15s; }
+  .lb-bar button:active { transform: scale(0.95); }
+  .rules-toc a { transition: border-color 0.15s, color 0.15s, transform 0.1s; }
+  .rules-toc a:active { transform: scale(0.97); }
+  details { interpolate-size: allow-keywords; }
+  details::details-content { block-size: 0; overflow: clip; transition: block-size 0.24s ease, content-visibility 0.24s allow-discrete; }
+  details[open]::details-content { block-size: auto; }
+}
 </style>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -10255,7 +10292,7 @@ img { max-width: 100%; }
     document.getElementById('log-filter').innerHTML = [['all', 'Все']].concat(Object.keys(KIND).map(function (k) { return [k, KIND[k].charAt(0) + KIND[k].slice(1).toLowerCase()]; }))
       .map(function (k) { return '<button type="button" class="btn" data-k="' + k[0] + '" aria-pressed="false"><span>' + k[1] + '</span></button>'; }).join('');
     document.getElementById('log-filter').addEventListener('click', function (ev) {
-      var b = ev.target.closest('button[data-k]'); if (!b) return; cur = b.getAttribute('data-k'); draw();
+      var b = ev.target.closest('button[data-k]'); if (!b) return; cur = b.getAttribute('data-k'); draw(); fxPop(document.getElementById('log-list'));
     });
     draw();
   })();
@@ -10518,13 +10555,14 @@ img { max-width: 100%; }
         var k = s.getAttribute('data-sort'), col = HCOLS.filter(function (c) { return c.k === k; })[0];
         if (hsSort.k === k) hsSort.asc = !hsSort.asc; else { hsSort.k = k; hsSort.asc = !!col.asc; }
         renderHeroStats();
+        fxPop(document.querySelector('#hstats tbody'));
         return;
       }
       var hc = e.target.closest('.ht-chip');
       if (hc) { openHero(hc.getAttribute('data-h')); return; }
       if (e.target.closest('a')) return;
       var tr = e.target.closest('tr.hrow');
-      if (tr) { var n = tr.getAttribute('data-h'); hsOpen[n] = !hsOpen[n]; renderHeroStats(); }
+      if (tr) { var n = tr.getAttribute('data-h'); hsOpen[n] = !hsOpen[n]; renderHeroStats(); fxPop(document.querySelector('#hstats tr.hrow.open[data-h="' + n + '"] + tr.hdet .hd')); }
     });
     document.getElementById('ht-own').addEventListener('click', function () {
       tlSetMode('heroes');
@@ -10625,6 +10663,9 @@ img { max-width: 100%; }
       if (j >= 0) a.splice(j, 0, name); else a.push(name);
     }
     tierSel = null; tlSave(); renderTier();
+    document.querySelectorAll('#view-tier .tl-chip').forEach(function (c) {
+      if (c.getAttribute('data-p') === name) fx(c, [{ transform: 'skewX(-8deg) scale(1.18)' }, { transform: 'skewX(-8deg) scale(1)' }], { duration: 220, easing: FX_EASE });
+    });
   }
   function tlImage() {
     // portraits are loaded first: same-origin files, so the canvas stays exportable
@@ -10760,16 +10801,113 @@ img { max-width: 100%; }
     });
   })();
 
+  // ---------- Motion ----------
+  // Only reactions to the visitor; everything is skipped under prefers-reduced-motion and without WAAPI.
+  var FX_EASE = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
+  function fxCalm() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+  function fx(el, frames, opts) {
+    if (!el || !el.animate || fxCalm()) return null;
+    return el.animate(frames, opts);
+  }
+  var FX_SPIRAL = (function () {
+    var d = '', turns = 2.4, steps = 72;
+    for (var i = 0; i <= steps; i++) {
+      var t = i / steps, r = 3 + t * 31, a = t * turns * 2 * Math.PI;
+      d += (i ? 'L' : 'M') + (38 + r * Math.cos(a)).toFixed(1) + ' ' + (38 + r * Math.sin(a)).toFixed(1);
+    }
+    return d;
+  })();
+  // A chakra spiral unwinds where the click landed; Akatsuki's side of a match answers in red.
+  function fxSeal(x, y, aka) {
+    if (fxCalm() || !document.body.animate) return;
+    var el = document.createElement('div');
+    el.className = 'fx-seal' + (aka ? ' aka' : '');
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="35"/><path pathLength="1" d="' + FX_SPIRAL + '"/></svg>';
+    document.body.appendChild(el);
+    el.querySelector('path').animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 300, easing: 'ease-out', fill: 'both' });
+    el.querySelector('circle').animate([{ transform: 'scale(0.3)', opacity: 0.9 }, { transform: 'scale(1)', opacity: 0 }], { duration: 420, easing: 'ease-out', fill: 'both' });
+    var a = el.animate(
+      [{ transform: 'scale(0.4) rotate(-150deg)', opacity: 1 }, { transform: 'scale(0.9) rotate(0deg)', opacity: 0.85, offset: 0.65 }, { transform: 'scale(1.1) rotate(50deg)', opacity: 0 }],
+      { duration: 480, easing: FX_EASE, fill: 'both' });
+    a.onfinish = a.oncancel = function () { el.remove(); };
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest && e.target.closest('a, button, summary, [data-shot], tr.hrow, .tl-lbl, .tl-chip');
+    if (!t) return;
+    var x = e.clientX, y = e.clientY;
+    if (!e.detail) { var r = t.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top + r.height / 2; }
+    fxSeal(x, y, !!t.closest('.team.akatsuki, .side.k'));
+  }, true);
+  // The underline travels from the old tab to the new one.
+  var fxTabs = document.querySelector('.tabs');
+  var fxInk = document.createElement('span');
+  fxInk.className = 'tab-ink'; fxInk.hidden = true; fxInk.setAttribute('aria-hidden', 'true');
+  fxTabs.appendChild(fxInk);
+  function fxMoveInk() {
+    var a = fxTabs.querySelector('[aria-current="page"]');
+    if (!a) { fxInk.hidden = true; fxTabs.classList.remove('has-ink'); return; }
+    fxInk.hidden = false;
+    fxInk.style.width = a.offsetWidth + 'px';
+    fxInk.style.transform = 'translate(' + a.offsetLeft + 'px, ' + (a.offsetTop + a.offsetHeight - 2) + 'px)';
+    fxTabs.classList.add('has-ink');
+  }
+  window.addEventListener('resize', fxMoveInk);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fxMoveInk);
+  setTimeout(function () { fxInk.classList.add('go'); }, 400);
+  // Tabs in bar order, so the wipe runs the way the visitor moved.
+  var FX_ORDER = { table: 0, matches: 1, players: 2, player: 2.5, heroes: 3, vs: 4, tier: 5, records: 6, rules: 7, log: 8 };
+  var FX_LISTS = { table: ['#board .lb-row', 10], players: ['#pcards .pcard', 12], matches: ['#matches .match', 4] };
+  var fxSweep = document.createElement('div');
+  fxSweep.className = 'fx-sweep'; fxSweep.hidden = true; fxSweep.setAttribute('aria-hidden', 'true');
+  fxSweep.innerHTML = '<i></i>';
+  document.body.appendChild(fxSweep);
+  function fxCascade(view) {
+    var l = FX_LISTS[view]; if (!l) return;
+    var nodes = document.querySelectorAll(l[0]);
+    for (var i = 0; i < nodes.length && i < l[1]; i++) {
+      fx(nodes[i], [{ opacity: 0, transform: 'translateX(-14px)' }, { opacity: 1, transform: 'none' }], { duration: 240, delay: i * 26, easing: FX_EASE, fill: 'backwards' });
+    }
+  }
+  function fxEnter(view, prev, heroBack) {
+    var dir = FX_ORDER[view] >= FX_ORDER[prev] ? 1 : -1;
+    var frames = [{ opacity: 0, transform: 'translateX(' + (dir * 22) + 'px)' }, { opacity: 1, transform: 'none' }];
+    var opts = { duration: 260, easing: FX_EASE };
+    fx(document.getElementById('view-' + view), frames, opts);
+    if (heroBack) fx(document.getElementById('hero'), frames, opts);
+    fxCascade(view);
+    fxSweep.hidden = false;
+    var band = fx(fxSweep.firstChild,
+      [{ transform: 'translateX(' + (dir > 0 ? '-50vw' : '110vw') + ') skewX(-12deg)' }, { transform: 'translateX(' + (dir > 0 ? '110vw' : '-50vw') + ') skewX(-12deg)' }],
+      { duration: 420, easing: 'ease-in-out' });
+    if (band) band.onfinish = band.oncancel = function () { fxSweep.hidden = true; }; else fxSweep.hidden = true;
+  }
+  // New content after a filter, a sort or an opened row.
+  function fxPop(el) {
+    fx(el, [{ opacity: 0.2, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 200, easing: FX_EASE });
+  }
+  // The match the visitor came for lights up.
+  function fxFlash(el) {
+    fx(el, [{ boxShadow: '0 0 0 1px #ffc94a, 0 0 34px rgba(255, 201, 74, 0.4)' }, { boxShadow: '0 0 0 1px rgba(255, 201, 74, 0), 0 0 0 rgba(255, 201, 74, 0)' }], { duration: 1200, easing: 'ease-out' });
+  }
+
   // ---------- Routing ----------
   var VIEWS = ['table', 'matches', 'players', 'heroes', 'records', 'player', 'vs', 'rules', 'tier', 'log'];
-  var current = 'table';
+  var current = 'table', shown = null;
   function show(view) {
     VIEWS.forEach(function (v) { document.getElementById('view-' + v).hidden = v !== view; });
-    document.getElementById('hero').hidden = view === 'player' || view === 'vs' || view === 'rules' || view === 'tier' || view === 'log';
+    var hero = document.getElementById('hero'), heroWas = hero.hidden;
+    hero.hidden = view === 'player' || view === 'vs' || view === 'rules' || view === 'tier' || view === 'log';
     var tab = view === 'player' ? 'players' : view;
     document.querySelectorAll('[data-tab]').forEach(function (a) {
       if (a.getAttribute('data-tab') === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
+    fxMoveInk();
+    if (shown && shown !== view) fxEnter(view, shown, heroWas && !hero.hidden);
+    shown = view;
   }
   function route() {
     var t = '';
@@ -10814,7 +10952,7 @@ img { max-width: 100%; }
     if (t.indexOf('match-') === 0) {
       show('matches');
       var card = document.getElementById(t);
-      if (card) card.scrollIntoView({ block: 'start' });
+      if (card) { card.scrollIntoView({ block: 'start' }); fxFlash(card); }
       return;
     }
     show(VIEWS.indexOf(t) >= 0 && t !== 'player' ? t : 'table');
@@ -10847,10 +10985,37 @@ img { max-width: 100%; }
     lbView.classList.toggle('full', on);
     lbZoom.textContent = on ? 'Вписать в экран' : 'Реальный размер';
   }
+  var lbClosing = false;
   function closeShot() {
-    lb.hidden = true;
-    document.body.style.overflow = '';
-    if (lastFocus) lastFocus.focus();
+    if (lbClosing) return;
+    function done() {
+      lbClosing = false;
+      lb.hidden = true;
+      document.body.style.overflow = '';
+      if (lastFocus) lastFocus.focus();
+    }
+    var a = fx(lb, [{ opacity: 1 }, { opacity: 0 }], { duration: 150, easing: 'ease-in' });
+    if (!a) { done(); return; }
+    lbClosing = true;
+    a.onfinish = a.oncancel = done;
+  }
+  // The screenshot grows out of its thumbnail.
+  function growShot(thumb) {
+    var from = thumb && thumb.getBoundingClientRect();
+    function run() {
+      lbImg.style.visibility = '';
+      var to = lbImg.getBoundingClientRect();
+      if (!from || !from.width || !to.width) return;
+      fx(lbImg, [
+        { transformOrigin: '0 0', transform: 'translate(' + (from.left - to.left) + 'px, ' + (from.top - to.top) + 'px) scale(' + (from.width / to.width) + ', ' + (from.height / to.height) + ')' },
+        { transformOrigin: '0 0', transform: 'none' }
+      ], { duration: 280, easing: FX_EASE });
+    }
+    fx(lb, [{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
+    if (lbImg.decode && !fxCalm()) {
+      lbImg.style.visibility = 'hidden';
+      lbImg.decode().then(run, run);
+    }
   }
   document.getElementById('matches').addEventListener('click', function (e) {
     var b = e.target.closest('[data-shot]');
@@ -10865,6 +11030,7 @@ img { max-width: 100%; }
     setFull(false);
     lb.hidden = false;
     document.body.style.overflow = 'hidden';
+    growShot(b.querySelector('img'));
     lbClose.focus();
   });
   lbClose.addEventListener('click', closeShot);
