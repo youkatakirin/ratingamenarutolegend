@@ -28,8 +28,8 @@ NEXT = os.path.join(ROOT, "discord", "next.json")
 FILES = os.path.join(ROOT, "discord", "files")
 AGENT = "ImmortalRating (https://github.com/youkatakirin/ratingamenarutolegend, 1.0)"
 MAX_FILE = 15 * 1024 * 1024
-RESULT = re.compile(r"^\s*Рейтинговая\s+игра", re.I)
-TYPED = re.compile(r"#\s*(\d+)")
+RESULT = re.compile(r"Рейтинговая\s+игра|Rating\s+Games?", re.I)
+TYPED = re.compile(r"(?<![<\d])#\s*(\d{1,4})\b")
 
 
 def get(url, token=None):
@@ -78,7 +78,8 @@ def fetch_since(after, token):
 
 
 def is_result(text):
-    return bool(RESULT.search(text)) and "обедитель" in text
+    # Organizers write it plain or with Discord markdown: "## Rating Games # 53", "- Победитель: **Альянс**"
+    return bool(text) and bool(RESULT.search(text.split("\n")[0])) and "обедитель" in text
 
 
 def site_last_game():
