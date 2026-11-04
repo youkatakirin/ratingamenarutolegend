@@ -560,22 +560,37 @@ a.btn { display: inline-block; text-decoration: none; }
 @media (max-width: 600px) { .tl-row { grid-template-columns: 52px minmax(0, 1fr); } .tl-lbl { font-size: 24px; } .ava.lg { width: 64px; height: 64px; } .ava.vs-ava { width: 34px; height: 34px; } .vs-nm { gap: 8px; } .hd .g { grid-template-columns: 44px minmax(90px, 1fr) 22px 84px; } .hd .g .dm { display: none; } }
 @media (prefers-reduced-motion: reduce) { .pcard { transition: none; } .r-item.hl { animation: none; } .title { animation: none; } }
 /* Motion: everything below answers a click or a tap, nothing runs on its own.
-   Signature: the chakra spiral at the point of the click (fxSeal) and the wipe between tabs (fxEnter). */
+   Signature: the chakra spiral at the point of the click (fxSeal), gold as the only finish metal. */
 .tabs { position: relative; }
 .tabs.has-ink a[aria-current="page"] { border-bottom-color: transparent; }
-.tab-ink { position: absolute; left: 0; top: 0; width: 1px; height: 2px; background: var(--ally); box-shadow: 0 0 10px var(--ally); pointer-events: none; }
+.tab-ink { position: absolute; left: 0; top: 0; width: 1px; height: 2px; background: linear-gradient(90deg, #ffe7a6, var(--gold)); box-shadow: 0 0 10px rgba(255, 201, 74, 0.55); pointer-events: none; }
 .tab-ink[hidden] { display: none; }
 .fx-seal { position: fixed; z-index: 60; width: 76px; height: 76px; margin: -38px 0 0 -38px; color: var(--ally); pointer-events: none; }
 .fx-seal.aka { color: var(--aka); }
 .fx-seal svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.fx-seal path { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; }
-.fx-seal circle { fill: none; stroke: currentColor; stroke-width: 1.5; transform-box: fill-box; transform-origin: center; }
-.fx-sweep { position: fixed; inset: 0; z-index: 19; overflow: hidden; pointer-events: none; }
-.fx-sweep[hidden] { display: none; }
+.fx-seal path { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; }
+.fx-seal circle { fill: none; stroke: currentColor; stroke-width: 1; transform-box: fill-box; transform-origin: center; }
 main.fx-run { overflow-x: clip; }
-.fx-sweep i {
-  position: absolute; top: -10%; bottom: -10%; left: 0; width: 42vw;
-  background: linear-gradient(90deg, transparent, rgba(47, 155, 255, 0.2) 42%, rgba(255, 58, 92, 0.2) 58%, transparent);
+html { scrollbar-color: var(--line-2) transparent; scrollbar-width: thin; }
+::selection { background: rgba(255, 201, 74, 0.28); }
+/* Podium: metal is a hairline and a breath of colour from the left, never a filled row. */
+.lb-row:has(.plink.top1), .pcard:has(.pcard-name.top1) { border-color: rgba(255, 201, 74, 0.55); background: linear-gradient(100deg, rgba(255, 201, 74, 0.1), var(--panel) 48%); }
+.lb-row:has(.plink.top2), .pcard:has(.pcard-name.top2) { border-color: rgba(200, 214, 234, 0.4); background: linear-gradient(100deg, rgba(200, 214, 234, 0.07), var(--panel) 48%); }
+.lb-row:has(.plink.top3), .pcard:has(.pcard-name.top3) { border-color: rgba(240, 168, 104, 0.42); background: linear-gradient(100deg, rgba(240, 168, 104, 0.08), var(--panel) 48%); }
+/* A glint runs along first place when the table opens. */
+.lb-row:has(.plink.top1) { position: relative; overflow: hidden; }
+.lb-row:has(.plink.top1)::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 231, 166, 0.2) 50%, transparent 62%);
+}
+/* Soft light that follows the pointer across cards. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lb-row:not(.head), .pcard, .match { position: relative; }
+  .lb-row:not(.head)::before, .pcard::before, .match::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+    background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.05), transparent 70%);
+  }
+  .lb-row:not(.head):hover::before, .pcard:hover::before, .match:hover::before { opacity: 1; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .tab-ink.go { transition: transform 0.3s cubic-bezier(0.3, 1.3, 0.5, 1), width 0.3s cubic-bezier(0.3, 1.3, 0.5, 1); }
@@ -10804,7 +10819,7 @@ img { max-width: 100%; }
 
   // ---------- Motion ----------
   // Only reactions to the visitor; everything is skipped under prefers-reduced-motion and without WAAPI.
-  var FX_EASE = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
+  var FX_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
   function fxCalm() {
     return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }
@@ -10862,16 +10877,12 @@ img { max-width: 100%; }
   // Tabs in bar order, so the wipe runs the way the visitor moved.
   var FX_ORDER = { table: 0, matches: 1, players: 2, player: 2.5, heroes: 3, vs: 4, tier: 5, records: 6, rules: 7, log: 8 };
   var FX_LISTS = { table: ['#board .lb-row', 10], players: ['#pcards .pcard', 12], matches: ['#matches .match', 4] };
-  var fxSweep = document.createElement('div');
-  fxSweep.className = 'fx-sweep'; fxSweep.hidden = true; fxSweep.setAttribute('aria-hidden', 'true');
-  fxSweep.innerHTML = '<i></i>';
-  document.body.appendChild(fxSweep);
   var fxRunTimer = 0, fxMain = document.querySelector('main');
   function fxCascade(view) {
     var l = FX_LISTS[view]; if (!l) return;
     var nodes = document.querySelectorAll(l[0]);
     for (var i = 0; i < nodes.length && i < l[1]; i++) {
-      fx(nodes[i], [{ opacity: 0, transform: 'translateX(-14px)' }, { opacity: 1, transform: 'none' }], { duration: 240, delay: i * 26, easing: FX_EASE, fill: 'backwards' });
+      fx(nodes[i], [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 360, delay: i * 22, easing: FX_EASE, fill: 'backwards' });
     }
   }
   function fxEnter(view, prev, heroBack) {
@@ -10879,18 +10890,52 @@ img { max-width: 100%; }
     // The sideways shift must not open a horizontal scrollbar on phones.
     fxMain.classList.add('fx-run');
     clearTimeout(fxRunTimer);
-    fxRunTimer = setTimeout(function () { fxMain.classList.remove('fx-run'); }, 320);
-    var frames = [{ opacity: 0, transform: 'translateX(' + (dir * 22) + 'px)' }, { opacity: 1, transform: 'none' }];
-    var opts = { duration: 260, easing: FX_EASE };
+    fxRunTimer = setTimeout(function () { fxMain.classList.remove('fx-run'); }, 380);
+    var frames = [{ opacity: 0, transform: 'translateX(' + (dir * 10) + 'px)' }, { opacity: 1, transform: 'none' }];
+    var opts = { duration: 340, easing: FX_EASE };
     fx(document.getElementById('view-' + view), frames, opts);
     if (heroBack) fx(document.getElementById('hero'), frames, opts);
     fxCascade(view);
-    fxSweep.hidden = false;
-    var band = fx(fxSweep.firstChild,
-      [{ transform: 'translateX(' + (dir > 0 ? '-50vw' : '110vw') + ') skewX(-12deg)' }, { transform: 'translateX(' + (dir > 0 ? '110vw' : '-50vw') + ') skewX(-12deg)' }],
-      { duration: 420, easing: 'ease-in-out' });
-    if (band) band.onfinish = band.oncancel = function () { fxSweep.hidden = true; }; else fxSweep.hidden = true;
+    if (view === 'table') fxBoardFinish();
   }
+  // Scores roll up to their value; the text is restored exactly at the end.
+  function fxCount(el) {
+    if (!el || fxCalm() || !window.requestAnimationFrame) return;
+    var text = el.textContent, m = text.match(/^([+\u2212-]?)(\d+)$/);
+    if (!m || !+m[2]) return;
+    var to = +m[2], t0 = 0, dur = 800;
+    function step(t) {
+      if (!t0) t0 = t;
+      var k = Math.min(1, (t - t0) / dur), v = Math.round(to * (1 - Math.pow(1 - k, 4)));
+      el.textContent = k < 1 ? m[1] + v : text;
+      if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  function fxBoardFinish() {
+    var pts = document.querySelectorAll('#board .lb-row:not(.head) .pts');
+    for (var i = 0; i < 3 && i < pts.length; i++) fxCount(pts[i]);
+    var first = document.querySelector('#board .lb-row:has(.plink.top1)');
+    if (first && !fxCalm() && first.animate) {
+      first.animate([{ opacity: 1, transform: 'translateX(-100%)' }, { opacity: 1, transform: 'translateX(100%)' }],
+        { duration: 1100, delay: 260, easing: 'ease-in-out', pseudoElement: '::after' });
+    }
+  }
+  var fxPt = null;
+  document.addEventListener('pointermove', function (e) {
+    if (e.pointerType !== 'mouse') return;
+    if (!fxPt) requestAnimationFrame(function () {
+      var c = fxPt.target.closest && fxPt.target.closest('.lb-row, .pcard, .match');
+      if (c) {
+        var r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', (fxPt.clientX - r.left) + 'px');
+        c.style.setProperty('--my', (fxPt.clientY - r.top) + 'px');
+      }
+      fxPt = null;
+    });
+    fxPt = e;
+  }, { passive: true });
+
   // New content after a filter, a sort or an opened row.
   function fxPop(el) {
     fx(el, [{ opacity: 0.2, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 200, easing: FX_EASE });
@@ -11048,6 +11093,9 @@ img { max-width: 100%; }
   var ud = data.updated.split('-');
   document.getElementById('updated').textContent = 'Обновлено ' + ud[2] + '.' + ud[1] + '.' + ud[0];
   route();
+  fxCount(document.getElementById('t-a'));
+  fxCount(document.getElementById('t-k'));
+  if (shown === 'table') fxBoardFinish();
 })();
 </script>
 </body>
