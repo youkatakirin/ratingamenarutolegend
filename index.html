@@ -620,6 +620,27 @@ a.btn { display: inline-block; text-decoration: none; }
   0%, 100% { text-shadow: 0 0 6px rgba(255, 201, 74, 0.55), 0 0 14px rgba(255, 170, 40, 0.3); }
   50% { text-shadow: 0 0 12px rgba(255, 215, 110, 1), 0 0 30px rgba(255, 170, 40, 0.75); }
 }
+/* Result form for organizers */
+.fm-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 20px; align-items: start; }
+.fm { display: grid; gap: 14px; }
+.fm label, .fm-pick > span, .fm-bans legend { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--soft); }
+.fm-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.fm-pick { display: grid; gap: 6px; }
+.fm-pick > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.fm input, .fm select { width: 100%; min-width: 0; font: inherit; font-size: 15px; font-weight: 500; color: var(--ink); background: var(--panel-2); border: 1px solid var(--line-2); padding: 8px 10px; }
+.fm input:focus-visible, .fm select:focus-visible { outline: 2px solid var(--ally); outline-offset: 2px; }
+.fm input.bad { border-color: var(--loss); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.fm .btn[aria-pressed="true"] { background: var(--ally); border-color: var(--ally); color: #07090f; }
+.fm-bans { margin: 0; padding: 0; border: 0; display: grid; gap: 6px; }
+.fm-bans legend { padding: 0; margin-bottom: 6px; }
+#fm-bans { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.fm-side { position: sticky; top: 84px; display: grid; gap: 10px; }
+.fm-out { margin: 0; padding: 14px 16px; min-height: 280px; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--f-body); font-size: 14px; line-height: 1.5; }
+.fm-left { margin: 0; color: var(--loss); }
+.fm-left.ok { color: var(--muted); }
+@media (max-width: 860px) { .fm-layout { grid-template-columns: minmax(0, 1fr); } .fm-side { position: static; } }
+
 /* Motion: everything below answers a click or a tap, nothing runs on its own.
    Signature: the chakra spiral at the point of the click (fxSeal), gold as the only finish metal. */
 .tabs { position: relative; }
@@ -727,7 +748,7 @@ img { max-width: 100%; }
   </section>
 
   <section class="sec" id="view-matches" hidden aria-labelledby="h-matches">
-    <div class="sec-head"><h2 id="h-matches">МАТЧИ</h2><span class="note">сначала новые</span></div>
+    <div class="sec-head"><h2 id="h-matches">МАТЧИ</h2><a class="btn primary" href="#form" data-go="form" style="text-decoration:none"><span>Записать результат</span></a><span class="note">сначала новые</span></div>
     <div class="matches" id="matches"></div>
   </section>
 
@@ -801,6 +822,41 @@ img { max-width: 100%; }
     <div class="wk-grid" id="wk-out"></div>
     <p class="note" style="margin:0" id="wk-sum"></p>
     <p class="note" style="margin:0">Неделя идёт с понедельника по воскресенье, ночные игры до 6 утра считаются за предыдущий день.</p>
+  </section>
+
+  <section class="sec" id="view-form" hidden aria-labelledby="h-form">
+    <div class="sec-head"><h2 id="h-form">РЕЗУЛЬТАТ ИГРЫ</h2><span class="note">заполни, скопируй текст и отправь его в канал результатов со скриншотом итогов</span></div>
+    <div class="fm-layout">
+      <form class="fm" id="fm" autocomplete="off" onsubmit="return false">
+        <div class="fm-row">
+          <label>Номер игры<input id="fm-n" type="number" min="1" inputmode="numeric"></label>
+          <label>Организатор<input id="fm-org" list="fm-players"></label>
+        </div>
+        <p class="note" id="fm-n-note"></p>
+        <div class="fm-row">
+          <div class="fm-pick"><span id="fm-fp-l">Первый пик</span><div role="group" aria-labelledby="fm-fp-l" data-pick="fp">
+            <button type="button" class="btn" data-v="alliance" aria-pressed="false"><span>Альянс</span></button>
+            <button type="button" class="btn" data-v="akatsuki" aria-pressed="false"><span>Акацуки</span></button></div></div>
+          <div class="fm-pick"><span id="fm-win-l">Победитель</span><div role="group" aria-labelledby="fm-win-l" data-pick="win">
+            <button type="button" class="btn" data-v="alliance" aria-pressed="false"><span>Альянс</span></button>
+            <button type="button" class="btn" data-v="akatsuki" aria-pressed="false"><span>Акацуки</span></button></div></div>
+        </div>
+        <div class="odds-pick" id="fm-teams"></div>
+        <div class="fm-row">
+          <label>MVP (лучший у победителей)<select id="fm-mvp"></select></label>
+          <label>SVP (лучший у проигравших)<select id="fm-svp"></select></label>
+        </div>
+        <fieldset class="fm-bans"><legend>Баны: герои победителей</legend><div id="fm-bans"></div></fieldset>
+        <label>Примечание, если было: лив, штраф, замена<input id="fm-note" maxlength="200"></label>
+        <datalist id="fm-players"></datalist><datalist id="fm-heroes"></datalist>
+      </form>
+      <div class="fm-side">
+        <pre class="panel fm-out" id="fm-out" aria-label="Текст сообщения"></pre>
+        <p class="note fm-left" id="fm-left" role="status"></p>
+        <div class="wk-bar"><button type="button" class="btn primary" id="fm-copy"><span>Скопировать текст</span></button>
+        <button type="button" class="btn" id="fm-clear"><span>Очистить</span></button><span class="note" id="fm-msg" role="status"></span></div>
+      </div>
+    </div>
   </section>
 
   <section class="sec" id="view-fame" hidden aria-labelledby="h-fame">
@@ -11295,6 +11351,120 @@ img { max-width: 100%; }
     move.parentNode.appendChild(note);
   })();
 
+  // ---------- Result form: builds the message for the results channel ----------
+  (function () {
+    var form = document.getElementById('fm'), $ = function (id) { return document.getElementById(id); };
+    var SIDE_RU = { alliance: 'Альянс', akatsuki: 'Акацуки' };
+    var ALIAS = {
+      'inneska': 'Inesska', 'yvnkxx': '[YVN-KXX]', '[yvn_kxx]': '[YVN-KXX]', 'yvn_kxx': '[YVN-KXX]', 'letan_': 'letan', 'panda_95': 'Panda95',
+      'blackreaper': 'black_reaper', 'kuuhaku': 'Kuhakuu', 'frieren': 'Sutafokkusu', 'itadori#289': 'KimEtsu_No', 'itadori': 'KimEtsu_No',
+      'jackson-': 'KimEtsu_No', 'kanzensaimin': 'KimEtsu_No', 'nanaya': 'ShikiNanaya', 'lirik_nivs': 'Margylis',
+      'pro100_sanya': 'Magistor', 'akuma': 'nekt0', 'anteyli': 'd4vd'
+    };
+    var known = {}, heroes = {}, picks = { fp: '', win: '' };
+    var roster = rows.map(function (s) { return s.name; }).concat((data.roster || []).filter(function (n) { return !stats[n]; }));
+    roster.forEach(function (n) { known[n.toLowerCase()] = n; });
+    var heroNames = (data.heroPool || []).concat(heroPool).filter(function (n, i, a) { return a.indexOf(n) === i; });
+    heroNames.forEach(function (n) { heroes[n.toLowerCase()] = n; });
+    function opts(list) { return list.map(function (n) { return '<option value="' + esc(n) + '"></option>'; }).join(''); }
+    $('fm-players').innerHTML = opts(roster);
+    $('fm-heroes').innerHTML = opts(heroNames.slice().sort(function (a, b) { return a.localeCompare(b, 'ru'); }));
+    function team(side) {
+      var html = '<div class="odds-team ' + side + '"><b class="' + (side === 'alliance' ? 'side-a' : 'side-k') + '">' + SIDE_RU[side] + '</b>';
+      for (var i = 0; i < 4; i++) html += '<input list="fm-players" data-side="' + side + '" aria-label="' + SIDE_RU[side] + ', игрок ' + (i + 1) + '">';
+      return html + '</div>';
+    }
+    $('fm-teams').innerHTML = team('alliance') + team('akatsuki');
+    var banHtml = '';
+    for (var bi = 0; bi < 4; bi++) banHtml += '<input list="fm-heroes" data-ban aria-label="Бан ' + (bi + 1) + '">';
+    $('fm-bans').innerHTML = banHtml;
+    function player(v) {
+      var t = v.trim(), low = t.toLowerCase();
+      return ALIAS[low] || known[low] || t;
+    }
+    function hero(v) { var t = v.trim(); return heroes[t.toLowerCase()] || t; }
+    function vals(sel, f) { return [].map.call(form.querySelectorAll(sel), function (i) { return f(i.value); }); }
+    function fillAward(id, names) {
+      var sel = $(id), cur = sel.value;
+      sel.innerHTML = '<option value="">Выбери игрока</option>' + names.filter(Boolean).map(function (n) {
+        return '<option value="' + esc(n) + '"' + (n === cur ? ' selected' : '') + '>' + esc(n) + '</option>';
+      }).join('');
+    }
+    function draw() {
+      var A = vals('[data-side="alliance"]', player), K = vals('[data-side="akatsuki"]', player), B = vals('[data-ban]', hero);
+      var win = picks.win, lose = win === 'alliance' ? K : win === 'akatsuki' ? A : [];
+      fillAward('fm-mvp', win === 'alliance' ? A : win === 'akatsuki' ? K : []);
+      fillAward('fm-svp', lose);
+      var n = $('fm-n').value.trim(), org = player($('fm-org').value), note = $('fm-note').value.trim();
+      var mvp = $('fm-mvp').value, svp = $('fm-svp').value, all = A.concat(K), named = all.filter(Boolean), left = [], warn = [];
+      if (!n) left.push('номер игры');
+      if (!org) left.push('организатор');
+      if (!picks.fp) left.push('первый пик');
+      if (!win) left.push('победитель');
+      if (named.length < 8) left.push('игроки: ещё ' + (8 - named.length));
+      if (named.some(function (x, i) { return named.indexOf(x) !== i; })) left.push('один игрок указан дважды');
+      if (win && !mvp) left.push('MVP');
+      if (win && !svp) left.push('SVP');
+      var bans = B.filter(Boolean);
+      if (bans.length < 4) left.push('баны: ещё ' + (4 - bans.length));
+      if (bans.some(function (x, i) { return bans.indexOf(x) !== i; })) left.push('один герой указан дважды');
+      var badHero = bans.filter(function (x) { return !heroes[x.toLowerCase()]; });
+      if (badHero.length) left.push('нет такого героя: ' + badHero.join(', '));
+      named.concat(org ? [org] : []).forEach(function (x) { if (!known[x.toLowerCase()] && warn.indexOf(x) < 0) warn.push(x); });
+      form.querySelectorAll('[data-ban]').forEach(function (i) { var v = hero(i.value); i.classList.toggle('bad', !!v && !heroes[v.toLowerCase()]); });
+      form.querySelectorAll('[data-side]').forEach(function (i) { var v = player(i.value); i.classList.toggle('bad', !!v && all.indexOf(v) !== all.lastIndexOf(v)); });
+      function side(s, t) { return (s === 'alliance' ? 'Alliance: ' : 'Akatsuki: ') + (win === s ? '+20' : win ? '-20' : '') + '\n' + t.filter(Boolean).join('\n'); }
+      var text = 'Рейтинговая игра #' + n + '\nОрганизатор: ' + org + '\nПервый пик: ' + (SIDE_RU[picks.fp] || '') + '\nПобедитель: ' + (SIDE_RU[win] || '') + '\n' +
+        side('alliance', A) + '\n\n' + side('akatsuki', K) + '\n\nБаны: ' + bans.join(', ') + '\nMVP: ' + mvp + '\nSVP: ' + svp + (note ? '\nПримечание: ' + note : '');
+      $('fm-out').textContent = text;
+      var box = $('fm-left'), ready = !left.length;
+      box.classList.toggle('ok', ready);
+      box.textContent = ready ? (warn.length ? 'Новые ники, проверь написание: ' + warn.join(', ') : 'Всё заполнено. Не забудь скриншот итогов.') : 'Осталось: ' + left.join(', ');
+      $('fm-copy').disabled = !ready;
+      $('fm-msg').textContent = '';
+      return text;
+    }
+    function reset() {
+      $('fm-n').value = lastN + 1;
+      $('fm-n-note').textContent = 'На сайте последняя игра #' + lastN + '. Если после неё уже были игры, поправь номер.';
+      var saved = ''; try { saved = localStorage.getItem('immortal-form-org') || ''; } catch (e) {}
+      $('fm-org').value = saved;
+      form.querySelectorAll('[data-side], [data-ban], #fm-note').forEach(function (i) { i.value = ''; });
+      picks.fp = picks.win = '';
+      form.querySelectorAll('[data-pick] button').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+      $('fm-mvp').value = ''; $('fm-svp').value = '';
+      draw();
+    }
+    form.addEventListener('input', draw);
+    form.addEventListener('change', function (e) {
+      var t = e.target;
+      // On leaving a field the nick or hero takes its proper spelling
+      if (t.hasAttribute('data-side') || t.id === 'fm-org') t.value = player(t.value);
+      if (t.hasAttribute('data-ban')) t.value = hero(t.value);
+      draw();
+    });
+    form.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-pick] button'); if (!b) return;
+      var box = b.parentNode, key = box.getAttribute('data-pick');
+      picks[key] = b.getAttribute('data-v');
+      box.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      draw();
+    });
+    $('fm-clear').addEventListener('click', reset);
+    $('fm-copy').addEventListener('click', function () {
+      var text = draw(), msg = $('fm-msg'), org = player($('fm-org').value);
+      try { localStorage.setItem('immortal-form-org', org); } catch (e) {}
+      function fine() { msg.textContent = 'Скопировано'; }
+      function manual() {
+        var r = document.createRange(); r.selectNodeContents($('fm-out'));
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        msg.textContent = 'Текст выделен, скопируй его вручную';
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(fine, manual); else manual();
+    });
+    reset();
+  })();
+
   // ---------- Motion ----------
   // Only reactions to the visitor; everything is skipped under prefers-reduced-motion and without WAAPI.
   var FX_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
@@ -11353,7 +11523,7 @@ img { max-width: 100%; }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fxMoveInk);
   setTimeout(function () { fxInk.classList.add('go'); }, 400);
   // Tabs in bar order, so the wipe runs the way the visitor moved.
-  var FX_ORDER = { table: 0, matches: 1, players: 2, player: 2.5, heroes: 3, vs: 4, tier: 5, week: 5.5, records: 6, rules: 7, log: 8, fame: 9 };
+  var FX_ORDER = { table: 0, matches: 1, players: 2, player: 2.5, heroes: 3, vs: 4, tier: 5, week: 5.5, records: 6, rules: 7, log: 8, fame: 9, form: 1.5 };
   var FX_LISTS = { table: ['#board .lb-row', 10], players: ['#pcards .pcard', 12], matches: ['#matches .match', 4], week: ['#wk-out .wk-card', 4] };
   var fxRunTimer = 0, fxMain = document.querySelector('main');
   function fxCascade(view) {
@@ -11429,13 +11599,13 @@ img { max-width: 100%; }
   }
 
   // ---------- Routing ----------
-  var VIEWS = ['table', 'matches', 'players', 'heroes', 'records', 'player', 'vs', 'rules', 'tier', 'log', 'week', 'fame'];
+  var VIEWS = ['table', 'matches', 'players', 'heroes', 'records', 'player', 'vs', 'rules', 'tier', 'log', 'week', 'fame', 'form'];
   var current = 'table', shown = null;
   function show(view) {
     VIEWS.forEach(function (v) { document.getElementById('view-' + v).hidden = v !== view; });
     var hero = document.getElementById('hero'), heroWas = hero.hidden;
-    hero.hidden = view === 'player' || view === 'vs' || view === 'rules' || view === 'tier' || view === 'log' || view === 'week' || view === 'fame';
-    var tab = view === 'player' ? 'players' : view;
+    hero.hidden = view === 'player' || view === 'vs' || view === 'rules' || view === 'tier' || view === 'log' || view === 'week' || view === 'fame' || view === 'form';
+    var tab = view === 'player' ? 'players' : view === 'form' ? 'matches' : view;
     document.querySelectorAll('[data-tab]').forEach(function (a) {
       if (a.getAttribute('data-tab') === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
