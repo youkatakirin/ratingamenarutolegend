@@ -28,36 +28,39 @@
       "time": "2026-11-04T17:40:27.390000+00:00",
       "edited": "2026-11-04T17:41:17.728000+00:00",
       "author": "Libe",
-      "result": false,
-      "typed": null,
+      "result": true,
+      "typed": 51,
       "text": "## Рейтинговая игра Rating Games # 51\n- Организатор: **Magistor**\n- Первый пик: **Альянс**\n- Победитель: **Акацуки**\n  - Alliance: **-20**\n  - SVP: **Margylis** (**+5**)\n    - **Magistor**\n    - **Margylis**\n    - **letan_**\n    - **SoulWind**\n  - Akatsuki: **+20**\n  - MVP: **black_reaper** (**+5**)\n    - **black_reaper**\n    - **Inesska**\n    - **[YVN_KXX]**\n    - **TUNDRA.**\n- Баны: **Данзо Хирузен Наруто Саске**",
       "files": [
         "discord/files/1567594391336648838-0.png"
-      ]
+      ],
+      "game": 51
     },
     {
       "id": "1567622296527438016",
       "time": "2026-11-04T19:31:20.506000+00:00",
       "edited": "2026-11-04T19:32:24.031000+00:00",
       "author": "prince丶",
-      "result": false,
+      "result": true,
       "typed": null,
       "text": "## Рейтинговая игра Rating Games <#1567595340360720475> \n- Организатор: **milancore**\n- Первый пик: **Акацуки**\n- Победитель: **Акацуки**\n  - Alliance: **-10** (SAND вылет)\n  - SVP: **black_reaper** (**+5**)\n    - **Magistor**\n    - **black_reaper**\n    - **SAND** свет выключили, доказано (без штрафа к очкам, просто -20 вместо -10)\n    - **ShikiNanaya**\n  - Akatsuki: **+20**\n  - MVP: **milancore** (**+5**)\n    - **milancore**\n    - **SoulWind**\n    - **Sutafokkusu**\n    - **Margylis**\n- Баны: **Югито, Ханзо, Кушимару, Ямато**",
       "files": [
         "discord/files/1567622296527438016-0.png"
-      ]
+      ],
+      "game": 52
     },
     {
       "id": "1567646814927323197",
       "time": "2026-11-04T21:08:46.148000+00:00",
       "edited": null,
       "author": "Libe",
-      "result": false,
-      "typed": null,
+      "result": true,
+      "typed": 53,
       "text": "## Rating Games # 53\n- Организатор: **Magistor**\n- Первый пик: **Альянс**\n- Победитель: **Акацуки**\n  - Alliance: **-20**\n  - SVP: **Magistor** (**+5**)\n    - **Magistor**\n    - **milancore**\n    - **d4vd**\n    - **black_reaper**\n  - Akatsuki: **+20**\n  - MVP: **nekt0** (**+5**)\n    - **nekt0**\n    - **Sutafokkusu**\n    - **Myamm**\n    - **Margylis**\n- Баны: **Асума Неджи Хаку Раса**",
       "files": [
         "discord/files/1567646814927323197-0.png"
-      ]
+      ],
+      "game": 53
     }
   ]
 }
