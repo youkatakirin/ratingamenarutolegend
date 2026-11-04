@@ -50,6 +50,15 @@ def get(url, token=None):
     sys.exit("Discord keeps rate limiting, will try on the next run")
 
 
+def check_access(page):
+    """Without Message Content Intent Discord answers normally but blanks every post."""
+    posts = [m for m in page if m.get("type", 0) in (0, 19)]
+    if posts and not any(m.get("content") or m.get("attachments") for m in posts):
+        sys.exit("Posts come back empty: turn on Message Content Intent for the bot")
+    if posts:
+        print(f"channel ok, latest post {posts[0]['id']} from {posts[0]['timestamp'][:16]}, {len(posts[0].get('content', ''))} chars")
+
+
 def fetch_since(after, token):
     """All posts newer than `after`, oldest first."""
     out, before = [], None
@@ -58,6 +67,8 @@ def fetch_since(after, token):
         if before:
             url += "&before=" + before
         page = json.loads(get(url, token))
+        if not before:
+            check_access(page)
         fresh = [m for m in page if int(m["id"]) > int(after)]
         out.extend(fresh)
         if len(page) < 100 or len(fresh) < len(page):
