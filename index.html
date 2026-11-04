@@ -572,7 +572,7 @@ a.btn { display: inline-block; text-decoration: none; }
 .fx-seal circle { fill: none; stroke: currentColor; stroke-width: 1.5; transform-box: fill-box; transform-origin: center; }
 .fx-sweep { position: fixed; inset: 0; z-index: 19; overflow: hidden; pointer-events: none; }
 .fx-sweep[hidden] { display: none; }
-body.fx-run { overflow-x: clip; }
+main.fx-run { overflow-x: clip; }
 .fx-sweep i {
   position: absolute; top: -10%; bottom: -10%; left: 0; width: 42vw;
   background: linear-gradient(90deg, transparent, rgba(47, 155, 255, 0.2) 42%, rgba(255, 58, 92, 0.2) 58%, transparent);
@@ -10866,7 +10866,7 @@ img { max-width: 100%; }
   fxSweep.className = 'fx-sweep'; fxSweep.hidden = true; fxSweep.setAttribute('aria-hidden', 'true');
   fxSweep.innerHTML = '<i></i>';
   document.body.appendChild(fxSweep);
-  var fxRunTimer = 0;
+  var fxRunTimer = 0, fxMain = document.querySelector('main');
   function fxCascade(view) {
     var l = FX_LISTS[view]; if (!l) return;
     var nodes = document.querySelectorAll(l[0]);
@@ -10877,9 +10877,9 @@ img { max-width: 100%; }
   function fxEnter(view, prev, heroBack) {
     var dir = FX_ORDER[view] >= FX_ORDER[prev] ? 1 : -1;
     // The sideways shift must not open a horizontal scrollbar on phones.
-    document.body.classList.add('fx-run');
+    fxMain.classList.add('fx-run');
     clearTimeout(fxRunTimer);
-    fxRunTimer = setTimeout(function () { document.body.classList.remove('fx-run'); }, 320);
+    fxRunTimer = setTimeout(function () { fxMain.classList.remove('fx-run'); }, 320);
     var frames = [{ opacity: 0, transform: 'translateX(' + (dir * 22) + 'px)' }, { opacity: 1, transform: 'none' }];
     var opts = { duration: 260, easing: FX_EASE };
     fx(document.getElementById('view-' + view), frames, opts);
