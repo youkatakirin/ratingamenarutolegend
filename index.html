@@ -620,6 +620,31 @@ a.btn { display: inline-block; text-decoration: none; }
   0%, 100% { text-shadow: 0 0 6px rgba(255, 201, 74, 0.55), 0 0 14px rgba(255, 170, 40, 0.3); }
   50% { text-shadow: 0 0 12px rgba(255, 215, 110, 1), 0 0 30px rgba(255, 170, 40, 0.75); }
 }
+/* Board tools, events, race, goals, champions */
+.lb-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.lb-tools input { flex: 0 1 260px; min-width: 0; font: inherit; font-size: 15px; font-weight: 500; color: var(--ink); background: var(--panel-2); border: 1px solid var(--line-2); padding: 7px 10px; }
+.lb-tools input:focus-visible { outline: 2px solid var(--ally); outline-offset: 2px; }
+.lb-tools .btn[aria-pressed="true"] { background: var(--ally); border-color: var(--ally); color: #07090f; }
+.lb-sort { font: inherit; letter-spacing: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit; }
+.lb-sort:hover, .lb-sort.on { color: var(--ink); }
+.lb-sort.on::after { content: " ↓"; }
+.lb-sort.on.asc::after { content: " ↑"; }
+.lb-none { padding: 18px; color: var(--muted); background: var(--panel); border: 1px solid var(--line); }
+.ev-row { display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 9px 16px; border-top: 1px solid var(--line); font-size: 15px; }
+.ev-row:first-child { border-top: 0; }
+.ev-row .d { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.ev-row a.m { font-size: 13px; color: var(--soft); }
+.ev-row.gold .t { color: var(--gold); }
+.race-lg { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; }
+.race-lg span { display: inline-flex; align-items: center; gap: 7px; }
+.race-lg i, .chart-tip i { display: inline-block; width: 10px; height: 10px; flex: none; }
+.chart-tip .rw { display: flex; align-items: center; gap: 7px; }
+.chart-tip .rw b { margin-left: auto; padding-left: 14px; }
+.champ { font-size: 13px; font-weight: 600; color: var(--gold); border: 1px solid rgba(255, 201, 74, 0.5); padding: 2px 10px; transform: skewX(-8deg); white-space: nowrap; }
+.champ > span { display: inline-block; transform: skewX(8deg); }
+.prof-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+@media (max-width: 520px) { .ev-row { grid-template-columns: minmax(0, 1fr) auto; } .ev-row .d { display: none; } }
+
 /* Result form for organizers */
 .fm-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 20px; align-items: start; }
 .fm { display: grid; gap: 14px; }
@@ -741,8 +766,23 @@ img { max-width: 100%; }
   </header>
 
   <section class="sec" id="view-table" aria-labelledby="h-table">
+    <div class="sec" style="gap:10px;margin-bottom:12px" id="ev-wrap">
+      <h3>СОБЫТИЯ</h3>
+      <div class="panel list" id="ev-list"></div>
+      <details class="bench" id="ev-more"><summary>Показать ещё</summary><div class="panel list" id="ev-rest" style="margin-top:8px"></div></details>
+    </div>
     <div class="sec-head"><h2 id="h-table">ТАБЛИЦА ЛИДЕРОВ</h2><span class="note">нажми на ник — откроется профиль игрока</span></div>
+    <div class="lb-tools">
+      <input id="lb-q" type="search" placeholder="Найти игрока" aria-label="Найти игрока" autocomplete="off">
+      <button type="button" class="btn" id="lb-min" aria-pressed="false"><span>От 5 игр</span></button>
+      <span class="note" id="lb-count" role="status"></span>
+    </div>
     <div class="scroll-x"><div class="lb" id="board"></div></div>
+    <div class="sec" style="gap:10px;margin-top:14px">
+      <h3>ГОНКА ЗА ПЕРВОЕ МЕСТО</h3>
+      <div class="race-lg" id="race-lg"></div>
+      <div class="panel chart" id="race-chart"></div>
+    </div>
     <details class="bench" id="bench"><summary id="bench-sum">Ещё не играли</summary><div class="bench-list" id="bench-list"></div></details>
     <div class="sec" style="gap:14px;margin-top:24px" id="cm-wrap"></div>
   </section>
@@ -10043,22 +10083,61 @@ img { max-width: 100%; }
   })();
 
   // ---------- Leaderboard ----------
+  function boardRow(s) {
+    var w = Math.round(s.wr * 100);
+    return '<div class="lb-row">' +
+      '<span class="rk-cell"><span class="rk' + rkCls(s.place) + '">' + s.place + '</span>' + moveChip(s) + '</span>' +
+      '<span class="name-cell">' + avatar(s, topCls(s.place)) + plink(s.name, topCls(s.place)) + streakChip(s) + '</span>' +
+      '<span class="pts ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' +
+      '<span>' + s.w + ' – ' + s.l + '</span>' +
+      '<span class="wr"><span class="bar"><i style="width:' + w + '%"></i></span><span class="v">' + w + '%</span></span>' +
+      '<span style="color:var(--soft)">' + (s.sg ? s.k + ' / ' + s.d + ' / ' + s.a : '<span class="muted">нет данных</span>') + '</span>' +
+      '<span title="MVP / SVP">' + (s.mvp || s.svp ? '<b class="aw-mvp">' + s.mvp + '</b> <span class="muted">/</span> <b class="aw-svp">' + s.svp + '</b>' : '<span class="muted">—</span>') + '</span>' +
+      '<span class="form">' + s.form.slice(-5).map(chip).join('') + '</span>' +
+      '</div>';
+  }
   (function () {
-    var html = '<div class="lb-row head"><span>#</span><span>ИГРОК</span><span class="r">ОЧКИ</span><span>П – П</span><span>ВИНРЕЙТ</span><span>У / С / П</span><span>MVP / SVP</span><span>ПОСЛЕДНИЕ</span></div>';
-    rows.forEach(function (s) {
-      var w = Math.round(s.wr * 100);
-      html += '<div class="lb-row">' +
-        '<span class="rk-cell"><span class="rk' + rkCls(s.place) + '">' + s.place + '</span>' + moveChip(s) + '</span>' +
-        '<span class="name-cell">' + avatar(s, topCls(s.place)) + plink(s.name, topCls(s.place)) + streakChip(s) + '</span>' +
-        '<span class="pts ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' +
-        '<span>' + s.w + ' – ' + s.l + '</span>' +
-        '<span class="wr"><span class="bar"><i style="width:' + w + '%"></i></span><span class="v">' + w + '%</span></span>' +
-        '<span style="color:var(--soft)">' + (s.sg ? s.k + ' / ' + s.d + ' / ' + s.a : '<span class="muted">нет данных</span>') + '</span>' +
-        '<span title="MVP / SVP">' + (s.mvp || s.svp ? '<b class="aw-mvp">' + s.mvp + '</b> <span class="muted">/</span> <b class="aw-svp">' + s.svp + '</b>' : '<span class="muted">—</span>') + '</span>' +
-        '<span class="form">' + s.form.slice(-5).map(chip).join('') + '</span>' +
-        '</div>';
+    var COLS = [
+      { k: 'place', t: '#', asc: true, v: function (s) { return s.place; } },
+      { k: 'name', t: 'ИГРОК', asc: true, v: function (s) { return s.name.toLowerCase(); } },
+      { k: 'pts', t: 'ОЧКИ', r: true, v: function (s) { return s.pts; } },
+      { k: 'w', t: 'П – П', v: function (s) { return s.w; } },
+      { k: 'wr', t: 'ВИНРЕЙТ', v: function (s) { return s.wr; } },
+      { k: 'ratio', t: 'У / С / П', v: function (s) { return s.ratio; } },
+      { k: 'mvp', t: 'MVP / SVP', v: function (s) { return s.mvp * 1000 + s.svp; } }
+    ];
+    var sort = { k: 'place', asc: true }, query = '', minGames = false;
+    function draw() {
+      var col = COLS.filter(function (c) { return c.k === sort.k; })[0];
+      var list = rows.filter(function (s) {
+        return (!query || s.name.toLowerCase().indexOf(query) >= 0) && (!minGames || s.g >= 5);
+      }).slice().sort(function (a, b) {
+        var x = col.v(a), y = col.v(b), d = x < y ? -1 : x > y ? 1 : 0;
+        return (sort.asc ? d : -d) || a.place - b.place || a.name.localeCompare(b.name);
+      });
+      var head = '<div class="lb-row head">' + COLS.map(function (c) {
+        var on = c.k === sort.k;
+        return '<span' + (c.r ? ' class="r"' : '') + '><button type="button" class="lb-sort' + (on ? ' on' : '') + (on && sort.asc ? ' asc' : '') + '" data-lb="' + c.k + '" aria-label="Сортировать: ' + c.t + '">' + c.t + '</button></span>';
+      }).join('') + '<span>ПОСЛЕДНИЕ</span></div>';
+      document.getElementById('board').innerHTML = head + (list.length ? list.map(boardRow).join('') : '<div class="lb-none">Никого не нашли</div>');
+      var filtered = query || minGames;
+      document.getElementById('lb-count').textContent = filtered ? 'Показано ' + list.length + ' из ' + rows.length : '';
+    }
+    draw();
+    document.getElementById('board').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-lb]'); if (!b) return;
+      var k = b.getAttribute('data-lb'), col = COLS.filter(function (c) { return c.k === k; })[0];
+      if (sort.k === k) sort.asc = !sort.asc; else { sort.k = k; sort.asc = !!col.asc; }
+      draw();
+      var again = document.querySelector('[data-lb="' + k + '"]'); if (again) again.focus();
+      fxPop(document.getElementById('board'));
     });
-    document.getElementById('board').innerHTML = html;
+    document.getElementById('lb-q').addEventListener('input', function (e) { query = e.target.value.trim().toLowerCase(); draw(); });
+    document.getElementById('lb-min').addEventListener('click', function (e) {
+      minGames = !minGames;
+      e.currentTarget.setAttribute('aria-pressed', minGames ? 'true' : 'false');
+      draw();
+    });
     var played = {};
     rows.forEach(function (s) { played[s.name] = true; });
     var bench = (data.roster || []).filter(function (n) { return !played[n]; });
@@ -10185,6 +10264,26 @@ img { max-width: 100%; }
     { name: 'Фидер сезона', desc: 'Больше всех смертей в сезоне', test: function (s) { return s.sg > 0 && maxDeaths > 0 && s.d === maxDeaths; } }
   ];
   function achCount(a, s) { return a.count ? a.count(s) : (a.test(s) ? 1 : 0); }
+  // Only achievements with a counter can show progress; one-off feats are left out.
+  var ACH_PROG = {
+    'Звезда матча': [function (s) { return s.mvp; }, 3], 'Король арены': [function (s) { return s.mvp; }, 10],
+    'Честь в поражении': [function (s) { return s.svp; }, 3],
+    'Серия': [function (s) { return s.bestStreak; }, 5], 'В огне': [function (s) { return s.bestStreak; }, 8], 'Неудержимый': [function (s) { return s.bestStreak; }, 12],
+    'Обе стороны': [function (s) { return Math.min(s.sides.alliance.w, s.sides.akatsuki.w); }, 3],
+    'Универсал': [function (s) { return heroWins(s); }, 6],
+    'Мастер героя': [function (s) { return Math.max.apply(null, Object.keys(s.heroes).map(function (h) { return s.heroes[h].w; }).concat(0)); }, 5],
+    'Ветеран': [function (s) { return s.g; }, 25], 'Старожил': [function (s) { return s.g; }, 50], 'Легенда': [function (s) { return s.g; }, 100]
+  };
+  function nextAch(s) {
+    var best = null;
+    ACH.forEach(function (a) {
+      var p = ACH_PROG[a.name]; if (!p) return;
+      var cur = p[0](s), max = p[1];
+      if (cur >= max) return;
+      if (!best || cur / max > best.cur / best.max) best = { name: a.name, desc: a.desc, cur: cur, max: max };
+    });
+    return best;
+  }
   rows.forEach(function (s) { s.achs = ACH.filter(function (a) { return achCount(a, s) > 0; }).length; });
 
   // ---------- Records ----------
@@ -10455,6 +10554,12 @@ img { max-width: 100%; }
       tiles.push(['Ср. урон по зданиям', fmt(s.tdmg / s.tg), 'всего ' + fmt(s.tdmg)]);
       tiles.push(['Ср. получ. урон', fmt(s.taken / s.tg), 'всего ' + fmt(s.taken)]);
     }
+    var above = rows.filter(function (r) { return r.pts > s.pts; }).pop();
+    var below = rows.filter(function (r) { return r.pts < s.pts; })[0];
+    if (above) tiles.push(['До ' + above.place + '-го места', above.pts - s.pts + ' ' + plural(above.pts - s.pts, 'очко', 'очка', 'очков'), 'догнать ' + above.name]);
+    else if (below) tiles.push(['Отрыв от ' + below.place + '-го места', s.pts - below.pts + ' ' + plural(s.pts - below.pts, 'очко', 'очка', 'очков'), 'следом идёт ' + below.name]);
+    var goal = nextAch(s);
+    if (goal) tiles.push(['Ближайшее достижение', goal.cur + ' / ' + goal.max, goal.name + ': ' + goal.desc]);
     var other = rows.filter(function (r) { return r.name !== s.name; })[0];
     var cmpTok = other ? 'vs~' + slugFor(s.name) + '~' + slugFor(other.name) : 'vs';
     var html = '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px"><a class="back" href="#players" data-go="players">← Все игроки</a>' +
@@ -10462,7 +10567,9 @@ img { max-width: 100%; }
       '<div class="prof-head"><div class="prof-id">' + avatar(s, 'lg ' + topCls(s.place)) + '<h2 class="prof-name">' + esc(s.name) + '</h2></div>' +
       '<div class="prof-line"><span class="rk' + rkCls(s.place) + '">' + s.place + '</span>' +
       '<span class="form">' + s.form.slice(-10).map(chip).join('') + '</span>' +
-      (s.mainHero ? '<span class="muted">чаще всего: <b style="color:var(--ink);font-weight:600">' + esc(s.mainHero) + '</b></span>' : '') + '</div></div>' +
+      (s.mainHero ? '<span class="muted">чаще всего: <b style="color:var(--ink);font-weight:600">' + esc(s.mainHero) + '</b></span>' : '') +
+      (s.champs || []).map(function (c) { return '<span class="champ" title="Больше всех побед на этом герое"><span>Лучший ' + esc(c) + '</span></span>'; }).join('') + '</div></div>' +
+      '<div class="prof-actions"><button type="button" class="btn primary" id="pc-png"><span>Скачать карточку игрока</span></button><span class="note" id="pc-msg" role="status"></span></div>' +
       '<div class="tiles">' + tiles.map(function (t) { return '<div class="tile"><span class="k">' + t[0] + '</span><span class="v">' + t[1] + '</span><span class="s">' + esc(t[2]) + '</span></div>'; }).join('') + '</div>';
     html += '<div class="sec" style="gap:10px"><h3>ДОСЬЕ</h3><div class="panel" style="padding:14px 16px"><p style="margin:0;line-height:1.65">' + esc(dossier(s)) + '</p></div></div>';
     html += '<div class="sec" style="gap:10px"><h3>ОЧКИ ПО ИГРАМ</h3><div class="panel chart" id="pts-chart"></div></div>';
@@ -10767,6 +10874,15 @@ img { max-width: 100%; }
     return Object.keys(h.players).map(function (n) { return { name: n, g: h.players[n].g, w: h.players[n].w }; })
       .sort(function (a, b) { return b.g - a.g || b.w - a.w || a.name.localeCompare(b.name); });
   }
+  // Champion of a hero: most wins on it, from 3 games and 2 wins; ties go to the better win rate, then more games.
+  heroList.forEach(function (h) {
+    var list = heroPlayers(h).filter(function (p) { return p.g >= 3 && p.w >= 2; });
+    list.sort(function (a, b) { return b.w - a.w || b.w / b.g - a.w / a.g || b.g - a.g || a.name.localeCompare(b.name); });
+    if (!list[0]) return;
+    h.champ = list[0].name;
+    var s = stats[h.champ];
+    (s.champs || (s.champs = [])).push(h.name);
+  });
   var hsSort = { k: 'score', asc: false }, hsOpen = {};
   function heroDetail(h) {
     var sideTxt = '<span class="side-a">Альянс ' + h.sides.alliance + '</span> · <span class="side-k">Акацуки ' + h.sides.akatsuki + '</span>';
@@ -10778,6 +10894,7 @@ img { max-width: 100%; }
         '<span class="r dm">' + (x.kda && x.dmg ? fmt(x.dmg) : '') + '</span></a>';
     }).join('');
     return '<div class="hd">' +
+      (h.champ ? '<div><div class="k">ЛУЧШИЙ НА ГЕРОЕ</div><div>' + plink(h.champ) + '</div></div>' : '') +
       '<div><div class="k">ИГРОКИ</div><div class="who">' + heroPlayers(h).map(function (p) { return plink(p.name) + ' <span class="muted">' + p.w + '–' + (p.g - p.w) + '</span>'; }).join('') + '</div></div>' +
       '<div><div class="k">СТОРОНЫ</div><div>' + sideTxt + '</div></div>' +
       '<div><div class="k">ИГРЫ</div><div class="games">' + games + '</div></div></div>';
@@ -11351,6 +11468,187 @@ img { max-width: 100%; }
     move.parentNode.appendChild(note);
   })();
 
+  // ---------- Events: the season replayed game by game, newest first ----------
+  (function () {
+    var out = [], best = {}, run = {}, seen = {}, leaders = '', before = {};
+    var METRICS = [
+      { k: 'dmg', v: function (x) { return x.dmg || 0; }, t: 'урона по героям' },
+      { k: 'kills', v: function (x) { return x.kda ? x.kda[0] : 0; }, t: 'убийств' },
+      { k: 'tdmg', v: function (x) { return x.tdmg || 0; }, t: 'урона по зданиям' },
+      { k: 'cs', v: function (x) { return x.cs || 0; }, t: 'крипов' }
+    ];
+    function add(m, pr, cls, html) { out.push({ n: m.n, date: m.date, pr: pr, cls: cls, html: html }); }
+    matches.forEach(function (m, i) {
+      var now = rankAt(m.n), names = Object.keys(now);
+      var lead = names.filter(function (n) { return now[n] === 1; }).sort().join('|');
+      if (i >= 3 && lead !== leaders) {
+        lead.split('|').forEach(function (n) { if (leaders.split('|').indexOf(n) < 0) add(m, 0, 'gold', plink(n) + ' вышел на 1-е место'); });
+      }
+      leaders = lead;
+      SIDES.forEach(function (side) {
+        (m[side] || []).forEach(function (x) {
+          var won = m.winner === side, r = run[x.p] || (run[x.p] = { w: 0, l: 0 });
+          r.w = won ? r.w + 1 : 0; r.l = won ? 0 : r.l + 1;
+          if (r.w === 5 || r.w === 8 || r.w === 12) add(m, 3, '', plink(x.p) + ': ' + r.w + ' побед подряд');
+          if (r.l === 5 || r.l === 8) add(m, 3, '', plink(x.p) + ': ' + r.l + ' поражений подряд');
+          if (i >= 5 && !seen[x.p]) add(m, 5, '', plink(x.p) + ' сыграл первую игру в рейтинге');
+          seen[x.p] = true;
+          METRICS.forEach(function (c) {
+            var v = c.v(x);
+            if (v > (best[c.k] || 0)) {
+              if (i >= 5) { add(m, 1, 'gold', 'Рекорд сезона: ' + fmt(v) + ' ' + c.t + ', ' + plink(x.p) + (x.hero ? ' на герое ' + esc(x.hero) : '')); out[out.length - 1].rec = c.k; }
+              best[c.k] = v;
+            }
+          });
+        });
+      });
+      if (i >= 5) names.forEach(function (n) {
+        var was = before[n], cur = now[n];
+        if (was > 3 && cur <= 3 && cur > 1) add(m, 2, '', plink(n) + ' вошёл в топ-3');
+        else if (i >= 10 && was && was - cur >= 5 && cur > 3) add(m, 4, '', plink(n) + ' поднялся с ' + was + '-го на ' + cur + '-е место');
+      });
+      before = now;
+    });
+    // A record beaten twice in one game keeps only the final value
+    var lastRec = {};
+    out.forEach(function (e) { if (e.rec) lastRec[e.rec + '|' + e.n] = e; });
+    out = out.filter(function (e) { return !e.rec || lastRec[e.rec + '|' + e.n] === e; });
+    out.sort(function (a, b) { return b.n - a.n || a.pr - b.pr; });
+    function row(e) {
+      return '<div class="ev-row' + (e.cls ? ' ' + e.cls : '') + '"><span class="d">' + esc(dmy(e.date.slice(0, 10)).slice(0, 5)) + '</span><span class="t">' + e.html + '</span>' +
+        '<a class="m" href="#match-' + e.n + '" data-go="match-' + e.n + '">#' + e.n + '</a></div>';
+    }
+    if (!out.length) { document.getElementById('ev-wrap').hidden = true; return; }
+    document.getElementById('ev-list').innerHTML = out.slice(0, 4).map(row).join('');
+    var rest = out.slice(4, 24);
+    if (rest.length) document.getElementById('ev-rest').innerHTML = rest.map(row).join('');
+    else document.getElementById('ev-more').hidden = true;
+  })();
+
+  // ---------- Race: the current top five through the season ----------
+  var RACE_COLORS = ['#bd8814', '#2388e0', '#f03a5a', '#a06cf0', '#1fa368'];  // checked for dark surface and colour blindness, adjacent pairs
+  var raceTop = rows.slice(0, 5);
+  document.getElementById('race-lg').innerHTML = raceTop.map(function (s, i) {
+    return '<span><i style="background:' + RACE_COLORS[i] + '"></i>' + plink(s.name) + '</span>';
+  }).join('');
+  var raceData = raceTop.map(function (s) { return matches.map(function (m) { return ptsAt(s, m.n); }); });
+  var raceW = 0;
+  function drawRace(force) {
+    var el = document.getElementById('race-chart');
+    if (!el || !matches.length || !el.clientWidth) return;
+    var W = el.clientWidth - 28;
+    if (!force && W === raceW) return;
+    raceW = W;
+    var H = W < 520 ? 240 : 300, L = 42, R = 14, T = 12, B = 24, N = matches.length;
+    var flat = [].concat.apply([0], raceData), lo = Math.min.apply(null, flat), hi = Math.max.apply(null, flat);
+    var step = niceStep((hi - lo) / 4 || 20);
+    lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+    function X(i) { return L + (W - L - R) * (N > 1 ? i / (N - 1) : 0); }
+    function Y(v) { return T + (H - T - B) * (1 - (v - lo) / (hi - lo)); }
+    var svg = '';
+    for (var v = lo; v <= hi + 1e-6; v += step) {
+      svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="' + (v === 0 ? '#2c3549' : '#1d2433') + '" stroke-width="1"/>' +
+        '<text x="' + (L - 8) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + signed(v) + '</text>';
+    }
+    var every = Math.max(1, Math.ceil(N / (W < 520 ? 4 : 8)));
+    for (var i = 0; i < N; i += every) svg += '<text x="' + X(i) + '" y="' + (H - 6) + '" text-anchor="middle">#' + matches[i].n + '</text>';
+    raceData.forEach(function (line, s) {
+      svg += '<path d="' + line.map(function (v, j) { return (j ? 'L' : 'M') + X(j).toFixed(1) + ' ' + Y(v).toFixed(1); }).join('') + '" fill="none" stroke="' + RACE_COLORS[s] + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+    });
+    svg += '<line class="hov" y1="' + T + '" y2="' + (H - B) + '" stroke="#2c3549" visibility="hidden"/>';
+    el.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Очки топ-5 игроков по ходу сезона">' + svg + '</svg><div class="chart-tip" hidden></div>';
+    var box = el.querySelector('svg'), hov = box.querySelector('.hov'), tip = el.querySelector('.chart-tip');
+    function move(ev) {
+      var r = box.getBoundingClientRect(), k = Math.max(0, Math.min(N - 1, Math.round(((ev.clientX - r.left) * (W / r.width) - L) / (W - L - R) * (N - 1))));
+      hov.setAttribute('visibility', 'visible'); hov.setAttribute('x1', X(k)); hov.setAttribute('x2', X(k));
+      var list = raceTop.map(function (s, i) { return { n: s.name, c: RACE_COLORS[i], v: raceData[i][k] }; }).sort(function (a, b) { return b.v - a.v; });
+      tip.innerHTML = '<span class="muted">После игры #' + matches[k].n + '</span>' + list.map(function (x) {
+        return '<span class="rw"><i style="background:' + x.c + '"></i>' + esc(x.n) + '<b>' + signed(x.v) + '</b></span>';
+      }).join('');
+      tip.hidden = false;
+      var tw = tip.offsetWidth, x = X(k) + 28;
+      tip.style.left = (x + tw > el.clientWidth ? Math.max(4, x - tw - 28) : x) + 'px';
+    }
+    box.addEventListener('pointermove', move);
+    box.addEventListener('pointerdown', move);
+    box.addEventListener('pointerleave', function () { hov.setAttribute('visibility', 'hidden'); tip.hidden = true; });
+  }
+  window.addEventListener('resize', function () { drawRace(); });
+
+  // ---------- Player card: a picture for Discord, drawn in the browser ----------
+  function playerCard(s) {
+    var msg = document.getElementById('pc-msg'), portrait = null, url = s.mainHero && HERO_ICON[s.mainHero];
+    function go() { cardDraw(s, portrait, msg); }
+    Promise.all([new Promise(function (done) {
+      if (!url) { done(); return; }
+      var im = new Image();
+      im.onload = function () { portrait = im; done(); };
+      im.onerror = function () { done(); };
+      im.src = url;
+    })].concat(document.fonts && document.fonts.load ? [document.fonts.load('42px "Russo One"'), document.fonts.load('600 18px "Exo 2"')] : [])).then(go, go);
+  }
+  function cardDraw(s, portrait, msg) {
+    var W = 900, H = 1200, M = 44, F = '"Exo 2", "Segoe UI", sans-serif', FD = '"Russo One", "Arial Black", sans-serif';
+    var metal = s.place === 1 ? '#ffc94a' : s.place === 2 ? '#c8d6ea' : s.place === 3 ? '#f0a868' : '#2f9bff';
+    var cv = document.createElement('canvas'), x = cv.getContext('2d');
+    cv.width = W; cv.height = H;
+    x.fillStyle = '#07090f'; x.fillRect(0, 0, W, H);
+    var g = x.createRadialGradient(W / 2, 400, 40, W / 2, 400, 620);
+    g.addColorStop(0, metal + '3d'); g.addColorStop(1, metal + '00');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    x.strokeStyle = metal; x.lineWidth = 3; x.strokeRect(M / 2, M / 2, W - M, H - M);
+    x.textBaseline = 'alphabetic';
+    x.textAlign = 'left'; x.fillStyle = metal; x.font = '104px ' + FD; x.fillText(String(s.place), M + 14, M + 118);
+    x.font = '600 20px ' + F; x.fillStyle = '#8a94aa'; x.fillText('место из ' + rows.length, M + 16, M + 150);
+    x.textAlign = 'right'; x.font = '30px ' + FD; x.fillStyle = '#f2f4f8'; x.fillText('IMMORTAL', W - M - 14, M + 60);
+    x.font = '600 16px ' + F; x.fillStyle = '#8a94aa'; x.fillText('NARUTO LEGEND 3.0', W - M - 14, M + 86);
+    var P = 340, px = (W - P) / 2, py = 214;
+    x.fillStyle = '#131826'; x.fillRect(px, py, P, P);
+    if (portrait) { x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high'; x.drawImage(portrait, px, py, P, P); }
+    x.strokeStyle = metal; x.lineWidth = 2; x.strokeRect(px, py, P, P);
+    x.textAlign = 'center'; x.fillStyle = '#f2f4f8';
+    var fs = 66; x.font = fs + 'px ' + FD;
+    while (fs > 28 && x.measureText(s.name).width > W - M * 2 - 40) { fs -= 2; x.font = fs + 'px ' + FD; }
+    x.fillText(s.name, W / 2, 640);
+    var sub = (s.champs && s.champs.length) ? 'Лучший ' + s.champs.slice(0, 2).join(', ') : s.mainHero ? 'Чаще всего: ' + s.mainHero : '';
+    x.font = '600 24px ' + F; x.fillStyle = s.champs && s.champs.length ? '#ffc94a' : '#c4cbda'; x.fillText(sub, W / 2, 684);
+    var cells = [
+      ['ОЧКИ', signed(s.pts)], ['ВИНРЕЙТ', pct(s.w, s.g)], ['ИГРЫ', s.w + ' – ' + s.l],
+      ['KDA', s.sg ? s.ratio.toFixed(2).replace('.', ',') : '—'], ['MVP / SVP', s.mvp + ' / ' + s.svp], ['СР. УРОН', s.sg ? fmt(s.dmg / s.sg) : '—']
+    ];
+    var cw = (W - M * 2 - 32) / 3, ch = 134, top = 730;
+    cells.forEach(function (c, i) {
+      var cx = M + 16 + (i % 3) * cw, cy = top + Math.floor(i / 3) * ch;
+      x.fillStyle = '#0f131d'; x.fillRect(cx + 5, cy, cw - 10, ch - 10);
+      x.strokeStyle = '#1d2433'; x.lineWidth = 1; x.strokeRect(cx + 5.5, cy + 0.5, cw - 11, ch - 11);
+      x.textAlign = 'center'; x.font = '600 17px ' + F; x.fillStyle = '#8a94aa'; x.fillText(c[0], cx + cw / 2, cy + 42);
+      var f = 42; x.font = f + 'px ' + FD;
+      while (f > 20 && x.measureText(c[1]).width > cw - 34) { f -= 2; x.font = f + 'px ' + FD; }
+      x.fillStyle = '#f2f4f8'; x.fillText(c[1], cx + cw / 2, cy + 94);
+    });
+    var form = s.form.slice(-5), sq = 42, gap = 10, fx0 = W / 2 - (form.length * sq + (form.length - 1) * gap) / 2, fy = 1016;
+    form.forEach(function (r, i) {
+      var cx = fx0 + i * (sq + gap);
+      x.fillStyle = r === 'w' ? '#4fd18b' : '#131826'; x.fillRect(cx, fy, sq, sq);
+      x.strokeStyle = r === 'w' ? '#4fd18b' : '#ff6b7f'; x.lineWidth = 1.5; x.strokeRect(cx + 0.75, fy + 0.75, sq - 1.5, sq - 1.5);
+      x.textAlign = 'center'; x.font = '700 20px ' + F; x.fillStyle = r === 'w' ? '#07090f' : '#ff6b7f'; x.fillText(r === 'w' ? 'В' : 'П', cx + sq / 2, fy + 29);
+    });
+    x.textAlign = 'center'; x.font = '500 18px ' + F; x.fillStyle = '#8a94aa';
+    x.fillText('youkatakirin.github.io/ratingamenarutolegend', W / 2, H - 62);
+    x.font = '500 15px ' + F; x.fillText('после игры #' + lastN, W / 2, H - 38);
+    cv.toBlob(function (b) {
+      if (!b) { if (msg) msg.textContent = 'Не получилось сохранить картинку'; return; }
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(b); a.download = 'immortal-' + slugFor(s.name).replace(/^p-/, '') + '.png';
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+      if (msg) msg.textContent = 'Карточка сохранена';
+    });
+  }
+  document.getElementById('view-player').addEventListener('click', function (e) {
+    if (e.target.closest('#pc-png') && chartFor) playerCard(chartFor);
+  });
+
   // ---------- Result form: builds the message for the results channel ----------
   (function () {
     var form = document.getElementById('fm'), $ = function (id) { return document.getElementById(id); };
@@ -11610,6 +11908,7 @@ img { max-width: 100%; }
       if (a.getAttribute('data-tab') === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
     fxMoveInk();
+    if (view === 'table') drawRace();
     if (shown && shown !== view) fxEnter(view, shown, heroWas && !hero.hidden);
     shown = view;
   }
