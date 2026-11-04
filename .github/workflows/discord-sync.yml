@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
+    inputs:
+      ac:
+        description: "Только показать разбор матчей ac, например 7640,7648"
+        required: false
 
 permissions:
   contents: write
@@ -21,7 +25,8 @@ jobs:
       - name: Read the results channel
         env:
           DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
-        run: python3 tools/discord_sync.py
+          AC_IDS: ${{ inputs.ac }}
+        run: python3 tools/discord_sync.py ${AC_IDS:+--ac "$AC_IDS"}
       - name: Commit new posts
         run: |
           git add discord

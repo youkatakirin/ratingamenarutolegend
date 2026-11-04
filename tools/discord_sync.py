@@ -8,10 +8,18 @@ Writes:
   discord/files/       the screenshots in full size
   discord/next.json    number of the next game, read by the result form
 
+Each result post also gets "ac": the match found on ac.narutolegend.dog by time, nicks
+and bans (null until it appears there). Nothing here decides anything: the numbers wait
+for a person or Claude to enter them.
+
+    python3 tools/discord_sync.py --ac 7648   prints how a match page is read
+
 Post numbers come from the order of result posts, not from what the organizer typed:
 "typed" keeps the typed number so a mismatch can be seen. Posts of games already in
 index.html are removed on the next run, with their screenshots.
 """
+import calendar
+import html.parser
 import json
 import os
 import re
@@ -27,6 +35,10 @@ INBOX = os.path.join(ROOT, "discord", "inbox.json")
 NEXT = os.path.join(ROOT, "discord", "next.json")
 FILES = os.path.join(ROOT, "discord", "files")
 AGENT = "ImmortalRating (https://github.com/youkatakirin/ratingamenarutolegend, 1.0)"
+AC = os.environ.get("AC_SITE", "https://ac.narutolegend.dog")
+AC_WINDOW = 45 * 60      # a match ends within minutes of its post
+AC_GIVE_UP = 24 * 3600   # stop looking for a post this old
+AC_SCAN = 60             # newest match pages to look through per run
 MAX_FILE = 15 * 1024 * 1024
 RESULT = re.compile(r"Рейтинговая\s+игра|Rating\s+Games?", re.I)
 TYPED = re.compile(r"(?<![<\d])#\s*(\d{1,4})\b")
@@ -139,6 +151,121 @@ def prune(state, site_last):
         state["after"] = str(edge)
 
 
+class Page(html.parser.HTMLParser):
+    """Text of a page without scripts, plus its table rows."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.skip = 0
+        self.text = []
+        self.rows = []
+        self.cell = None
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ("script", "style"):
+            self.skip += 1
+        elif tag == "tr":
+            self.rows.append([])
+        elif tag == "td" and self.rows:
+            self.cell = []
+
+    def handle_endtag(self, tag):
+        if tag in ("script", "style"):
+            self.skip = max(0, self.skip - 1)
+        elif tag == "td" and self.cell is not None:
+            self.rows[-1].append(re.sub(r"\s+", " ", "".join(self.cell)).strip())
+            self.cell = None
+
+    def handle_data(self, data):
+        if self.skip:
+            return
+        self.text.append(data)
+        if self.cell is not None:
+            self.cell.append(data)
+
+
+def number_of(text):
+    digits = re.sub(r"\D", "", text)
+    return int(digits) if digits else 0
+
+
+def ac_match(src):
+    """One match page as data, or None when it has no stats yet."""
+    page = Page()
+    try:
+        page.feed(get(f"{AC}/match/{src}").decode("utf8", "replace"))
+    except urllib.error.HTTPError:
+        return None
+    text = re.sub(r"\s+", " ", " ".join(page.text))
+    head = re.search(r"(\d{1,2})\.(\d{2})\.(\d{4}),\s*(\d{2}):(\d{2}):\d{2}\s*Матч\s*#\d+\s*(?:(\d+)\s*:\s*(\d+)\s*убийства\s*)?(\d+:\d{2})?", text)
+    if not head:
+        return None
+    day, month, year, hour, minute = (int(x) for x in head.group(1, 2, 3, 4, 5))
+    players = []
+    for r in page.rows:
+        if len(r) < 7 or "/" not in r[2]:
+            continue
+        kda = [int(x) for x in r[2].split("/")]
+        hero = r[1][2:] if r[1] != "—" else ""
+        if not hero or not sum(kda) + number_of(r[3]):
+            continue  # a spectator's slot
+        players.append({
+            "nick": re.sub(r"\s*MVP$", "", r[0]),
+            "mvp": r[0].endswith("MVP"),
+            "hero": hero, "kda": kda, "cs": number_of(r[3]), "gold": number_of(r[4]),
+            "dmg": number_of(r[5]), "lvl": number_of(r[6]),
+        })
+    if not players:
+        return None
+    return {
+        "src": src,
+        "ends_utc": calendar.timegm((year, month, day, hour - 3, minute, 0)),  # the site shows Moscow time
+        "kills": [int(head.group(6)), int(head.group(7))] if head.group(6) else None,
+        "duration_ac": head.group(8),
+        "players": players,
+    }
+
+
+def post_time(entry):
+    stamp = re.match(r"(\d+)-(\d+)-(\d+)T(\d+):(\d+)", entry["time"])
+    return calendar.timegm(tuple(int(x) for x in stamp.groups()) + (0,))
+
+
+def fits(entry, m):
+    """Nicks can be spoofed on either side, so a few misses are fine if the bans agree."""
+    text = entry["text"].lower()
+    bans = next((l.lower() for l in text.split("\n") if "баны" in l), "")
+    nicks = sum(p["nick"].lower().strip("_") in text for p in m["players"])
+    heroes = sum(p["hero"].lower() in bans for p in m["players"])
+    return nicks >= 6 or (nicks >= 4 and heroes >= 3)
+
+
+def find_ac(state):
+    """Fill in "ac" for result posts that still miss it."""
+    now = time.time()
+    want = [e for e in state["messages"] if e["result"] and not e.get("ac") and now - post_time(e) < AC_GIVE_UP]
+    if not want:
+        return
+    listing = get(f"{AC}/matches").decode("utf8", "replace")
+    ids = sorted({int(x) for x in re.findall(r"/match/(\d+)", listing)}, reverse=True)
+    if not ids:
+        return
+    floor = max(state.get("ac_after", 0), ids[0] - AC_SCAN)
+    for src in range(ids[0], floor, -1):
+        if not want:
+            break
+        m = ac_match(src)
+        time.sleep(0.2)
+        if not m:
+            continue
+        for e in want:
+            if abs(post_time(e) - m["ends_utc"]) <= AC_WINDOW and fits(e, m):
+                e["ac"] = m
+                state["ac_after"] = max(state.get("ac_after", 0), src)
+                want.remove(e)
+                break
+
+
 def write_if_changed(path, data):
     text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
     old = open(path, encoding="utf8").read() if os.path.exists(path) else ""
@@ -148,6 +275,9 @@ def write_if_changed(path, data):
 
 
 def main():
+    if len(sys.argv) == 3 and sys.argv[1] == "--ac":
+        print(json.dumps([ac_match(int(x)) for x in sys.argv[2].split(",")], ensure_ascii=False))
+        return
     token = os.environ.get("DISCORD_BOT_TOKEN", "").strip()
     if not token:
         print("DISCORD_BOT_TOKEN is not set yet, nothing to do")
@@ -173,6 +303,7 @@ def main():
             "typed": int(typed.group(1)) if typed else None,
             "text": text,
             "files": (old or {}).get("files") or save_files(m),
+            "ac": (old or {}).get("ac"),
         }
         entries.append(e)
     for e in state["messages"]:
@@ -180,6 +311,7 @@ def main():
             drop_files(e)  # the post was deleted in the channel
     state["messages"] = entries
     prune(state, site_last_game())
+    find_ac(state)
     last = number(state)
     write_if_changed(INBOX, state)
     write_if_changed(NEXT, {"next": last + 1})
