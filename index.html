@@ -559,6 +559,67 @@ a.btn { display: inline-block; text-decoration: none; }
 .hd .g .r { text-align: right; }
 @media (max-width: 600px) { .tl-row { grid-template-columns: 52px minmax(0, 1fr); } .tl-lbl { font-size: 24px; } .ava.lg { width: 64px; height: 64px; } .ava.vs-ava { width: 34px; height: 34px; } .vs-nm { gap: 8px; } .hd .g { grid-template-columns: 44px minmax(90px, 1fr) 22px 84px; } .hd .g .dm { display: none; } }
 @media (prefers-reduced-motion: reduce) { .pcard { transition: none; } .r-item.hl { animation: none; } .title { animation: none; } }
+/* Rating over time: place movement, points chart, week summary, 4v4 odds, weekly meta, Hall of Fame */
+.lb { min-width: 1040px; }
+.lb-row { grid-template-columns: 92px minmax(190px, 1fr) 84px 76px 130px 120px 88px 130px; }
+.rk-cell { display: inline-flex; align-items: center; gap: 8px; }
+.mv { font-size: 12px; font-weight: 700; white-space: nowrap; }
+.mv.up { color: var(--win); } .mv.down { color: var(--loss); } .mv.new { color: var(--gold); }
+.chart { position: relative; padding: 12px 14px 8px; }
+.chart svg { display: block; width: 100%; touch-action: pan-y; }
+.chart text { fill: var(--muted); font-size: 12px; font-family: var(--f-body); font-variant-numeric: tabular-nums; }
+.chart .end { fill: var(--ink); font-size: 14px; font-weight: 600; }
+.chart-tip {
+  position: absolute; top: 10px; left: 0; pointer-events: none; display: grid; gap: 1px; padding: 7px 11px; font-size: 13px; white-space: nowrap;
+  background: var(--panel-2); border: 1px solid var(--line-2); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+.chart-tip b { font-weight: 600; }
+.chart-tip .muted { font-size: 12px; }
+.wk-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.wk-bar a.btn { text-decoration: none; }
+.wk-bar a.btn.off { opacity: 0.35; pointer-events: none; }
+.wk-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 680px) { .wk-grid { grid-template-columns: minmax(0, 1fr); } }
+.wk-card { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 4px 16px; align-items: center; padding: 18px 20px; background: var(--panel); border: 1px solid var(--line); }
+.wk-card.best { border-color: rgba(255, 201, 74, 0.55); background: linear-gradient(100deg, rgba(255, 201, 74, 0.09), var(--panel) 55%); }
+.wk-card .pic { grid-row: span 3; }
+.wk-card .pic .ava, .wk-card .pic .hi { width: 76px; height: 76px; margin: 0; font-size: 30px; }
+.wk-card .k { font-size: 13px; font-weight: 600; color: var(--muted); }
+.wk-card .n { font-family: var(--f-display); font-size: 22px; min-width: 0; overflow-wrap: anywhere; }
+.wk-card .n a { text-decoration: none; }
+.wk-card .s { font-size: 14px; color: var(--soft); }
+.wk-card.empty .s { color: var(--muted); }
+.odds-pick { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.odds-team { display: grid; gap: 6px; padding: 12px 14px; background: var(--panel); border: 1px solid var(--line); }
+.odds-team.alliance { border-top: 2px solid var(--ally); } .odds-team.akatsuki { border-top: 2px solid var(--aka); }
+.odds-team b { font-weight: 600; font-size: 14px; }
+.odds-team select { width: 100%; font: inherit; font-size: 14px; color: var(--ink); background: var(--panel-2); border: 1px solid var(--line-2); padding: 7px 9px; }
+.odds-team select:focus-visible { outline: 2px solid var(--ally); outline-offset: 2px; }
+.odds-nums { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.odds-nums span { font-family: var(--f-display); font-size: 30px; font-variant-numeric: tabular-nums; }
+.odds-bar { display: flex; gap: 2px; height: 12px; }
+.odds-bar i { display: block; min-width: 4px; transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+.odds-bar .a { background: var(--ally); } .odds-bar .k { background: var(--aka); }
+.hs.meta-t { min-width: 900px; }
+.meta-t td { vertical-align: middle; }
+.meta-t th, .meta-t td { text-align: left; }
+.meta-t .picks { display: flex; gap: 6px 12px; flex-wrap: wrap; }
+.meta-t .picks span { white-space: nowrap; }
+.fame { position: relative; min-height: min(62vh, 560px); display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at 50% 90%, rgba(255, 201, 74, 0.16), transparent 62%), var(--panel); border: 1px solid rgba(255, 201, 74, 0.4); }
+.fame-wall { position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; gap: 4%; padding: 0 8%; filter: blur(14px); }
+.fp { flex: 1; max-width: 240px; background: linear-gradient(180deg, rgba(255, 231, 166, 0.95), rgba(255, 201, 74, 0.22)); }
+.fp.g { height: 74%; } .fp.s { height: 54%; background: linear-gradient(180deg, rgba(214, 226, 242, 0.9), rgba(200, 214, 234, 0.16)); } .fp.b { height: 42%; background: linear-gradient(180deg, rgba(240, 168, 104, 0.9), rgba(240, 168, 104, 0.16)); }
+.fame-soon { position: relative; text-align: center; display: grid; gap: 8px; padding: 24px; }
+.fame-soon h2 { margin: 0; color: var(--gold); text-shadow: 0 0 18px rgba(255, 201, 74, 0.6); }
+.fame-soon p { margin: 0; font-family: var(--f-display); font-size: clamp(40px, 9vw, 76px); line-height: 1.05; }
+.tabs a.fame-tab { color: var(--gold); text-shadow: 0 0 8px rgba(255, 201, 74, 0.75), 0 0 20px rgba(255, 170, 40, 0.45); }
+@media (prefers-reduced-motion: no-preference) {
+  .tabs a.fame-tab { animation: fame-glow 2.4s ease-in-out infinite; }
+}
+@keyframes fame-glow {
+  0%, 100% { text-shadow: 0 0 6px rgba(255, 201, 74, 0.55), 0 0 14px rgba(255, 170, 40, 0.3); }
+  50% { text-shadow: 0 0 12px rgba(255, 215, 110, 1), 0 0 30px rgba(255, 170, 40, 0.75); }
+}
 /* Motion: everything below answers a click or a tap, nothing runs on its own.
    Signature: the chakra spiral at the point of the click (fxSeal), gold as the only finish metal. */
 .tabs { position: relative; }
@@ -634,9 +695,11 @@ img { max-width: 100%; }
       <a href="#heroes" data-go="heroes" data-tab="heroes">Герои</a>
       <a href="#vs" data-go="vs" data-tab="vs">1 на 1</a>
       <a href="#tier" data-go="tier" data-tab="tier">Тир-лист</a>
+      <a href="#week" data-go="week" data-tab="week">Итоги</a>
       <a href="#records" data-go="records" data-tab="records">Рекорды</a>
       <a href="#rules" data-go="rules" data-tab="rules">Правила</a>
       <a href="#log" data-go="log" data-tab="log">Логи</a>
+      <a href="#fame" data-go="fame" data-tab="fame" class="fame-tab">Зал славы</a>
     </div>
   </div>
 </nav>
@@ -690,6 +753,11 @@ img { max-width: 100%; }
       <p class="note" style="margin:0">Нажми на заголовок столбца, чтобы отсортировать, а на героя — чтобы увидеть, кто на нём играл и в каких играх. Средние K/D/A, урон и крипы — по играм со статистикой, урон по зданиям и полученный урон — по скриншотам итогов.</p>
       <p class="note" style="margin:0" id="hs-unpicked"></p>
     </div>
+    <div class="sec" style="gap:12px">
+      <h3>МЕТА ПО НЕДЕЛЯМ</h3>
+      <div class="panel scroll-x"><table class="hs meta-t" id="meta-t"></table></div>
+      <div class="cols" id="meta-move"></div>
+    </div>
   </section>
 
   <section class="sec" id="view-records" hidden aria-labelledby="h-records">
@@ -715,6 +783,31 @@ img { max-width: 100%; }
       <label for="cmp-b">ИГРОК 2<select id="cmp-b"></select></label>
     </div>
     <div id="cmp-out" class="sec" style="gap:18px"></div>
+    <div class="sec" style="gap:12px;margin-top:24px">
+      <div class="sec-head"><h3>ШАНСЫ 4 НА 4</h3><span class="note">собери составы, сначала стоят команды последней игры</span></div>
+      <div class="odds-pick" id="odds-pick"></div>
+      <div id="odds-out" class="sec" style="gap:12px"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="view-week" hidden aria-labelledby="h-week">
+    <div class="sec-head"><h2 id="h-week">ИТОГИ НЕДЕЛИ</h2><span class="note" id="wk-range"></span></div>
+    <div class="wk-bar">
+      <a class="btn" id="wk-prev"><span>Раньше</span></a>
+      <a class="btn" id="wk-next"><span>Позже</span></a>
+      <button type="button" class="btn primary" id="wk-png"><span>Скачать картинку</span></button>
+      <span class="note" id="wk-msg" role="status"></span>
+    </div>
+    <div class="wk-grid" id="wk-out"></div>
+    <p class="note" style="margin:0" id="wk-sum"></p>
+    <p class="note" style="margin:0">Неделя идёт с понедельника по воскресенье, ночные игры до 6 утра считаются за предыдущий день.</p>
+  </section>
+
+  <section class="sec" id="view-fame" hidden aria-labelledby="h-fame">
+    <div class="fame">
+      <div class="fame-wall" aria-hidden="true"><span class="fp s"></span><span class="fp g"></span><span class="fp b"></span></div>
+      <div class="fame-soon"><h2 id="h-fame">ЗАЛ СЛАВЫ</h2><p>Скоро…</p></div>
+    </div>
   </section>
 
   <section class="sec" id="view-tier" hidden aria-labelledby="h-tier">
@@ -9775,6 +9868,58 @@ img { max-width: 100%; }
     s.place = place;
   });
   rows.forEach(function (s) { slugFor(s.name); });
+
+  // ---------- Season over time ----------
+  function ptsAt(s, n) {
+    var sum = 0;
+    s.games.forEach(function (g) { if (g.m.n <= n) sum += g.total; });
+    extraPens.forEach(function (p) {
+      if (p.p === s.name && (p.match || lastN) <= n) sum += typeof p.points === 'number' ? p.points : -BAN_PTS;
+    });
+    return sum;
+  }
+  // Standings right after game n: same order and shared places as the leaderboard.
+  function rankAt(n) {
+    var list = rows.map(function (s) {
+      var g = s.games.filter(function (x) { return x.m.n <= n; });
+      var w = g.filter(function (x) { return x.won; }).length;
+      return { name: s.name, pts: ptsAt(s, n), g: g.length, wr: g.length ? w / g.length : 0 };
+    }).filter(function (x) { return x.g > 0 || x.pts !== 0; });
+    list.sort(function (a, b) { return b.pts - a.pts || b.wr - a.wr || b.g - a.g || a.name.localeCompare(b.name); });
+    var out = {}, place = 0, last = null;
+    list.forEach(function (x, i) { if (x.pts !== last) { place = i + 1; last = x.pts; } out[x.name] = place; });
+    return out;
+  }
+  (function () {
+    if (matches.length < 2) return;
+    var before = rankAt(matches[matches.length - 2].n);
+    rows.forEach(function (s) {
+      s.placeWas = before[s.name] || 0;
+      s.moved = s.placeWas ? s.placeWas - s.place : 0;
+    });
+  })();
+  function moveChip(s) {
+    if (matches.length < 2) return '';
+    if (!s.placeWas) return '<span class="mv new" title="Первая игра в рейтинге">новый</span>';
+    if (!s.moved) return '';
+    var title = 'До игры #' + lastN + ' было ' + s.placeWas + '-е место';
+    return s.moved > 0
+      ? '<span class="mv up" title="' + title + '">▲' + s.moved + '</span>'
+      : '<span class="mv down" title="' + title + '">▼' + (-s.moved) + '</span>';
+  }
+  // Teammates live in s.mates; opponents are counted here: w = wins of this player over that one.
+  rows.forEach(function (s) { s.foes = {}; });
+  matches.forEach(function (m) {
+    SIDES.forEach(function (side) {
+      var other = side === 'alliance' ? 'akatsuki' : 'alliance', won = m.winner === side;
+      (m[side] || []).forEach(function (x) {
+        (m[other] || []).forEach(function (y) {
+          var t = stats[x.p].foes[y.p] || (stats[x.p].foes[y.p] = { g: 0, w: 0 });
+          t.g++; if (won) t.w++;
+        });
+      });
+    });
+  });
   var withStats = matches.filter(function (m) { return SIDES.some(function (side) { return (m[side] || []).some(function (x) { return x.kda; }); }); }).length;
 
   function gameNote(g) {
@@ -9847,7 +9992,7 @@ img { max-width: 100%; }
     rows.forEach(function (s) {
       var w = Math.round(s.wr * 100);
       html += '<div class="lb-row">' +
-        '<span><span class="rk' + rkCls(s.place) + '">' + s.place + '</span></span>' +
+        '<span class="rk-cell"><span class="rk' + rkCls(s.place) + '">' + s.place + '</span>' + moveChip(s) + '</span>' +
         '<span class="name-cell">' + avatar(s, topCls(s.place)) + plink(s.name, topCls(s.place)) + streakChip(s) + '</span>' +
         '<span class="pts ' + pcls(s.pts) + '">' + signed(s.pts) + '</span>' +
         '<span>' + s.w + ' – ' + s.l + '</span>' +
@@ -10167,6 +10312,71 @@ img { max-width: 100%; }
     return out.join(' ');
   }
 
+  // dir −1: best win rate first (partners); dir 1: worst first (opponents who beat this player).
+  function pairBlock(title, map, dir, empty) {
+    var list = Object.keys(map).filter(function (n) { return map[n].g >= 3 && (dir < 0 || map[n].w < map[n].g - map[n].w); }).sort(function (a, b) {
+      var x = map[a], y = map[b];
+      return dir * (x.w / x.g - y.w / y.g) || y.g - x.g || a.localeCompare(b);
+    }).slice(0, 5);
+    return '<div class="sec" style="gap:10px"><h3>' + title + '</h3><div class="panel list">' + (list.length ? list.map(function (n) {
+      var x = map[n];
+      return '<div class="list-row"><span style="min-width:0">' + plink(n) + '</span><span class="meta">' + pct(x.w, x.g) + '</span><span>' + x.w + ' – ' + (x.g - x.w) + '</span></div>';
+    }).join('') : '<div class="list-row"><span class="muted">' + empty + '</span><span></span><span></span></div>') + '</div></div>';
+  }
+  // Points after each of the player's games; one line, so the section title names it.
+  var chartFor = null;
+  function niceStep(span) {
+    var m = Math.pow(10, Math.floor(Math.log(span || 1) / Math.LN10)), r = span / m;
+    return (r <= 1 ? 1 : r <= 2 ? 2 : r <= 5 ? 5 : 10) * m;
+  }
+  function drawPointsChart() {
+    var el = document.getElementById('pts-chart'), s = chartFor;
+    if (!el || !s || !el.clientWidth) return;
+    var pts = [{ i: 0, v: 0, g: null }].concat(s.games.map(function (g, i) { return { i: i + 1, v: ptsAt(s, g.m.n), g: g }; }));
+    var W = el.clientWidth - 28, H = W < 520 ? 200 : 240, L = 42, R = 16, T = 22, B = 24;
+    var lo = Math.min.apply(null, pts.map(function (p) { return p.v; }).concat(0));
+    var hi = Math.max.apply(null, pts.map(function (p) { return p.v; }).concat(0));
+    var step = niceStep((hi - lo) / 4 || 20);
+    lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+    if (hi === lo) hi = lo + step;
+    function X(i) { return L + (W - L - R) * (pts.length > 1 ? i / (pts.length - 1) : 0); }
+    function Y(v) { return T + (H - T - B) * (1 - (v - lo) / (hi - lo)); }
+    var svg = '';
+    for (var v = lo; v <= hi + 1e-6; v += step) {
+      svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v) + '" y2="' + Y(v) + '" stroke="' + (v === 0 ? '#2c3549' : '#1d2433') + '" stroke-width="1"/>' +
+        '<text x="' + (L - 8) + '" y="' + (Y(v) + 4) + '" text-anchor="end">' + signed(v) + '</text>';
+    }
+    var every = Math.max(1, Math.ceil(pts.length / (W < 520 ? 4 : 8)));
+    for (var i = 1; i < pts.length; i += every) {
+      svg += '<text x="' + X(i) + '" y="' + (H - 6) + '" text-anchor="middle">#' + pts[i].g.m.n + '</text>';
+    }
+    var line = pts.map(function (p, j) { return (j ? 'L' : 'M') + X(p.i).toFixed(1) + ' ' + Y(p.v).toFixed(1); }).join('');
+    var e = pts[pts.length - 1];
+    svg += '<path d="' + line + '" fill="none" stroke="#2f9bff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<circle cx="' + X(e.i) + '" cy="' + Y(e.v) + '" r="4" fill="#2f9bff" stroke="#0f131d" stroke-width="2"/>' +
+      '<text class="end" x="' + (W - R) + '" y="' + Math.max(14, Y(e.v) - 10) + '" text-anchor="end">' + signed(e.v) + '</text>' +
+      '<g class="hov" visibility="hidden"><line y1="' + T + '" y2="' + (H - B) + '" stroke="#2c3549"/><circle r="5" fill="#2f9bff" stroke="#0f131d" stroke-width="2"/></g>';
+    el.innerHTML = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Очки игрока ' + esc(s.name) + ' по играм, сейчас ' + signed(e.v) + '">' + svg + '</svg><div class="chart-tip" hidden></div>';
+    var box = el.querySelector('svg'), hov = box.querySelector('.hov'), tip = el.querySelector('.chart-tip');
+    function move(ev) {
+      var r = box.getBoundingClientRect(), k = Math.round(((ev.clientX - r.left) * (W / r.width) - L) / (W - L - R) * (pts.length - 1));
+      var p = pts[Math.max(0, Math.min(pts.length - 1, k))];
+      hov.setAttribute('visibility', 'visible');
+      hov.firstChild.setAttribute('x1', X(p.i)); hov.firstChild.setAttribute('x2', X(p.i));
+      hov.lastChild.setAttribute('cx', X(p.i)); hov.lastChild.setAttribute('cy', Y(p.v));
+      tip.innerHTML = p.g
+        ? '<b>Игра #' + p.g.m.n + (p.g.x.hero ? ', ' + esc(p.g.x.hero) : '') + '</b><span>' + signed(p.g.total) + ' за игру, всего ' + signed(p.v) + '</span><span class="muted">' + esc(dmy(p.g.m.date.slice(0, 10))) + '</span>'
+        : '<b>Начало сезона</b>';
+      tip.hidden = false;
+      var tw = tip.offsetWidth, x = X(p.i) + 14 + 14;
+      tip.style.left = (x + tw > el.clientWidth ? Math.max(4, x - tw - 28) : x) + 'px';
+    }
+    box.addEventListener('pointermove', move);
+    box.addEventListener('pointerdown', move);
+    box.addEventListener('pointerleave', function () { hov.setAttribute('visibility', 'hidden'); tip.hidden = true; });
+  }
+  window.addEventListener('resize', function () { if (!document.getElementById('view-player').hidden) drawPointsChart(); });
+
   function renderPlayer(name) {
     var s = stats[name];
     var view = document.getElementById('view-player');
@@ -10199,6 +10409,8 @@ img { max-width: 100%; }
       (s.mainHero ? '<span class="muted">чаще всего: <b style="color:var(--ink);font-weight:600">' + esc(s.mainHero) + '</b></span>' : '') + '</div></div>' +
       '<div class="tiles">' + tiles.map(function (t) { return '<div class="tile"><span class="k">' + t[0] + '</span><span class="v">' + t[1] + '</span><span class="s">' + esc(t[2]) + '</span></div>'; }).join('') + '</div>';
     html += '<div class="sec" style="gap:10px"><h3>ДОСЬЕ</h3><div class="panel" style="padding:14px 16px"><p style="margin:0;line-height:1.65">' + esc(dossier(s)) + '</p></div></div>';
+    html += '<div class="sec" style="gap:10px"><h3>ОЧКИ ПО ИГРАМ</h3><div class="panel chart" id="pts-chart"></div></div>';
+    chartFor = s;
     if (s.sg < s.g) html += '<p class="note" style="margin:0">K/D/A и урон посчитаны по ' + s.sg + ' из ' + s.g + ' ' + plural(s.g, 'игры', 'игр', 'игр') + ': для остальных статистики нет.</p>';
 
     // sides + heroes + mates
@@ -10224,6 +10436,8 @@ img { max-width: 100%; }
       }).join('') + '</div></div>';
     html += '</div>';
 
+    html += '<div class="cols">' + pairBlock('ЛУЧШИЕ СВЯЗКИ', s.mates, -1, 'Пока нет напарников с 3 совместными играми') +
+      pairBlock('НЕУДОБНЫЕ СОПЕРНИКИ', s.foes, 1, 'Пока нет соперников с 3 играми друг против друга') + '</div>';
     var pens = penaltyLog.filter(function (p) { return p.p === s.name; });
     if (pens.length) {
       html += '<div class="sec" style="gap:10px"><h3>НАКАЗАНИЯ</h3><div class="panel list">' + pens.map(function (p) {
@@ -10817,6 +11031,270 @@ img { max-width: 100%; }
     });
   })();
 
+  // ---------- Weeks: Monday to Sunday by the time on the site (UTC+5) ----------
+  function dayShift(key, days) {
+    var d = new Date(key + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + days);
+    return d.toISOString().slice(0, 10);
+  }
+  // A night session belongs to the evening it started: games before 6:00 count for the previous day.
+  function weekOf(iso) {
+    var d = new Date(iso + ':00Z');
+    d.setUTCHours(d.getUTCHours() - 6);
+    return dayShift(d.toISOString().slice(0, 10), -((d.getUTCDay() + 6) % 7));
+  }
+  var weeks = [];
+  matches.forEach(function (m) {
+    var key = weekOf(m.date), w = weeks[weeks.length - 1];
+    if (!w || w.key !== key) { w = { key: key, games: [] }; weeks.push(w); }
+    w.games.push(m);
+  });
+  function weekLabel(w) {
+    var a = w.key.split('-'), b = dayShift(w.key, 6).split('-');
+    return a[2] + '.' + a[1] + ' – ' + b[2] + '.' + b[1];
+  }
+  function weekStats(w) {
+    var first = w.games[0].n, last = w.games[w.games.length - 1].n;
+    var was = first > matches[0].n ? rankAt(first - 1) : {}, now = rankAt(last), per = {}, heroes = {};
+    var sum = { games: w.games.length, a: 0, k: 0, fp: 0 };
+    function one(name) { return per[name] || (per[name] = { name: name, pts: 0, w: 0, l: 0 }); }
+    w.games.forEach(function (m) {
+      if (m.winner === 'alliance') sum.a++; else sum.k++;
+      if (m.firstPick === m.winner) sum.fp++;
+      SIDES.forEach(function (side) {
+        (m[side] || []).forEach(function (x) {
+          var g = gameOf[m.n + '|' + x.p], won = m.winner === side, p = one(x.p);
+          p.pts += g ? g.total : x.d;
+          if (won) p.w++; else p.l++;
+          if (x.hero) { var h = heroes[x.hero] || (heroes[x.hero] = { name: x.hero, g: 0, w: 0 }); h.g++; if (won) h.w++; }
+        });
+      });
+    });
+    extraPens.forEach(function (p) {
+      if (p.match >= first && p.match <= last) one(p.p).pts += typeof p.points === 'number' ? p.points : -BAN_PTS;
+    });
+    var list = Object.keys(per).map(function (n) { return per[n]; });
+    function by(f) { return list.slice().sort(function (a, b) { return f(a, b) || a.name.localeCompare(b.name); })[0]; }
+    var best = by(function (a, b) { return b.pts - a.pts || b.w - a.w; });
+    var worst = by(function (a, b) { return a.pts - b.pts || b.l - a.l; });
+    var climbs = list.filter(function (p) { return was[p.name] && now[p.name] < was[p.name]; });
+    climbs.sort(function (a, b) { return (was[b.name] - now[b.name]) - (was[a.name] - now[a.name]) || b.pts - a.pts || a.name.localeCompare(b.name); });
+    var hs = Object.keys(heroes).map(function (n) { return heroes[n]; });
+    var pool = hs.filter(function (h) { return h.g >= 2; });
+    if (!pool.length) pool = hs;
+    pool.sort(function (a, b) { return b.w - a.w || b.w / b.g - a.w / a.g || b.g - a.g || a.name.localeCompare(b.name, 'ru'); });
+    return {
+      sum: sum, best: best, worst: worst.pts < 0 ? worst : null,
+      climb: climbs[0] ? { p: climbs[0], from: was[climbs[0].name], to: now[climbs[0].name] } : null,
+      hero: pool[0] || null
+    };
+  }
+  function weekCards(d) {
+    function rec(p) { return p.w + ' – ' + p.l; }
+    return [
+      { cls: 'best', k: 'Игрок недели', p: d.best, line: signed(d.best.pts) + ' очков, ' + rec(d.best) },
+      d.climb ? { k: 'Рост недели', p: d.climb.p, line: 'с ' + d.climb.from + '-го на ' + d.climb.to + '-е место, ' + signed(d.climb.p.pts) }
+        : { k: 'Рост недели', line: 'Никто не поднялся в таблице' },
+      d.worst ? { k: 'Провал недели', p: d.worst, line: signed(d.worst.pts) + ' очков, ' + rec(d.worst) }
+        : { k: 'Провал недели', line: 'Никто не ушёл в минус' },
+      d.hero ? { k: 'Герой недели', hero: d.hero.name, line: d.hero.w + ' – ' + (d.hero.g - d.hero.w) + ', винрейт ' + pct(d.hero.w, d.hero.g) }
+        : { k: 'Герой недели', line: 'Нет данных о героях' }
+    ];
+  }
+  var weekNow = null;
+  function renderWeek(key) {
+    if (!weeks.length) return;
+    var i = weeks.length - 1;
+    weeks.forEach(function (w, j) { if (w.key === key) i = j; });
+    var w = weeks[i], d = weekStats(w), out = document.getElementById('wk-out');
+    weekNow = { w: w, d: d };
+    document.getElementById('wk-range').textContent = weekLabel(w);
+    out.innerHTML = weekCards(d).map(function (c) {
+      var who = c.p ? stats[c.p.name] : null;
+      var pic = who ? avatar(who, topCls(who.place)) : c.hero ? heroPic(c.hero) : '<span class="hi none"></span>';
+      var name = who ? plink(who.name) : c.hero ? esc(c.hero) : '—';
+      return '<div class="wk-card' + (c.cls ? ' ' + c.cls : '') + (who || c.hero ? '' : ' empty') + '"><span class="pic">' + pic + '</span><span class="k">' + c.k + '</span><span class="n">' + name + '</span><span class="s">' + esc(c.line) + '</span></div>';
+    }).join('');
+    document.getElementById('wk-sum').textContent = weekSummary(d);
+    [['wk-prev', weeks[i - 1]], ['wk-next', weeks[i + 1]]].forEach(function (x) {
+      var a = document.getElementById(x[0]), to = x[1] ? 'week~' + x[1].key : '';
+      a.classList.toggle('off', !to);
+      if (to) { a.setAttribute('href', '#' + to); a.setAttribute('data-go', to); a.removeAttribute('aria-disabled'); }
+      else { a.removeAttribute('href'); a.removeAttribute('data-go'); a.setAttribute('aria-disabled', 'true'); }
+    });
+    if (shown === 'week') fxPop(out);
+  }
+  function weekSummary(d) {
+    var s = d.sum;
+    return s.games + ' ' + plural(s.games, 'игра', 'игры', 'игр') + ', Альянс ' + s.a + ' : ' + s.k + ' Акацуки, первый пик выиграл ' + s.fp + ' из ' + s.games;
+  }
+  // The card for Discord: drawn in the browser, like the tier list picture.
+  function weekImage() {
+    var cur = weekNow; if (!cur) return;
+    var cards = weekCards(cur.d), imgs = [];
+    Promise.all(cards.map(function (c, i) {
+      var name = c.hero || (c.p && stats[c.p.name].mainHero), u = name && HERO_ICON[name];
+      return new Promise(function (done) {
+        if (!u) { done(); return; }
+        var im = new Image();
+        im.onload = function () { imgs[i] = im; done(); };
+        im.onerror = function () { done(); };
+        im.src = u;
+      });
+    }).concat(document.fonts && document.fonts.load ? [document.fonts.load('42px "Russo One"'), document.fonts.load('600 18px "Exo 2"')] : []))
+      .then(function () { weekDraw(cur, cards, imgs); }, function () { weekDraw(cur, cards, imgs); });
+  }
+  function weekDraw(cur, cards, imgs) {
+    var W = 1200, H = 675, PAD = 36, GAP = 16, F = '"Exo 2", "Segoe UI", sans-serif', FD = '"Russo One", "Arial Black", sans-serif';
+    var cv = document.createElement('canvas'), x = cv.getContext('2d');
+    cv.width = W; cv.height = H;
+    x.fillStyle = '#07090f'; x.fillRect(0, 0, W, H);
+    var g = x.createLinearGradient(PAD, 0, PAD + 620, 0);
+    g.addColorStop(0, '#2f9bff'); g.addColorStop(0.5, '#9a6bff'); g.addColorStop(1, '#ff3a5c');
+    x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+    x.font = '44px ' + FD; x.fillStyle = g; x.fillText('ИТОГИ НЕДЕЛИ', PAD, 80);
+    x.textAlign = 'right'; x.font = '600 20px ' + F; x.fillStyle = '#c4cbda'; x.fillText(weekLabel(cur.w), W - PAD, 62);
+    x.font = '600 15px ' + F; x.fillStyle = '#8a94aa'; x.fillText('IMMORTAL, NARUTO LEGEND 3.0', W - PAD, 84);
+    var cw = (W - PAD * 2 - GAP) / 2, ch = 214, top = 112, P = 118;
+    cards.forEach(function (c, i) {
+      var cx = PAD + (i % 2) * (cw + GAP), cy = top + Math.floor(i / 2) * (ch + GAP), has = c.p || c.hero;
+      x.fillStyle = '#0f131d'; x.fillRect(cx, cy, cw, ch);
+      x.strokeStyle = c.cls ? 'rgba(255,201,74,0.65)' : '#1d2433'; x.lineWidth = 1; x.strokeRect(cx + 0.5, cy + 0.5, cw - 1, ch - 1);
+      var px = cx + 22, py = cy + (ch - P) / 2;
+      x.fillStyle = '#131826'; x.fillRect(px, py, P, P);
+      if (imgs[i]) x.drawImage(imgs[i], px, py, P, P);
+      x.strokeStyle = '#2c3549'; x.strokeRect(px + 0.5, py + 0.5, P - 1, P - 1);
+      var tx = px + P + 22, maxW = cw - P - 66, name = c.p ? c.p.name : c.hero || '—', fs = 34;
+      x.textAlign = 'left';
+      x.font = '600 17px ' + F; x.fillStyle = '#8a94aa'; x.fillText(c.k, tx, cy + 64);
+      x.font = fs + 'px ' + FD;
+      while (fs > 18 && x.measureText(name).width > maxW) { fs -= 2; x.font = fs + 'px ' + FD; }
+      x.fillStyle = c.cls ? '#ffc94a' : '#f2f4f8'; x.fillText(name, tx, cy + 108);
+      x.font = '600 18px ' + F; x.fillStyle = has ? '#c4cbda' : '#8a94aa';
+      var line = c.line;
+      while (x.measureText(line).width > maxW && line.length > 4) line = line.slice(0, -2);
+      x.fillText(line === c.line ? line : line + '…', tx, cy + 142);
+    });
+    x.textAlign = 'left'; x.font = '500 16px ' + F; x.fillStyle = '#c4cbda'; x.fillText(weekSummary(cur.d), PAD, H - 26);
+    x.textAlign = 'right'; x.fillStyle = '#8a94aa'; x.fillText('youkatakirin.github.io/ratingamenarutolegend', W - PAD, H - 26);
+    cv.toBlob(function (b) {
+      var msg = document.getElementById('wk-msg');
+      if (!b) { msg.textContent = 'Не получилось сохранить картинку'; return; }
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(b); a.download = 'itogi-nedeli-' + cur.w.key + '.png';
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+      msg.textContent = 'Картинка сохранена';
+    });
+  }
+  document.getElementById('wk-png').addEventListener('click', weekImage);
+
+  // ---------- Odds 4v4: team strength replayed over the whole season (Elo, K 24, start 1500) ----------
+  var elo = {};
+  matches.forEach(function (m) {
+    function r(n) { return elo[n] === undefined ? 1500 : elo[n]; }
+    function team(side) { return (m[side] || []).reduce(function (a, x) { return a + r(x.p); }, 0) / Math.max(1, (m[side] || []).length); }
+    var ea = 1 / (1 + Math.pow(10, (team('akatsuki') - team('alliance')) / 400));
+    var d = 24 * ((m.winner === 'alliance' ? 1 : 0) - ea);
+    (m.alliance || []).forEach(function (x) { elo[x.p] = r(x.p) + d; });
+    (m.akatsuki || []).forEach(function (x) { elo[x.p] = r(x.p) - d; });
+  });
+  (function () {
+    var box = document.getElementById('odds-pick'), last = matches[matches.length - 1];
+    if (!last) return;
+    function team(side, label) {
+      var picks = (last[side] || []).slice(0, 4);
+      var sel = '';
+      for (var i = 0; i < 4; i++) {
+        var cur = picks[i] ? picks[i].p : (rows[i] || {}).name;
+        sel += '<select aria-label="' + label + ', игрок ' + (i + 1) + '" data-side="' + side + '">' + rows.map(function (s) {
+          return '<option value="' + esc(s.name) + '"' + (s.name === cur ? ' selected' : '') + '>' + s.place + '. ' + esc(s.name) + '</option>';
+        }).join('') + '</select>';
+      }
+      return '<div class="odds-team ' + side + '"><b class="' + (side === 'alliance' ? 'side-a' : 'side-k') + '">' + label + '</b>' + sel + '</div>';
+    }
+    box.innerHTML = team('alliance', 'Альянс') + team('akatsuki', 'Акацуки');
+    function names(side) { return [].map.call(box.querySelectorAll('select[data-side="' + side + '"]'), function (s) { return s.value; }); }
+    function draw() {
+      var A = names('alliance'), K = names('akatsuki'), all = A.concat(K), out = document.getElementById('odds-out');
+      if (all.some(function (n, i) { return all.indexOf(n) !== i; })) {
+        out.innerHTML = '<p class="muted" style="margin:0">Выбери 8 разных игроков.</p>'; return;
+      }
+      function power(t) { return t.reduce(function (a, n) { return a + (elo[n] === undefined ? 1500 : elo[n]); }, 0) / t.length; }
+      var pa = power(A), pk = power(K), ea = 1 / (1 + Math.pow(10, (pk - pa) / 400)), wa = Math.round(ea * 100);
+      function mates(t) {
+        var w = 0, l = 0;
+        t.forEach(function (n, i) { t.slice(i + 1).forEach(function (o) { var x = stats[n].mates[o]; if (x) { w += x.w; l += x.g - x.w; } }); });
+        return w + ' – ' + l;
+      }
+      var fw = 0, fl = 0;
+      A.forEach(function (n) { K.forEach(function (o) { var x = stats[n].foes[o]; if (x) { fw += x.w; fl += x.g - x.w; } }); });
+      var thin = all.filter(function (n) { return stats[n].g < 5; });
+      out.innerHTML = '<div class="panel" style="padding:14px 16px;display:grid;gap:8px">' +
+        '<div class="odds-nums"><span class="side-a">' + wa + '%</span><span class="side-k">' + (100 - wa) + '%</span></div>' +
+        '<div class="odds-bar" role="img" aria-label="Шансы: Альянс ' + wa + '%, Акацуки ' + (100 - wa) + '%"><i class="a" style="width:' + wa + '%"></i><i class="k" style="width:' + (100 - wa) + '%"></i></div>' +
+        '</div><div class="panel list">' +
+        '<div class="list-row"><span>Сила команды</span><span class="side-a">' + Math.round(pa) + '</span><span class="side-k">' + Math.round(pk) + '</span></div>' +
+        '<div class="list-row"><span>Пары в команде, победы и поражения вместе</span><span class="side-a">' + mates(A) + '</span><span class="side-k">' + mates(K) + '</span></div>' +
+        '<div class="list-row"><span>Победы в личных встречах этих игроков</span><span class="side-a">' + fw + '</span><span class="side-k">' + fl + '</span></div></div>' +
+        '<p class="note" style="margin:0">Сила считается по всем играм сезона: победа над сильными даёт больше, чем над слабыми. Это оценка, а не гарантия.' +
+        (thin.length ? ' Меньше 5 игр: ' + esc(thin.join(', ')) : '') + '</p>';
+    }
+    box.addEventListener('change', draw);
+    draw();
+  })();
+
+  // ---------- Meta by week ----------
+  (function () {
+    function heroCount(w) {
+      var map = {}, slots = 0;
+      w.games.forEach(function (m) {
+        SIDES.forEach(function (side) {
+          (m[side] || []).forEach(function (x) {
+            if (!x.hero) return;
+            slots++;
+            var h = map[x.hero] || (map[x.hero] = { name: x.hero, g: 0, w: 0 });
+            h.g++; if (m.winner === side) h.w++;
+          });
+        });
+      });
+      return { map: map, list: Object.keys(map).map(function (k) { return map[k]; }), games: slots / 8 };
+    }
+    function tag(h, text) { return '<span>' + heroImg(h.name, 'sm') + esc(h.name) + ' <span class="muted">' + text + '</span></span>'; }
+    var counted = weeks.map(function (w) { return { w: w, c: heroCount(w) }; });
+    var body = counted.slice().reverse().map(function (r) {
+      var w = r.w, c = r.c, fp = w.games.filter(function (m) { return m.firstPick === m.winner; }).length;
+      var a = w.games.filter(function (m) { return m.winner === 'alliance'; }).length;
+      var tm = w.games.filter(function (m) { return m.duration; }).map(function (m) { var p = m.duration.split(':'); return +p[0] * 60 + +p[1]; });
+      var top = c.list.slice().sort(function (x, y) { return y.g - x.g || y.w - x.w || x.name.localeCompare(y.name, 'ru'); }).slice(0, 3);
+      var wr = c.list.filter(function (h) { return h.g >= 3; }).sort(function (x, y) { return y.w / y.g - x.w / x.g || y.g - x.g; })[0];
+      return '<tr><td>' + esc(weekLabel(w)) + '</td><td>' + w.games.length + '</td><td>' + fp + ' из ' + w.games.length + '</td><td>' + a + ' : ' + (w.games.length - a) + '</td><td>' +
+        (tm.length ? mmss(tm.reduce(function (s, v) { return s + v; }, 0) / tm.length) : '—') + '</td><td><div class="picks">' +
+        top.map(function (h) { return tag(h, h.g + ' ' + plural(h.g, 'игра', 'игры', 'игр')); }).join('') + '</div></td><td>' +
+        (wr ? tag(wr, pct(wr.w, wr.g)) : '<span class="muted">мало игр</span>') + '</td></tr>';
+    }).join('');
+    document.getElementById('meta-t').innerHTML = '<thead><tr><th>НЕДЕЛЯ</th><th>ИГРЫ</th><th>ПЕРВЫЙ ПИК</th><th>АЛЬЯНС : АКАЦУКИ</th><th>СРЕДНЯЯ ИГРА</th><th>ЧАЩЕ БРАЛИ</th><th>ЛУЧШИЙ ВИНРЕЙТ</th></tr></thead><tbody>' + body + '</tbody>';
+    var move = document.getElementById('meta-move');
+    if (counted.length < 2) { move.hidden = true; return; }
+    var now = counted[counted.length - 1], was = counted[counted.length - 2];
+    function share(c, n) { var h = c.map[n]; return c.games ? (h ? h.g : 0) / c.games : 0; }
+    var diff = Object.keys(now.c.map).concat(Object.keys(was.c.map)).filter(function (n, i, a) { return a.indexOf(n) === i; }).map(function (n) {
+      return { name: n, d: share(now.c, n) - share(was.c, n), a: share(was.c, n), b: share(now.c, n) };
+    });
+    function block(title, list) {
+      return '<div class="sec" style="gap:10px"><h3>' + title + '</h3><div class="panel list">' + (list.length ? list.map(function (h) {
+        return '<div class="list-row"><span class="hn">' + heroImg(h.name) + '<b>' + esc(h.name) + '</b></span><span class="meta">было ' + Math.round(h.a * 100) + '%</span><span>стало ' + Math.round(h.b * 100) + '%</span></div>';
+      }).join('') : '<div class="list-row"><span class="muted">Нет заметных изменений</span><span></span><span></span></div>') + '</div></div>';
+    }
+    function top(sign) {
+      return diff.filter(function (h) { return sign * h.d > 0; }).sort(function (x, y) { return sign * (y.d - x.d) || x.name.localeCompare(y.name, 'ru'); }).slice(0, 4);
+    }
+    move.innerHTML = block('НАБИРАЮТ ПОПУЛЯРНОСТЬ', top(1)) + block('ТЕРЯЮТ ПОПУЛЯРНОСТЬ', top(-1));
+    var note = document.createElement('p');
+    note.className = 'note'; note.style.margin = '0';
+    note.textContent = 'Доля игр, где взяли героя: неделя ' + weekLabel(now.w) + ' против ' + weekLabel(was.w) + '.';
+    move.parentNode.appendChild(note);
+  })();
+
   // ---------- Motion ----------
   // Only reactions to the visitor; everything is skipped under prefers-reduced-motion and without WAAPI.
   var FX_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
@@ -10875,8 +11353,8 @@ img { max-width: 100%; }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fxMoveInk);
   setTimeout(function () { fxInk.classList.add('go'); }, 400);
   // Tabs in bar order, so the wipe runs the way the visitor moved.
-  var FX_ORDER = { table: 0, matches: 1, players: 2, player: 2.5, heroes: 3, vs: 4, tier: 5, records: 6, rules: 7, log: 8 };
-  var FX_LISTS = { table: ['#board .lb-row', 10], players: ['#pcards .pcard', 12], matches: ['#matches .match', 4] };
+  var FX_ORDER = { table: 0, matches: 1, players: 2, player: 2.5, heroes: 3, vs: 4, tier: 5, week: 5.5, records: 6, rules: 7, log: 8, fame: 9 };
+  var FX_LISTS = { table: ['#board .lb-row', 10], players: ['#pcards .pcard', 12], matches: ['#matches .match', 4], week: ['#wk-out .wk-card', 4] };
   var fxRunTimer = 0, fxMain = document.querySelector('main');
   function fxCascade(view) {
     var l = FX_LISTS[view]; if (!l) return;
@@ -10897,6 +11375,11 @@ img { max-width: 100%; }
     if (heroBack) fx(document.getElementById('hero'), frames, opts);
     fxCascade(view);
     if (view === 'table') fxBoardFinish();
+    if (view === 'fame') {
+      // The hall comes into view sharp for a moment, then falls out of focus behind "Скоро…".
+      fx(document.querySelector('.fame-wall'), [{ filter: 'blur(0px)' }, { filter: 'blur(14px)' }], { duration: 900, easing: FX_EASE });
+      fx(document.querySelector('.fame-soon'), [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 500, delay: 450, easing: FX_EASE, fill: 'backwards' });
+    }
   }
   // Scores roll up to their value; the text is restored exactly at the end.
   function fxCount(el) {
@@ -10946,12 +11429,12 @@ img { max-width: 100%; }
   }
 
   // ---------- Routing ----------
-  var VIEWS = ['table', 'matches', 'players', 'heroes', 'records', 'player', 'vs', 'rules', 'tier', 'log'];
+  var VIEWS = ['table', 'matches', 'players', 'heroes', 'records', 'player', 'vs', 'rules', 'tier', 'log', 'week', 'fame'];
   var current = 'table', shown = null;
   function show(view) {
     VIEWS.forEach(function (v) { document.getElementById('view-' + v).hidden = v !== view; });
     var hero = document.getElementById('hero'), heroWas = hero.hidden;
-    hero.hidden = view === 'player' || view === 'vs' || view === 'rules' || view === 'tier' || view === 'log';
+    hero.hidden = view === 'player' || view === 'vs' || view === 'rules' || view === 'tier' || view === 'log' || view === 'week' || view === 'fame';
     var tab = view === 'player' ? 'players' : view;
     document.querySelectorAll('[data-tab]').forEach(function (a) {
       if (a.getAttribute('data-tab') === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
@@ -10966,11 +11449,15 @@ img { max-width: 100%; }
     if (!t) t = current;
     current = t;
     if (t.indexOf('p-') === 0 && nameOf[t]) {
-      renderPlayer(nameOf[t]); show('player'); window.scrollTo(0, 0);
+      renderPlayer(nameOf[t]); show('player'); drawPointsChart(); window.scrollTo(0, 0);
       document.title = nameOf[t] + ' · Рейтинг Immortal';
       return;
     }
     document.title = 'Рейтинг Immortal';
+    if (t === 'week' || t.indexOf('week~') === 0) {
+      renderWeek(t.split('~')[1]); show('week'); window.scrollTo(0, 0);
+      return;
+    }
     if (t === 'vs' || t.indexOf('vs~') === 0) {
       var parts = t.split('~');
       var a = nameOf[parts[1]] || (rows[0] && rows[0].name);
