@@ -1,0 +1,14 @@
+name: ac check
+on:
+  push:
+    branches: [ac-check]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch a match page
+        run: |
+          for u in https://ac.narutolegend.dog/match/7648 https://ac.narutolegend.dog/matches; do
+            code=$(curl -sS -A "ImmortalRating (https://github.com/youkatakirin/ratingamenarutolegend, 1.0)" -o page.html -w "%{http_code}" --max-time 30 "$u" || echo FAIL)
+            echo "RESULT $u status=$code bytes=$(wc -c < page.html) rows=$(grep -o '<tr' page.html | wc -l) nekt0=$(grep -c 'nekt0' page.html) cf=$(grep -ci 'cloudflare\|just a moment' page.html)"
+          done
