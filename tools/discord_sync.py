@@ -311,7 +311,10 @@ def main():
             drop_files(e)  # the post was deleted in the channel
     state["messages"] = entries
     prune(state, site_last_game())
-    find_ac(state)
+    try:
+        find_ac(state)
+    except Exception as e:  # ac being down must not cost us the Discord posts
+        print("ac.narutolegend.dog is not available this run:", e)
     last = number(state)
     write_if_changed(INBOX, state)
     write_if_changed(NEXT, {"next": last + 1})
