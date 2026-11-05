@@ -150,9 +150,131 @@
       "files": [
         "discord/files/1567987925273280615-0.png"
       ],
-      "ac": null,
+      "ac": {
+        "src": 7667,
+        "ends_utc": 1793907660,
+        "kills": [
+          2,
+          31
+        ],
+        "duration_ac": "55:00",
+        "players": [
+          {
+            "nick": "milancore",
+            "mvp": false,
+            "hero": "Ягура",
+            "kda": [
+              2,
+              11,
+              0
+            ],
+            "cs": 173,
+            "gold": 15290,
+            "dmg": 8164,
+            "lvl": 24
+          },
+          {
+            "nick": "Jackson-",
+            "mvp": false,
+            "hero": "Кимимаро",
+            "kda": [
+              0,
+              6,
+              0
+            ],
+            "cs": 294,
+            "gold": 21378,
+            "dmg": 13533,
+            "lvl": 27
+          },
+          {
+            "nick": "Initio",
+            "mvp": false,
+            "hero": "Асума",
+            "kda": [
+              0,
+              10,
+              1
+            ],
+            "cs": 137,
+            "gold": 12685,
+            "dmg": 9130,
+            "lvl": 22
+          },
+          {
+            "nick": "Inesska",
+            "mvp": false,
+            "hero": "Хан",
+            "kda": [
+              0,
+              9,
+              1
+            ],
+            "cs": 124,
+            "gold": 12392,
+            "dmg": 6773,
+            "lvl": 22
+          },
+          {
+            "nick": "black_reaper",
+            "mvp": false,
+            "hero": "Какузу",
+            "kda": [
+              15,
+              0,
+              9
+            ],
+            "cs": 117,
+            "gold": 24416,
+            "dmg": 20759,
+            "lvl": 30
+          },
+          {
+            "nick": "ShikiNanaya",
+            "mvp": false,
+            "hero": "Итачи",
+            "kda": [
+              7,
+              1,
+              16
+            ],
+            "cs": 167,
+            "gold": 22335,
+            "dmg": 19037,
+            "lvl": 30
+          },
+          {
+            "nick": "[YVN_KXX]",
+            "mvp": true,
+            "hero": "Хирузен",
+            "kda": [
+              6,
+              2,
+              17
+            ],
+            "cs": 171,
+            "gold": 17410,
+            "dmg": 28825,
+            "lvl": 30
+          },
+          {
+            "nick": "SAND",
+            "mvp": false,
+            "hero": "Суйгецу",
+            "kda": [
+              3,
+              2,
+              11
+            ],
+            "cs": 227,
+            "gold": 26879,
+            "dmg": 26883,
+            "lvl": 30
+          }
+        ]
+      },
       "game": 56
     }
   ],
-  "ac_after": 7664
+  "ac_after": 7667
 }
