@@ -1,280 +1,144 @@
 {
   "channel": "1180907593493925958",
-  "after": "1567943514443219007",
-  "base_game": 54,
+  "after": "1567987925273280615",
+  "base_game": 56,
   "messages": [
     {
-      "id": "1567972352589959182",
-      "time": "2026-11-05T18:42:20.375000+00:00",
-      "edited": null,
-      "author": "prince丶",
+      "id": "1568027625241321664",
+      "time": "2026-11-05T22:21:58.402000+00:00",
+      "edited": "2026-11-05T22:22:12.105000+00:00",
+      "author": "hyamm",
       "result": true,
-      "typed": null,
-      "text": "## Rating Games <#1567944304545243156> \n- Организатор: **milancore**\n- Первый пик: **Альянс**\n- Победитель: **Акацуки**\n  - Alliance: **-20**\n  - SVP: **milancore** (**+5**)\n    - **Itadori#289**\n    - **milancore**\n    - **[YVN-KXX]**\n    - **Margylis**\n  - Akatsuki: **+20**\n  - MVP: **Magistor** (**+5**)\n    - **Magistor**\n    - **d4vd**\n    - **Sutafokkusu**\n    - **Inesska**\n- Баны: **Нагато Наруто Раса Йондайме**",
+      "typed": 57,
+      "text": "Rating Games # 57\nОрганизатор: Myamm\nПервый пик: Альянс\nПобедитель: Акацуки\n\nAlliance: -20\nmilancore\nShikiNanaya\nMagistor\nbyp9I\n\nAkatsuki: +20\nSAND\nJackson-\nMyamm\nblack_reaper\n\nБаны: Саске Ямато Раса Какаши",
       "files": [
-        "discord/files/1567972352589959182-0.png"
+        "discord/files/1568027625241321664-0.png"
       ],
       "ac": {
-        "src": 7664,
-        "ends_utc": 1793903520,
+        "src": 7676,
+        "ends_utc": 1793917200,
         "kills": [
-          34,
-          47
+          33,
+          36
         ],
-        "duration_ac": "78:22",
+        "duration_ac": "77:16",
         "players": [
-          {
-            "nick": "Jackson-",
-            "mvp": false,
-            "hero": "Обито",
-            "kda": [
-              11,
-              10,
-              10
-            ],
-            "cs": 293,
-            "gold": 31733,
-            "dmg": 39571,
-            "lvl": 30
-          },
           {
             "nick": "milancore",
             "mvp": false,
-            "hero": "Забуза",
+            "hero": "Хан",
             "kda": [
-              8,
-              12,
-              8
+              14,
+              9,
+              7
             ],
-            "cs": 403,
-            "gold": 27019,
-            "dmg": 56889,
-            "lvl": 30
-          },
-          {
-            "nick": "[YVN_KXX]",
-            "mvp": false,
-            "hero": "Хидан",
-            "kda": [
-              8,
-              16,
-              10
-            ],
-            "cs": 191,
-            "gold": 25420,
-            "dmg": 27527,
-            "lvl": 30
-          },
-          {
-            "nick": "Margylis",
-            "mvp": false,
-            "hero": "Мей",
-            "kda": [
-              7,
-              15,
-              11
-            ],
-            "cs": 223,
-            "gold": 30757,
-            "dmg": 36751,
-            "lvl": 30
-          },
-          {
-            "nick": "d4vd",
-            "mvp": false,
-            "hero": "Нагато",
-            "kda": [
-              23,
-              13,
-              9
-            ],
-            "cs": 294,
-            "gold": 34571,
-            "dmg": 57052,
+            "cs": 318,
+            "gold": 29583,
+            "dmg": 51568,
             "lvl": 30
           },
           {
             "nick": "Magistor",
-            "mvp": true,
+            "mvp": false,
             "hero": "Йондайме Эй",
             "kda": [
-              14,
-              4,
-              22
-            ],
-            "cs": 220,
-            "gold": 33506,
-            "dmg": 61877,
-            "lvl": 30
-          },
-          {
-            "nick": "Sutafokkusu",
-            "mvp": false,
-            "hero": "Раса",
-            "kda": [
-              5,
-              12,
-              28
-            ],
-            "cs": 210,
-            "gold": 37486,
-            "dmg": 71818,
-            "lvl": 30
-          },
-          {
-            "nick": "Inesska",
-            "mvp": false,
-            "hero": "Наруто",
-            "kda": [
-              5,
               8,
-              14
+              8,
+              10
             ],
-            "cs": 288,
-            "gold": 36490,
-            "dmg": 55594,
-            "lvl": 30
-          }
-        ]
-      },
-      "game": 55
-    },
-    {
-      "id": "1567987925273280615",
-      "time": "2026-11-05T19:44:13.192000+00:00",
-      "edited": null,
-      "author": "SAND",
-      "result": true,
-      "typed": 56,
-      "text": "Rating Games # 56\nОрганизатор: SAND\nПервый пик: Акацуки\nПобедитель: Акацуки\n\nAlliance: -20\nmilancore\nJackson-\nInesska\nInitio\n\nAkatsuki: +20\nSAND\nShikiNanaya\n[YVN_KXX]\nblack_reaper\n\nБаны:  Какузу Хирузен Итачи Суйгецу",
-      "files": [
-        "discord/files/1567987925273280615-0.png"
-      ],
-      "ac": {
-        "src": 7667,
-        "ends_utc": 1793907660,
-        "kills": [
-          2,
-          31
-        ],
-        "duration_ac": "55:00",
-        "players": [
-          {
-            "nick": "milancore",
-            "mvp": false,
-            "hero": "Ягура",
-            "kda": [
-              2,
-              11,
-              0
-            ],
-            "cs": 173,
-            "gold": 15290,
-            "dmg": 8164,
-            "lvl": 24
-          },
-          {
-            "nick": "Jackson-",
-            "mvp": false,
-            "hero": "Кимимаро",
-            "kda": [
-              0,
-              6,
-              0
-            ],
-            "cs": 294,
-            "gold": 21378,
-            "dmg": 13533,
-            "lvl": 27
-          },
-          {
-            "nick": "Initio",
-            "mvp": false,
-            "hero": "Асума",
-            "kda": [
-              0,
-              10,
-              1
-            ],
-            "cs": 137,
-            "gold": 12685,
-            "dmg": 9130,
-            "lvl": 22
-          },
-          {
-            "nick": "Inesska",
-            "mvp": false,
-            "hero": "Хан",
-            "kda": [
-              0,
-              9,
-              1
-            ],
-            "cs": 124,
-            "gold": 12392,
-            "dmg": 6773,
-            "lvl": 22
-          },
-          {
-            "nick": "black_reaper",
-            "mvp": false,
-            "hero": "Какузу",
-            "kda": [
-              15,
-              0,
-              9
-            ],
-            "cs": 117,
-            "gold": 24416,
-            "dmg": 20759,
+            "cs": 158,
+            "gold": 23709,
+            "dmg": 24888,
             "lvl": 30
           },
           {
             "nick": "ShikiNanaya",
             "mvp": false,
-            "hero": "Итачи",
+            "hero": "Хаширама",
             "kda": [
+              6,
               7,
-              1,
-              16
+              11
             ],
-            "cs": 167,
-            "gold": 22335,
-            "dmg": 19037,
+            "cs": 221,
+            "gold": 26429,
+            "dmg": 24638,
             "lvl": 30
           },
           {
-            "nick": "[YVN_KXX]",
-            "mvp": true,
-            "hero": "Хирузен",
+            "nick": "byp9I",
+            "mvp": false,
+            "hero": "Шисуи",
             "kda": [
-              6,
-              2,
-              17
+              5,
+              16,
+              10
             ],
-            "cs": 171,
-            "gold": 17410,
-            "dmg": 28825,
+            "cs": 191,
+            "gold": 25678,
+            "dmg": 31831,
+            "lvl": 30
+          },
+          {
+            "nick": "black_reaper",
+            "mvp": true,
+            "hero": "Какаши",
+            "kda": [
+              19,
+              8,
+              12
+            ],
+            "cs": 293,
+            "gold": 39526,
+            "dmg": 78837,
+            "lvl": 30
+          },
+          {
+            "nick": "Jackson-",
+            "mvp": false,
+            "hero": "Ямато",
+            "kda": [
+              7,
+              9,
+              11
+            ],
+            "cs": 192,
+            "gold": 26920,
+            "dmg": 24690,
             "lvl": 30
           },
           {
             "nick": "SAND",
             "mvp": false,
-            "hero": "Суйгецу",
+            "hero": "Раса",
             "kda": [
-              3,
-              2,
-              11
+              6,
+              10,
+              19
             ],
-            "cs": 227,
-            "gold": 26879,
-            "dmg": 26883,
+            "cs": 219,
+            "gold": 32766,
+            "dmg": 59945,
+            "lvl": 30
+          },
+          {
+            "nick": "Myamm",
+            "mvp": false,
+            "hero": "Саске",
+            "kda": [
+              4,
+              11,
+              9
+            ],
+            "cs": 169,
+            "gold": 26240,
+            "dmg": 25836,
             "lvl": 30
           }
         ]
       },
-      "game": 56
+      "game": 57
     }
   ],
-  "ac_after": 7667
+  "ac_after": 7676
 }
