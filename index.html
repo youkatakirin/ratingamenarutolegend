@@ -10416,7 +10416,7 @@ img { max-width: 100%; }
     }).join('').replace(/^-+|-+$/g, '');
   }
   var HERO_ICON = {};
-  (data.heroPool || []).forEach(function (n) { HERO_ICON[n] = 'heroes/' + heroSlug(n) + '.webp'; });
+  (data.heroPool || []).forEach(function (n) { HERO_ICON[n] = 'heroes/' + heroSlug(n) + '.webp?v=2'; });
   function heroImg(name, cls) {
     return HERO_ICON[name] ? '<img class="hi' + (cls ? ' ' + cls : '') + '" src="' + HERO_ICON[name] + '" alt="" width="216" height="216" loading="lazy" decoding="async">' : '';
   }
