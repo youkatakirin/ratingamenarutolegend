@@ -113,6 +113,64 @@ h3 { font-size: 18px; letter-spacing: 0.04em; }
 .facts { display: flex; flex-wrap: wrap; gap: 8px 28px; color: var(--muted); }
 .facts b { color: var(--ink); font-weight: 600; }
 
+/* Season leader */
+.lead {
+  position: relative; overflow: hidden; isolation: isolate;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "pic id" "pic stats"; align-items: center; gap: 16px 34px;
+  padding: 24px 28px 24px 34px; border: 1px solid rgba(255, 201, 74, 0.32);
+  background: linear-gradient(100deg, rgba(255, 201, 74, 0.1), rgba(255, 201, 74, 0) 46%), var(--panel);
+  box-shadow: 0 0 44px rgba(255, 180, 50, 0.1), inset 0 1px 0 rgba(255, 228, 160, 0.14);
+}
+.lead::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: linear-gradient(180deg, #ffe39a, var(--gold) 55%, #b9791c); }
+.lead-bg {
+  position: absolute; z-index: -1; left: -4%; top: 50%; width: 58%; aspect-ratio: 1; transform: translateY(-50%);
+  object-fit: cover; filter: blur(34px) saturate(1.25); opacity: 0.3;
+  -webkit-mask-image: linear-gradient(90deg, #000 30%, transparent); mask-image: linear-gradient(90deg, #000 30%, transparent);
+}
+.lead-pics { grid-area: pic; display: flex; padding-inline: 14px; }
+.lead-pic {
+  display: block; flex: none; width: 156px; height: 156px; overflow: hidden; transform: skewX(-10deg);
+  background: #05070c; border: 2px solid var(--gold); box-shadow: 0 0 26px rgba(255, 201, 74, 0.38);
+}
+.lead-pic + .lead-pic { margin-left: -34px; }
+.lead-pic img { display: block; width: 120%; height: 120%; max-width: none; margin: -10% 0 0 -10%; object-fit: cover; transform: skewX(10deg); transition: transform 0.35s ease; }
+.lead-pic.none { display: grid; place-items: center; }
+.lead-pic.none span { transform: skewX(10deg); font-family: var(--f-display); font-size: 52px; color: var(--gold); }
+.lead-id { grid-area: id; display: grid; gap: 7px; min-width: 0; }
+.lead-k { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; letter-spacing: 0.18em; color: var(--gold); text-transform: uppercase; }
+.lead-nick { font-family: var(--f-display); font-size: clamp(28px, 4.1vw, 46px); line-height: 1.05; overflow-wrap: anywhere; }
+.lead-nick .sep { color: var(--muted); font-size: 0.6em; margin-inline: 8px; }
+.lead-sub { font-size: 14px; color: var(--soft); }
+.lead-sub a { color: var(--ink); }
+.lead-sub b { color: var(--ink); font-weight: 600; }
+.lead-stats { grid-area: stats; display: flex; flex-wrap: wrap; align-items: stretch; gap: 10px 0; }
+.lead-stat { display: grid; align-content: center; gap: 4px; padding: 2px 22px; border-left: 1px solid var(--line-2); white-space: nowrap; }
+.lead-stat:first-child { border-left: 0; padding-left: 0; }
+.lead-stat .v { font-family: var(--f-display); font-size: 25px; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.lead-stat .l { font-size: 12px; color: var(--muted); }
+.lead-stat.main .v { font-size: 42px; color: var(--gold); text-shadow: 0 0 20px rgba(255, 201, 74, 0.42); }
+@media (hover: hover) and (pointer: fine) { .lead-pic:hover img { transform: skewX(10deg) scale(1.07); } }
+@media (max-width: 780px) {
+  .lead { grid-template-areas: "pic id" "stats stats"; gap: 16px 22px; padding: 20px 20px 20px 24px; }
+  .lead-pics { padding-inline: 10px; }
+  .lead-pic { width: 112px; height: 112px; }
+  .lead-pic + .lead-pic { margin-left: -24px; }
+  .lead-stats { border-top: 1px solid var(--line); padding-top: 14px; }
+}
+@media (max-width: 600px) {
+  .lead { gap: 14px; padding: 16px 14px 16px 18px; }
+  .lead-pics { padding-inline: 6px; }
+  .lead-pic { width: 76px; height: 76px; }
+  .lead-pic + .lead-pic { margin-left: -18px; }
+  .lead-pic.none span { font-size: 34px; }
+  .lead-k { font-size: 12px; letter-spacing: 0.14em; }
+  .lead-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px; }
+  .lead-stat { padding: 0; border: 0; white-space: normal; }
+  .lead-stat .v { font-size: 20px; }
+  .lead-stat.main { grid-column: 1 / -1; }
+  .lead-stat.main .v { font-size: 36px; }
+}
+
 /* Shared bits */
 .rk {
   display: inline-block; transform: skewX(-12deg); border: 1px solid var(--line-2);
@@ -756,6 +814,7 @@ img { max-width: 100%; }
       <div class="eyebrow" id="season-line">Naruto Legend 3.0 · рейтинговый сезон</div>
       <h1 class="title">IMMORTAL</h1>
     </div>
+    <section class="lead" id="leader" aria-label="Лидер сезона" hidden></section>
     <div class="vs" aria-label="Победы сторон">
       <div class="side a"><div><span class="nm">АЛЬЯНС</span><span class="sc" id="t-a">0</span></div></div>
       <div class="mid">VS</div>
@@ -10359,7 +10418,7 @@ img { max-width: 100%; }
   var HERO_ICON = {};
   (data.heroPool || []).forEach(function (n) { HERO_ICON[n] = 'heroes/' + heroSlug(n) + '.webp'; });
   function heroImg(name, cls) {
-    return HERO_ICON[name] ? '<img class="hi' + (cls ? ' ' + cls : '') + '" src="' + HERO_ICON[name] + '" alt="" width="64" height="64" loading="lazy" decoding="async">' : '';
+    return HERO_ICON[name] ? '<img class="hi' + (cls ? ' ' + cls : '') + '" src="' + HERO_ICON[name] + '" alt="" width="216" height="216" loading="lazy" decoding="async">' : '';
   }
   // same, but keeps an empty square when there is no portrait (for rows that need aligned columns)
   function heroPic(name, cls) { return heroImg(name, cls) || '<span class="hi none' + (cls ? ' ' + cls : '') + '"></span>'; }
@@ -10593,6 +10652,36 @@ img { max-width: 100%; }
     }
     if (!html) { bar.hidden = true; return; }
     bar.innerHTML = html;
+  })();
+
+  // The season leader. Players level on points share the block.
+  (function () {
+    var box = document.getElementById('leader');
+    var top = rows.filter(function (s) { return s.place === 1 && s.w + s.l > 0; });
+    if (!top.length) return;
+    var s = top[0], tied = top.length > 1, next = rows.filter(function (r) { return r.place > 1; })[0];
+    function pic(p) {
+      var slug = slugFor(p.name), u = HERO_ICON[p.mainHero];
+      return '<a class="lead-pic' + (u ? '' : ' none') + '" href="#' + slug + '" data-go="' + slug + '" aria-label="Профиль ' + esc(p.name) + '">' +
+        (u ? heroImg(p.mainHero) : '<span>' + esc(p.name.charAt(0).toUpperCase()) + '</span>') + '</a>';
+    }
+    function tile(v, l, cls, id) {
+      return '<div class="lead-stat' + (cls ? ' ' + cls : '') + '"><span class="v"' + (id ? ' id="' + id + '"' : '') + '>' + esc(v) + '</span><span class="l">' + l + '</span></div>';
+    }
+    var tiles = tile(signed(s.pts), 'очков', 'main', 'lead-pts');
+    if (!tied) {
+      tiles += tile(s.w + ' – ' + s.l, 'победы и поражения') + tile(pct(s.w, s.w + s.l), 'винрейт') + tile(s.mvp + ' / ' + s.svp, 'MVP / SVP');
+    }
+    if (next) tiles += tile('+' + (s.pts - next.pts), 'отрыв от ' + plink(next.name));
+    var sub = tied ? top.length + ' игрока с одинаковыми очками'
+      : s.mainHero ? 'Чаще всего играет на <b>' + esc(s.mainHero) + '</b>' : '';
+    box.innerHTML = (s.mainHero && HERO_ICON[s.mainHero] ? '<img class="lead-bg" src="' + HERO_ICON[s.mainHero] + '" alt="" decoding="async">' : '') +
+      '<div class="lead-pics">' + top.slice(0, 3).map(pic).join('') + '</div>' +
+      '<div class="lead-id"><span class="lead-k"><span class="rk gold">1</span>' + (tied ? 'Делят первое место' : 'Лидер сезона') + '</span>' +
+      '<div class="lead-nick">' + top.map(function (p) { return plink(p.name, 'top1'); }).join('<span class="sep">и</span>') + '</div>' +
+      (sub ? '<div class="lead-sub">' + sub + '</div>' : '') + '</div>' +
+      '<div class="lead-stats">' + tiles + '</div>';
+    box.hidden = false;
   })();
 
   // ---------- Leaderboard ----------
@@ -12584,6 +12673,7 @@ img { max-width: 100%; }
   route();
   fxCount(document.getElementById('t-a'));
   fxCount(document.getElementById('t-k'));
+  fxCount(document.getElementById('lead-pts'));
   if (shown === 'table') fxBoardFinish();
 })();
 </script>
