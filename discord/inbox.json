@@ -2,6 +2,143 @@
   "channel": "1180907593493925958",
   "after": "1567646814927323197",
   "base_game": 53,
-  "messages": [],
-  "ac_after": 7648
+  "messages": [
+    {
+      "id": "1567943514443219007",
+      "time": "2026-11-05T16:47:44.825000+00:00",
+      "edited": "2026-11-05T16:48:22.375000+00:00",
+      "author": "SAND",
+      "result": true,
+      "typed": 54,
+      "text": "Rating Games # 54\nОрганизатор: SAND\nПервый пик: Акацуки\nПобедитель: Альянс\n\nAlliance: +20\nSAND\nGengo\nd4vd\nSutafokkusu\n\nAkatsuki: -20\nmilancore\nJackson-\nletan_\nKuhakuu\n\nБаны: Гай Хирузен Итачи Тобирама",
+      "files": [
+        "discord/files/1567943514443219007-0.png"
+      ],
+      "ac": {
+        "src": 7657,
+        "ends_utc": 1793897400,
+        "kills": [
+          28,
+          18
+        ],
+        "duration_ac": "78:30",
+        "players": [
+          {
+            "nick": "SAND",
+            "mvp": true,
+            "hero": "Гай",
+            "kda": [
+              20,
+              4,
+              3
+            ],
+            "cs": 336,
+            "gold": 40010,
+            "dmg": 50608,
+            "lvl": 30
+          },
+          {
+            "nick": "Sutafokkusu",
+            "mvp": false,
+            "hero": "Хирузен",
+            "kda": [
+              4,
+              9,
+              12
+            ],
+            "cs": 264,
+            "gold": 28822,
+            "dmg": 23758,
+            "lvl": 30
+          },
+          {
+            "nick": "Gengo",
+            "mvp": false,
+            "hero": "Тобирама",
+            "kda": [
+              3,
+              8,
+              16
+            ],
+            "cs": 220,
+            "gold": 25925,
+            "dmg": 21307,
+            "lvl": 30
+          },
+          {
+            "nick": "d4vd",
+            "mvp": false,
+            "hero": "Итачи",
+            "kda": [
+              1,
+              6,
+              16
+            ],
+            "cs": 194,
+            "gold": 25749,
+            "dmg": 12390,
+            "lvl": 30
+          },
+          {
+            "nick": "Kuhakuu",
+            "mvp": false,
+            "hero": "Шисуи",
+            "kda": [
+              10,
+              4,
+              5
+            ],
+            "cs": 257,
+            "gold": 25417,
+            "dmg": 28659,
+            "lvl": 30
+          },
+          {
+            "nick": "milancore",
+            "mvp": false,
+            "hero": "Кимимаро",
+            "kda": [
+              6,
+              9,
+              7
+            ],
+            "cs": 353,
+            "gold": 30651,
+            "dmg": 34102,
+            "lvl": 30
+          },
+          {
+            "nick": "Jackson-",
+            "mvp": false,
+            "hero": "Хаширама",
+            "kda": [
+              2,
+              7,
+              11
+            ],
+            "cs": 250,
+            "gold": 24278,
+            "dmg": 18566,
+            "lvl": 30
+          },
+          {
+            "nick": "letan_",
+            "mvp": false,
+            "hero": "Гаара",
+            "kda": [
+              0,
+              10,
+              5
+            ],
+            "cs": 130,
+            "gold": 16968,
+            "dmg": 6156,
+            "lvl": 29
+          }
+        ]
+      },
+      "game": 54
+    }
+  ],
+  "ac_after": 7657
 }
