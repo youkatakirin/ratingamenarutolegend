@@ -274,7 +274,293 @@
         ]
       },
       "game": 59
+    },
+    {
+      "id": "1568335677223862322",
+      "time": "2026-11-06T18:46:03.718000+00:00",
+      "edited": null,
+      "author": "SAND",
+      "result": true,
+      "typed": 60,
+      "text": "Rating Games # 60\nОрганизатор: SAND\nПервый пик: Акацуки\nПобедитель: Акацуки\n\nAlliance: -20\nMyamm\nKuhakuu\nmilancore\nLil_Happy\n\nAkatsuki: +20\nSAND\nJackson-\nblack_reaper\nletan_\n\nБаны: Ягура Шино Обито Суйгецу",
+      "files": [
+        "discord/files/1568335677223862322-0.png"
+      ],
+      "ac": {
+        "src": 7697,
+        "ends_utc": 1793990880,
+        "kills": [
+          15,
+          29
+        ],
+        "duration_ac": "57:16",
+        "players": [
+          {
+            "nick": "milancore",
+            "mvp": false,
+            "hero": "Хаку",
+            "kda": [
+              10,
+              4,
+              0
+            ],
+            "cs": 240,
+            "gold": 26195,
+            "dmg": 21039,
+            "lvl": 30
+          },
+          {
+            "nick": "Myamm",
+            "mvp": false,
+            "hero": "Раса",
+            "kda": [
+              3,
+              8,
+              6
+            ],
+            "cs": 160,
+            "gold": 18098,
+            "dmg": 23342,
+            "lvl": 29
+          },
+          {
+            "nick": "Kuhakuu",
+            "mvp": false,
+            "hero": "Хан",
+            "kda": [
+              2,
+              7,
+              5
+            ],
+            "cs": 107,
+            "gold": 14910,
+            "dmg": 11280,
+            "lvl": 26
+          },
+          {
+            "nick": "Lil_Happy",
+            "mvp": false,
+            "hero": "Ринго",
+            "kda": [
+              0,
+              11,
+              1
+            ],
+            "cs": 116,
+            "gold": 11675,
+            "dmg": 11568,
+            "lvl": 21
+          },
+          {
+            "nick": "SAND",
+            "mvp": false,
+            "hero": "Суйгецу",
+            "kda": [
+              11,
+              5,
+              6
+            ],
+            "cs": 263,
+            "gold": 32654,
+            "dmg": 28917,
+            "lvl": 30
+          },
+          {
+            "nick": "black_reaper",
+            "mvp": true,
+            "hero": "Ягура",
+            "kda": [
+              8,
+              3,
+              8
+            ],
+            "cs": 216,
+            "gold": 26427,
+            "dmg": 28593,
+            "lvl": 30
+          },
+          {
+            "nick": "Jackson-",
+            "mvp": false,
+            "hero": "Обито",
+            "kda": [
+              8,
+              4,
+              8
+            ],
+            "cs": 167,
+            "gold": 24661,
+            "dmg": 26935,
+            "lvl": 30
+          },
+          {
+            "nick": "letan_",
+            "mvp": false,
+            "hero": "Шино",
+            "kda": [
+              2,
+              7,
+              9
+            ],
+            "cs": 170,
+            "gold": 21721,
+            "dmg": 11266,
+            "lvl": 30
+          }
+        ]
+      },
+      "game": 60
+    },
+    {
+      "id": "1568354551491334200",
+      "time": "2026-11-06T20:01:03.694000+00:00",
+      "edited": "2026-11-06T20:01:19.678000+00:00",
+      "author": "SAND",
+      "result": true,
+      "typed": 61,
+      "text": "Rating Games # 61\nОрганизатор: SAND\nПервый пик: Альянс\nПобедитель: Альянс\n\nAlliance: +20\nJackson-\nSutafokkusu\nNanaya\nInneska\n\nAkatsuki: -20\nSAND\nmilancore\nInitio\nblack_reaper\n\n\nБаны: Тобирама Мадара Хаку Хирузен",
+      "files": [
+        "discord/files/1568354551491334200-0.png"
+      ],
+      "ac": {
+        "src": 7702,
+        "ends_utc": 1793995080,
+        "kills": [
+          26,
+          19
+        ],
+        "duration_ac": "46:43",
+        "players": [
+          {
+            "nick": "ShikiNanaya",
+            "mvp": true,
+            "hero": "Мадара",
+            "kda": [
+              9,
+              3,
+              9
+            ],
+            "cs": 257,
+            "gold": 29287,
+            "dmg": 33416,
+            "lvl": 30
+          },
+          {
+            "nick": "Jackson-",
+            "mvp": false,
+            "hero": "Хаку",
+            "kda": [
+              8,
+              5,
+              6
+            ],
+            "cs": 286,
+            "gold": 33596,
+            "dmg": 31213,
+            "lvl": 30
+          },
+          {
+            "nick": "Inesska",
+            "mvp": false,
+            "hero": "Тобирама",
+            "kda": [
+              5,
+              6,
+              12
+            ],
+            "cs": 123,
+            "gold": 18934,
+            "dmg": 23978,
+            "lvl": 30
+          },
+          {
+            "nick": "Sutafokkusu",
+            "mvp": false,
+            "hero": "Хирузен",
+            "kda": [
+              4,
+              10,
+              4
+            ],
+            "cs": 200,
+            "gold": 22961,
+            "dmg": 17275,
+            "lvl": 27
+          },
+          {
+            "nick": "milancore",
+            "mvp": false,
+            "hero": "Хан",
+            "kda": [
+              7,
+              9,
+              5
+            ],
+            "cs": 260,
+            "gold": 24693,
+            "dmg": 35821,
+            "lvl": 30
+          },
+          {
+            "nick": "black_reaper",
+            "mvp": false,
+            "hero": "Данзо",
+            "kda": [
+              6,
+              8,
+              2
+            ],
+            "cs": 220,
+            "gold": 21360,
+            "dmg": 16446,
+            "lvl": 30
+          },
+          {
+            "nick": "SAND",
+            "mvp": false,
+            "hero": "Гаара",
+            "kda": [
+              4,
+              9,
+              4
+            ],
+            "cs": 127,
+            "gold": 15180,
+            "dmg": 9747,
+            "lvl": 25
+          },
+          {
+            "nick": "Initio",
+            "mvp": false,
+            "hero": "Асума",
+            "kda": [
+              2,
+              7,
+              5
+            ],
+            "cs": 150,
+            "gold": 17076,
+            "dmg": 12853,
+            "lvl": 28
+          }
+        ]
+      },
+      "game": 61
+    },
+    {
+      "id": "1568381598662008975",
+      "time": "2026-11-06T21:48:32.242000+00:00",
+      "edited": null,
+      "author": "SAND",
+      "result": true,
+      "typed": 62,
+      "text": "Rating Games # 62\nОрганизатор: SAND\nПервый пик: Акацуки\nПобедитель: Альянс\n\nAlliance: +20\nJackson-\nSutafokkusu\nMagistor\nInneska\n\nAkatsuki: -20\nSAND\nnekt0\nShikiNanaya\n[YVN_KXX]\n\nБаны: Генгецу Суйгецу Джирая Йондайме",
+      "files": [
+        "discord/files/1568381598662008975-0.png"
+      ],
+      "ac": null,
+      "game": 62
     }
   ],
-  "ac_after": 7690
+  "ac_after": 7702
 }
