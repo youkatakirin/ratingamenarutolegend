@@ -30,8 +30,8 @@ def validate(data):
         if n in seen:
             sys.exit(f"duplicate match number {n}")
         seen.add(n)
-        if m["winner"] not in sides or m["firstPick"] not in sides:
-            sys.exit(f"match {n}: winner/firstPick must be alliance or akatsuki")
+        if m["winner"] not in sides or m.get("firstPick", "alliance") not in sides:
+            sys.exit(f"match {n}: winner/firstPick must be alliance or akatsuki")  # firstPick may be missing when nobody posted it
         for side in sides:
             for p in m[side]:
                 if not isinstance(p.get("d"), int):

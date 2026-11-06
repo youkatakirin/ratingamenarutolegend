@@ -10661,6 +10661,158 @@ img { max-width: 100%; }
       ],
       "shot": "shots/game-62.jpg",
       "card": "cards/game-62.png"
+    },
+    {
+      "n": 63,
+      "date": "2026-11-07T03:59",
+      "winner": "alliance",
+      "bans": [
+        "Хирузен",
+        "Раса",
+        "Гай",
+        "Кимимаро"
+      ],
+      "alliance": [
+        {
+          "p": "Magistor",
+          "d": 20,
+          "hero": "Хирузен",
+          "kda": [
+            9,
+            5,
+            9
+          ],
+          "cs": 160,
+          "gold": 24241,
+          "dmg": 33098,
+          "lvl": 30,
+          "award": "MVP",
+          "tdmg": 12087,
+          "taken": 19960
+        },
+        {
+          "p": "SAND",
+          "d": 20,
+          "hero": "Раса",
+          "kda": [
+            5,
+            11,
+            12
+          ],
+          "cs": 101,
+          "gold": 21468,
+          "dmg": 33408,
+          "lvl": 30,
+          "tdmg": 5612,
+          "taken": 25554
+        },
+        {
+          "p": "Margylis",
+          "d": 20,
+          "hero": "Гай",
+          "kda": [
+            13,
+            7,
+            9
+          ],
+          "cs": 108,
+          "gold": 24329,
+          "dmg": 22002,
+          "lvl": 30,
+          "tdmg": 4062,
+          "taken": 29948
+        },
+        {
+          "p": "milancore",
+          "d": 20,
+          "hero": "Кимимаро",
+          "kda": [
+            3,
+            2,
+            10
+          ],
+          "cs": 328,
+          "gold": 35000,
+          "dmg": 28650,
+          "lvl": 30,
+          "tdmg": 10227,
+          "taken": 20260
+        }
+      ],
+      "akatsuki": [
+        {
+          "p": "nekt0",
+          "d": -20,
+          "hero": "Му",
+          "kda": [
+            14,
+            9,
+            5
+          ],
+          "cs": 259,
+          "gold": 23193,
+          "dmg": 50374,
+          "lvl": 30,
+          "award": "SVP",
+          "tdmg": 4742,
+          "taken": 24574
+        },
+        {
+          "p": "Lil_Happy",
+          "d": -20,
+          "hero": "Хаширама",
+          "kda": [
+            1,
+            9,
+            9
+          ],
+          "cs": 100,
+          "gold": 15493,
+          "dmg": 17326,
+          "lvl": 27,
+          "tdmg": 3578,
+          "taken": 23372
+        },
+        {
+          "p": "Delorane",
+          "d": -20,
+          "hero": "Ямато",
+          "kda": [
+            1,
+            11,
+            11
+          ],
+          "cs": 82,
+          "gold": 15936,
+          "dmg": 13254,
+          "lvl": 29,
+          "tdmg": 1081,
+          "taken": 28387
+        },
+        {
+          "p": "Initio",
+          "d": -20,
+          "hero": "Обито",
+          "kda": [
+            3,
+            7,
+            4
+          ],
+          "cs": 163,
+          "gold": 17145,
+          "dmg": 14767,
+          "lvl": 26,
+          "tdmg": 4946,
+          "taken": 29919
+        }
+      ],
+      "duration": "46:29",
+      "kills": [
+        30,
+        19
+      ],
+      "shot": "shots/game-63.jpg",
+      "card": "cards/game-63.png"
     }
   ],
   "adjustments": [],
@@ -10938,6 +11090,12 @@ img { max-width: 100%; }
       "kind": "rules",
       "rule": "6.1",
       "text": "Скины героев разрешены, кроме скина на Сасори. Наказание за скин на Сасори остаётся прежним."
+    },
+    {
+      "date": "2026-11-07",
+      "kind": "note",
+      "match": 63,
+      "text": "Итог опубликован ботом Headdyson без организатора и первого пика; игра не входит в статистику первого пика."
     }
   ]
 }
@@ -12035,14 +12193,15 @@ img { max-width: 100%; }
   var aw = matches.filter(function (m) { return m.winner === 'alliance'; }).length;
   document.getElementById('t-a').textContent = aw;
   document.getElementById('t-k').textContent = matches.length - aw;
-  var fp = matches.filter(function (m) { return m.firstPick === m.winner; }).length;
+  var fpKnown = matches.filter(function (m) { return m.firstPick; });
+  var fp = fpKnown.filter(function (m) { return m.firstPick === m.winner; }).length;
   var sd = data.seasonStart.split('-');
   document.getElementById('season-line').textContent = 'Naruto Legend 3.0 · рейтинговый сезон с ' + sd[2] + '.' + sd[1] + '.' + sd[0];
   var timed = matches.filter(function (m) { return m.duration; }).map(function (m) {
     var p = m.duration.split(':'); return { m: m, sec: (+p[0]) * 60 + (+p[1]) };
   });
   function mmss(sec) { sec = Math.round(sec); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); }
-  var facts = [['Матчей', matches.length], ['Игроков', rows.length], ['Первый пик победил', fp + ' из ' + matches.length]];
+  var facts = [['Матчей', matches.length], ['Игроков', rows.length], ['Первый пик победил', fp + ' из ' + fpKnown.length]];
   if (timed.length) {
     facts.push(['Средняя игра', mmss(timed.reduce(function (a, b) { return a + b.sec; }, 0) / timed.length)]);
     var longest = timed.reduce(function (a, b) { return b.sec > a.sec ? b : a; });
@@ -12187,7 +12346,8 @@ img { max-width: 100%; }
     matches.slice().reverse().forEach(function (m) {
       var meta = '<span>' + esc(dmy(m.date)) + '</span>';
       if (m.duration) meta += '<span>' + esc(m.duration) + '</span>';
-      meta += '<span>Организатор <b>' + esc(m.org) + '</b></span><span>Первый пик <b>' + SIDE[m.firstPick] + '</b></span>';
+      if (m.org) meta += '<span>Организатор <b>' + esc(m.org) + '</b></span>';
+      if (m.firstPick) meta += '<span>Первый пик <b>' + SIDE[m.firstPick] + '</b></span>';
       var kills = m.kills ? ' · ' + m.kills[0] + ' : ' + m.kills[1] : '';
       html += '<article class="panel match" id="match-' + m.n + '">' +
         '<div class="m-head"><div class="m-title"><span class="m-no">ИГРА #' + m.n + '</span><span class="m-meta">' + meta + '</span></div>' +
@@ -12393,7 +12553,7 @@ img { max-width: 100%; }
   // ---------- Player dossier: first/second pick split and a short auto-written summary ----------
   function pickStats(s) {
     var r = { fp: { g: 0, w: 0 }, sp: { g: 0, w: 0 } };
-    s.games.forEach(function (g) { var k = g.m.firstPick === g.side ? 'fp' : 'sp'; r[k].g++; if (g.won) r[k].w++; });
+    s.games.forEach(function (g) { if (!g.m.firstPick) return; var k = g.m.firstPick === g.side ? 'fp' : 'sp'; r[k].g++; if (g.won) r[k].w++; });
     return r;
   }
   var leagueCache = null;
@@ -13244,10 +13404,11 @@ img { max-width: 100%; }
   function weekStats(w) {
     var first = w.games[0].n, last = w.games[w.games.length - 1].n;
     var was = first > matches[0].n ? rankAt(first - 1) : {}, now = rankAt(last), per = {}, heroes = {};
-    var sum = { games: w.games.length, a: 0, k: 0, fp: 0 };
+    var sum = { games: w.games.length, a: 0, k: 0, fp: 0, fpg: 0 };
     function one(name) { return per[name] || (per[name] = { name: name, pts: 0, w: 0, l: 0 }); }
     w.games.forEach(function (m) {
       if (m.winner === 'alliance') sum.a++; else sum.k++;
+      if (m.firstPick) sum.fpg++;
       if (m.firstPick === m.winner) sum.fp++;
       SIDES.forEach(function (side) {
         (m[side] || []).forEach(function (x) {
@@ -13314,7 +13475,7 @@ img { max-width: 100%; }
   }
   function weekSummary(d) {
     var s = d.sum;
-    return s.games + ' ' + plural(s.games, 'игра', 'игры', 'игр') + ', Альянс ' + s.a + ' : ' + s.k + ' Акацуки, первый пик выиграл ' + s.fp + ' из ' + s.games;
+    return s.games + ' ' + plural(s.games, 'игра', 'игры', 'игр') + ', Альянс ' + s.a + ' : ' + s.k + ' Акацуки, первый пик выиграл ' + s.fp + ' из ' + s.fpg;
   }
   // The card for Discord: drawn in the browser, like the tier list picture.
   function weekImage() {
@@ -13451,12 +13612,12 @@ img { max-width: 100%; }
     function tag(h, text) { return '<span>' + heroImg(h.name, 'sm') + esc(h.name) + ' <span class="muted">' + text + '</span></span>'; }
     var counted = weeks.map(function (w) { return { w: w, c: heroCount(w) }; });
     var body = counted.slice().reverse().map(function (r) {
-      var w = r.w, c = r.c, fp = w.games.filter(function (m) { return m.firstPick === m.winner; }).length;
+      var w = r.w, c = r.c, fp = w.games.filter(function (m) { return m.firstPick === m.winner; }).length, fpg = w.games.filter(function (m) { return m.firstPick; }).length;
       var a = w.games.filter(function (m) { return m.winner === 'alliance'; }).length;
       var tm = w.games.filter(function (m) { return m.duration; }).map(function (m) { var p = m.duration.split(':'); return +p[0] * 60 + +p[1]; });
       var top = c.list.slice().sort(function (x, y) { return y.g - x.g || y.w - x.w || x.name.localeCompare(y.name, 'ru'); }).slice(0, 3);
       var wr = c.list.filter(function (h) { return h.g >= 3; }).sort(function (x, y) { return y.w / y.g - x.w / x.g || y.g - x.g; })[0];
-      return '<tr><td>' + esc(weekLabel(w)) + '</td><td>' + w.games.length + '</td><td>' + fp + ' из ' + w.games.length + '</td><td>' + a + ' : ' + (w.games.length - a) + '</td><td>' +
+      return '<tr><td>' + esc(weekLabel(w)) + '</td><td>' + w.games.length + '</td><td>' + fp + ' из ' + fpg + '</td><td>' + a + ' : ' + (w.games.length - a) + '</td><td>' +
         (tm.length ? mmss(tm.reduce(function (s, v) { return s + v; }, 0) / tm.length) : '—') + '</td><td><div class="picks">' +
         top.map(function (h) { return tag(h, h.g + ' ' + plural(h.g, 'игра', 'игры', 'игр')); }).join('') + '</div></td><td>' +
         (wr ? tag(wr, pct(wr.w, wr.g)) : '<span class="muted">мало игр</span>') + '</td></tr>';
