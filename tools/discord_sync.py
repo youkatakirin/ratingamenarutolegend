@@ -65,7 +65,7 @@ def get(url, token=None):
 def check_access(page):
     """Without Message Content Intent Discord answers normally but blanks every post."""
     posts = [m for m in page if m.get("type", 0) in (0, 19)]
-    if posts and not any(m.get("content") or m.get("attachments") for m in posts):
+    if posts and not any(m.get("content") or m.get("attachments") or m.get("embeds") for m in posts):
         sys.exit("Posts come back empty: turn on Message Content Intent for the bot")
     if posts:
         print(f"channel ok, latest post {posts[0]['id']} from {posts[0]['timestamp'][:16]}, {len(posts[0].get('content', ''))} chars")
@@ -94,6 +94,25 @@ def is_result(text):
     return bool(text) and bool(RESULT.search(text.split("\n")[0])) and "обедитель" in text
 
 
+def embed_text(msg):
+    """Result bots post an embed instead of text: flatten it so the rest works the same."""
+    out = []
+    for em in msg.get("embeds", []):
+        for part in (em.get("author", {}).get("name"), em.get("title"), em.get("description")):
+            if part:
+                out.append(part.strip())
+        for f in em.get("fields", []):
+            out.append(f"{f.get('name', '').strip()}:\n{f.get('value', '').strip()}")
+        if em.get("footer", {}).get("text"):
+            out.append(em["footer"]["text"].strip())
+    return "\n".join(out)
+
+
+def embed_result(text):
+    low = text.lower()
+    return "итог" in low.split("\n")[0] and "обедитель" in text
+
+
 def site_last_game():
     html = open(os.path.join(ROOT, "index.html"), encoding="utf8").read()
     block = re.search(r'id="season-data">(.*?)</script>', html, re.S).group(1)
@@ -112,6 +131,20 @@ def save_files(msg):
             os.makedirs(FILES, exist_ok=True)
             with open(path, "wb") as f:
                 f.write(get(a["url"]))
+        names.append(rel)
+    for i, em in enumerate(msg.get("embeds", [])):
+        url = (em.get("image") or {}).get("url") or (em.get("thumbnail") or {}).get("url")
+        if not url:
+            continue
+        rel = f"discord/files/{msg['id']}-e{i}.png"
+        path = os.path.join(ROOT, rel)
+        if not os.path.exists(path):
+            data = get(url)
+            if len(data) > MAX_FILE:
+                continue
+            os.makedirs(FILES, exist_ok=True)
+            with open(path, "wb") as f:
+                f.write(data)
         names.append(rel)
     return names
 
@@ -237,6 +270,8 @@ def fits(entry, m):
     bans = next((l.lower() for l in text.split("\n") if "баны" in l), "")
     nicks = sum(p["nick"].lower().strip("_") in text for p in m["players"])
     heroes = sum(p["hero"].lower() in bans for p in m["players"])
+    if entry.get("embed") and not bans:
+        return nicks >= 4  # bot summaries have no bans line
     return nicks >= 6 or (nicks >= 4 and heroes >= 3)
 
 
@@ -290,16 +325,21 @@ def main():
     for m in posts:
         seen.add(m["id"])
         text = m.get("content", "")
+        embed = embed_text(m)
+        if embed:
+            text = (text + "\n" + embed).strip() if text else embed
         if m.get("type", 0) not in (0, 19) or not (text or m.get("attachments")):
             continue
         old = known.get(m["id"])
-        typed = TYPED.search(text.split("\n")[0]) if is_result(text) else None
+        result = is_result(text) or bool(embed and embed_result(embed))
+        typed = TYPED.search(text.split("\n")[0]) if result else None
         e = {
             "id": m["id"],
             "time": m["timestamp"],
             "edited": m.get("edited_timestamp"),
             "author": m.get("author", {}).get("global_name") or m.get("author", {}).get("username", ""),
-            "result": is_result(text),
+            "result": result,
+            "embed": bool(embed),
             "typed": int(typed.group(1)) if typed else None,
             "text": text,
             "files": (old or {}).get("files") or save_files(m),
