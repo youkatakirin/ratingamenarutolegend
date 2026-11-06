@@ -156,6 +156,43 @@ def drop_files(entry):
             os.remove(path)
 
 
+def site_recent():
+    """The last games already on the site, as (UTC time, nicks text, label)."""
+    html = open(os.path.join(ROOT, "index.html"), encoding="utf8").read()
+    block = re.search(r'id="season-data">(.*?)</script>', html, re.S).group(1)
+    out = []
+    for m in json.loads(block)["matches"][-3:]:
+        stamp = re.match(r"(\d+)-(\d+)-(\d+)T(\d+):(\d+)", m["date"])
+        when = calendar.timegm(tuple(int(x) for x in stamp.groups()) + (0,)) - 5 * 3600  # site times are UTC+5
+        nicks = " ".join(r["p"] for r in m.get("alliance", []) + m.get("akatsuki", []))
+        out.append((when, nicks.lower(), f"site#{m['n']}", m.get("src")))
+    return out
+
+
+def mark_duplicates(entries):
+    """A result bot may summarise a game that already has a written post: count it once."""
+    seen = site_recent()
+    for e in entries:
+        if not e["result"]:
+            continue
+        if e.get("embed"):
+            nicks = [n.strip().lower() for n in re.findall(r"—\s*(\S[^\n]*)", e["text"])]
+            for when, low, label, _ in seen:
+                if len(nicks) >= 6 and abs(post_time(e) - when) <= 40 * 60 and sum(n in low for n in nicks) >= 5:
+                    e["result"], e["dup_of"] = False, label
+                    break
+        if e["result"]:
+            seen.append((post_time(e), e["text"].lower(), e["id"], None))
+
+
+def drop_known_ac(state):
+    """A match whose ac page is already on the site is a repeat summary."""
+    srcs = {s for *_, s in site_recent() if s}
+    for e in state["messages"]:
+        if e["result"] and (e.get("ac") or {}).get("src") in srcs:
+            e["result"], e["dup_of"] = False, f"ac#{e['ac']['src']}"
+
+
 def number(state):
     n = state["base_game"]
     for e in state["messages"]:
@@ -349,12 +386,14 @@ def main():
     for e in state["messages"]:
         if e["id"] not in seen:
             drop_files(e)  # the post was deleted in the channel
+    mark_duplicates(entries)
     state["messages"] = entries
     prune(state, site_last_game())
     try:
         find_ac(state)
     except Exception as e:  # ac being down must not cost us the Discord posts
         print("ac.narutolegend.dog is not available this run:", e)
+    drop_known_ac(state)
     last = number(state)
     write_if_changed(INBOX, state)
     write_if_changed(NEXT, {"next": last + 1})
