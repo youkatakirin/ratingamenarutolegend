@@ -65,7 +65,7 @@ def get(url, token=None):
 def check_access(page):
     """Without Message Content Intent Discord answers normally but blanks every post."""
     posts = [m for m in page if m.get("type", 0) in (0, 19)]
-    if posts and not any(m.get("content") or m.get("attachments") or m.get("embeds") for m in posts):
+    if posts and not any(m.get("content") or m.get("attachments") or m.get("embeds") or m.get("message_snapshots") for m in posts):
         sys.exit("Posts come back empty: turn on Message Content Intent for the bot")
     if posts:
         print(f"channel ok, latest post {posts[0]['id']} from {posts[0]['timestamp'][:16]}, {len(posts[0].get('content', ''))} chars")
@@ -92,6 +92,16 @@ def fetch_since(after, token):
 def is_result(text):
     # Organizers write it plain or with Discord markdown: "## Rating Games # 53", "- Победитель: **Альянс**"
     return bool(text) and bool(RESULT.search(text.split("\n")[0])) and "обедитель" in text
+
+
+def unforward(msg):
+    """A forwarded post keeps its content in message_snapshots: lift it onto the message."""
+    for snap in msg.get("message_snapshots", []):
+        inner = snap.get("message", {})
+        msg["content"] = msg.get("content") or inner.get("content", "")
+        msg["embeds"] = msg.get("embeds", []) + inner.get("embeds", [])
+        msg["attachments"] = msg.get("attachments", []) + inner.get("attachments", [])
+    return msg
 
 
 def embed_text(msg):
@@ -304,7 +314,8 @@ def post_time(entry):
 def fits(entry, m):
     """Nicks can be spoofed on either side, so a few misses are fine if the bans agree."""
     text = entry["text"].lower()
-    bans = next((l.lower() for l in text.split("\n") if "баны" in l), "")
+    lines = text.split("\n")
+    bans = next((" ".join(lines[i:i + 2]) for i, l in enumerate(lines) if "баны" in l), "")  # embeds put the heroes on the next line
     nicks = sum(p["nick"].lower().strip("_") in text for p in m["players"])
     heroes = sum(p["hero"].lower() in bans for p in m["players"])
     if entry.get("embed") and not bans:
@@ -361,6 +372,7 @@ def main():
     entries = []
     for m in posts:
         seen.add(m["id"])
+        unforward(m)
         text = m.get("content", "")
         embed = embed_text(m)
         if embed:
