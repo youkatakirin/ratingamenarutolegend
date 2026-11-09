@@ -15,7 +15,8 @@ for a person or Claude to enter them.
     python3 tools/discord_sync.py --ac 7648   prints how a match page is read
 
 Post numbers come from the order of result posts, not from what the organizer typed:
-"typed" keeps the typed number so a mismatch can be seen. Posts of games already in
+"typed" keeps the typed number so a mismatch can be seen. The exception is a result
+card from a bot (embed) with a number: bots count games themselves, so their number wins. Posts of games already in
 index.html are removed on the next run, with their screenshots.
 """
 import calendar
@@ -185,7 +186,7 @@ def mark_duplicates(entries):
     for e in entries:
         if not e["result"]:
             continue
-        if e.get("embed"):
+        if e.get("embed") and not e.get("typed"):  # a numbered card is its own game
             nicks = [n.strip().lower() for n in re.findall(r"—\s*(\S[^\n]*)", e["text"])]
             for when, low, label, _ in seen:
                 if len(nicks) >= 6 and abs(post_time(e) - when) <= 40 * 60 and sum(n in low for n in nicks) >= 5:
@@ -207,8 +208,12 @@ def number(state):
     n = state["base_game"]
     for e in state["messages"]:
         if e["result"]:
-            n += 1
-            e["game"] = n
+            if e.get("embed") and e.get("typed"):
+                e["game"] = e["typed"]
+                n = max(n, e["typed"])
+            else:
+                n += 1
+                e["game"] = n
     return n
 
 
