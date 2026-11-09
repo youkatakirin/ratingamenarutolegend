@@ -243,6 +243,48 @@ h3 { font-size: 18px; letter-spacing: 0.04em; }
   .dos .sp-row .r { min-width: 0; }
 }
 
+/* Dossier comparison of two players */
+.dcmp { display: grid; gap: 12px; }
+.dcmp .dos-card { --c: var(--gold); }
+.dcmp .who { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 24px; }
+.dcmp .who > div { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.dcmp .who .nm { font-family: var(--f-display); font-size: 15px; overflow-wrap: anywhere; }
+.dcmp .who .a .nm { color: var(--ally); }
+.dcmp .who .k .nm { color: var(--aka); text-align: right; }
+.dcmp .who .k .traits { justify-content: flex-end; }
+.dcmp .who .k .dh { direction: rtl; }
+.dcmp .who .k .dh > * { direction: ltr; text-align: right; }
+.bf { display: grid; gap: 14px; }
+.bf-row { display: grid; grid-template-columns: 76px minmax(0, 1fr) 150px minmax(0, 1fr) 76px; gap: 10px; align-items: center; }
+.bf-row .l { text-align: center; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+.bf-row .va, .bf-row .vb { font-family: var(--f-display); font-size: 16px; font-variant-numeric: tabular-nums; color: var(--soft); }
+.bf-row .va { text-align: right; }
+.bf-row .va i, .bf-row .vb i { display: block; font-style: normal; font-family: var(--f-body); font-size: 11px; font-weight: 600; color: var(--muted); }
+.bf-row .va.win, .bf-row .vb.win { color: var(--ink); }
+.bf-t { position: relative; height: 10px; background: var(--line); }
+.bf-t b { position: absolute; top: 0; bottom: 0; opacity: 0.45; }
+.bf-t.a b { right: 0; background: var(--ally); }
+.bf-t.k b { left: 0; background: var(--aka); }
+.bf-t.win b { opacity: 1; }
+.bf-t.mid::after { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 2px; background: var(--soft); opacity: 0.6; }
+.bf-key { font-size: 12px; color: var(--muted); }
+.common { display: grid; gap: 8px; }
+.common-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: center; }
+.common-row .h { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.common-row .h .hi { width: 34px; height: 34px; }
+.common-row .ra, .common-row .rb { font-family: var(--f-display); font-size: 15px; color: var(--soft); font-variant-numeric: tabular-nums; }
+.common-row .ra { text-align: right; }
+.common-row .win { color: var(--gold); }
+@media (max-width: 640px) {
+  .bf-row { grid-template-columns: 58px minmax(0, 1fr) minmax(0, 1fr) 58px; grid-template-areas: "l l l l" "va ta tb vb"; gap: 6px 8px; }
+  .bf-row .l { grid-area: l; }
+  .bf-row .va { grid-area: va; } .bf-row .vb { grid-area: vb; }
+  .bf-t.a { grid-area: ta; } .bf-t.k { grid-area: tb; }
+  .dcmp .who { gap: 12px 14px; }
+  .dcmp .who.stack { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .dcmp .who.stack .k .nm { text-align: left; }
+}
+
 /* Shared bits */
 .rk {
   display: inline-block; transform: skewX(-12deg); border: 1px solid var(--line-2);
@@ -14213,13 +14255,9 @@ img { max-width: 100%; }
   }
   function num1(x) { return x.toFixed(1).replace('.', ','); }
   function wl(x) { return x.w + '–' + (x.g - x.w); }
-  // The dossier is laid out as cards: play style against the league, heroes, sides and picks, partners, awards.
-  function dossierHTML(s) {
-    var L = leagueAvg(), ps = pickStats(s), cards = [];
-    function card(cls, title, note, body) {
-      return '<section class="dos-card ' + cls + '"><div class="dos-h"><h4>' + title + '</h4>' + (note ? '<small>' + note + '</small>' : '') + '</div>' + body + '</section>';
-    }
-    // play style from per-game averages against the league average
+  // Dossier numbers, shared by the player page and the comparison of two players.
+  function dossierData(s) {
+    var L = leagueAvg(), D = { mets: [], traits: [], ps: pickStats(s) };
     var sg = 0, k = 0, d = 0, a = 0, cs = 0, sh = 0, tn = 0, td = 0, tk = 0;
     s.games.forEach(function (g) {
       var x = g.x; if (!x.kda) return;
@@ -14227,6 +14265,7 @@ img { max-width: 100%; }
       sg++; k += x.kda[0]; d += x.kda[1]; a += x.kda[2]; cs += x.cs || 0; if (tot) sh += (x.dmg || 0) / tot;
       if (typeof x.tdmg === 'number') { tn++; td += x.tdmg; tk += x.taken || 0; }
     });
+    D.sg = sg;
     if (sg >= 2) {
       k /= sg; d /= sg; a /= sg; cs /= sg; sh /= sg; if (tn) { td /= tn; tk /= tn; }
       // [label, player value, league value, shown value, higher is better (1), lower is better (−1) or neutral (0), trait if good, trait if bad]
@@ -14239,32 +14278,55 @@ img { max-width: 100%; }
       ];
       if (tn && L.td) M.push(['Урон по зданиям', td, L.td, fmt(td), 1, 'Сносит здания', '']);
       if (tn && L.tk) M.push(['Получает урона', tk, L.tk, fmt(tk), 0, 'Принимает удар', '']);
-      var traits = [], mets = '';
       M.forEach(function (m) {
         var r = m[2] ? m[1] / m[2] : 1, good = m[4] >= 0 ? r >= 1.15 : r <= 0.85, bad = m[4] > 0 ? r <= 0.85 : m[4] < 0 ? r >= 1.15 : false;
-        if (m[4] === 0 && r >= 1.2) traits.push([r - 1, m[5], 'even']);
-        else if (good && m[5]) traits.push([Math.abs(r - 1), m[5], 'good']);
-        else if (bad && m[6]) traits.push([Math.abs(r - 1), m[6], 'bad']);
-        var cls = m[4] === 0 ? '' : good ? ' good' : bad ? ' bad' : '';
-        mets += '<div class="met' + cls + '"><span class="l">' + m[0] + '</span><span class="v">' + m[3] + '<i>×' + num1(r) + '</i></span>' +
-          '<span class="bar"><b style="width:' + Math.min(r / 2, 1) * 100 + '%"></b></span></div>';
+        if (m[4] === 0 && r >= 1.2) D.traits.push([r - 1, m[5], 'even']);
+        else if (good && m[5]) D.traits.push([Math.abs(r - 1), m[5], 'good']);
+        else if (bad && m[6]) D.traits.push([Math.abs(r - 1), m[6], 'bad']);
+        D.mets.push({ l: m[0], r: r, shown: m[3], dir: m[4], cls: m[4] === 0 ? '' : good ? ' good' : bad ? ' bad' : '' });
       });
-      traits.sort(function (x, y) { return y[0] - x[0]; });
-      var tr = traits.slice(0, 4).map(function (x) { return '<span class="trait ' + x[2] + '">' + x[1] + '</span>'; }).join('') ||
-        '<span class="trait even">Ровный игрок без перекоса</span>';
-      cards.push(card('wide', 'СТИЛЬ ИГРЫ', 'в среднем за игру, ×1,0 — средний игрок лиги',
-        '<div class="traits">' + tr + '</div><div class="mets">' + mets + '</div><span class="met-key">средний уровень лиги</span>'));
+      D.traits.sort(function (x, y) { return y[0] - x[0]; });
+      D.traits = D.traits.slice(0, 4);
     }
-    var hs = Object.keys(s.heroes).sort(function (x, y) { return s.heroes[y].g - s.heroes[x].g || s.heroes[y].w - s.heroes[x].w; });
-    if (hs.length) {
-      var mh = hs[0], best = hs.filter(function (h) { return h !== mh && s.heroes[h].g >= 2 && s.heroes[h].w / s.heroes[h].g >= 0.6; })[0];
-      var hrow = function (h, label) {
-        var x = s.heroes[h];
-        return '<div class="dh">' + heroPic(h) + '<span class="n"><em>' + label + '</em>' + esc(h) + '</span>' +
-          '<span class="s"><b>' + x.g + '</b> ' + plural(x.g, 'игра', 'игры', 'игр') + ' · <b>' + wl(x) + '</b> · ' + pct(x.w, x.g) + ' побед</span></div>';
-      };
-      cards.push(card('c-gold', 'ГЕРОИ', 'в пуле ' + hs.length + ' ' + plural(hs.length, 'герой', 'героя', 'героев'),
-        hrow(mh, 'Чаще всего') + (best ? hrow(best, 'Лучший результат') : '')));
+    D.hs = Object.keys(s.heroes).sort(function (x, y) { return s.heroes[y].g - s.heroes[x].g || s.heroes[y].w - s.heroes[x].w; });
+    D.main = D.hs[0];
+    D.best = D.hs.filter(function (h) { return h !== D.main && s.heroes[h].g >= 2 && s.heroes[h].w / s.heroes[h].g >= 0.6; })[0];
+    var ms = Object.keys(s.mates).filter(function (n) { return s.mates[n].g >= 2; });
+    ms.sort(function (x, y) { return s.mates[y].w / s.mates[y].g - s.mates[x].w / s.mates[x].g || s.mates[y].g - s.mates[x].g; });
+    D.bm = ms[0];
+    D.wm = ms.length > 1 && s.mates[ms[ms.length - 1]].w / s.mates[ms[ms.length - 1]].g < 0.5 ? ms[ms.length - 1] : null;
+    return D;
+  }
+  function traitsHTML(D) {
+    return D.traits.map(function (x) { return '<span class="trait ' + x[2] + '">' + x[1] + '</span>'; }).join('') ||
+      '<span class="trait even">' + (D.sg >= 2 ? 'Ровный игрок без перекоса' : 'Мало игр со статистикой') + '</span>';
+  }
+  function heroRowHTML(s, h, label) {
+    var x = s.heroes[h];
+    return '<div class="dh">' + heroPic(h) + '<span class="n"><em>' + label + '</em>' + esc(h) + '</span>' +
+      '<span class="s"><b>' + x.g + '</b> ' + plural(x.g, 'игра', 'игры', 'игр') + ' · <b>' + wl(x) + '</b> · ' + pct(x.w, x.g) + ' побед</span></div>';
+  }
+  function mateRowHTML(s, n, cls, label) {
+    return '<div class="mate ' + cls + '">' + avatar(stats[n]) + '<span class="t"><em>' + label + '</em>' + plink(n) + '</span><span class="r">' + wl(s.mates[n]) + '</span></div>';
+  }
+  function dosCard(cls, title, note, body) {
+    return '<section class="dos-card ' + cls + '"><div class="dos-h"><h4>' + title + '</h4>' + (note ? '<small>' + note + '</small>' : '') + '</div>' + body + '</section>';
+  }
+
+  // The dossier is laid out as cards: play style against the league, heroes, sides and picks, partners, awards.
+  function dossierHTML(s) {
+    var D = dossierData(s), ps = D.ps, cards = [], card = dosCard;
+    if (D.sg >= 2) {
+      var mets = D.mets.map(function (m) {
+        return '<div class="met' + m.cls + '"><span class="l">' + m.l + '</span><span class="v">' + m.shown + '<i>×' + num1(m.r) + '</i></span>' +
+          '<span class="bar"><b style="width:' + Math.min(m.r / 2, 1) * 100 + '%"></b></span></div>';
+      }).join('');
+      cards.push(card('wide', 'СТИЛЬ ИГРЫ', 'в среднем за игру, ×1,0 — средний игрок лиги',
+        '<div class="traits">' + traitsHTML(D) + '</div><div class="mets">' + mets + '</div><span class="met-key">средний уровень лиги</span>'));
+    }
+    if (D.main) {
+      cards.push(card('c-gold', 'ГЕРОИ', 'в пуле ' + D.hs.length + ' ' + plural(D.hs.length, 'герой', 'героя', 'героев'),
+        heroRowHTML(s, D.main, 'Чаще всего') + (D.best ? heroRowHTML(s, D.best, 'Лучший результат') : '')));
     }
     function srow(label, color, x) {
       var w = x.g ? x.w / x.g * 100 : 0;
@@ -14280,15 +14342,9 @@ img { max-width: 100%; }
     cards.push(card('', 'СТОРОНЫ И ПИКИ', pnote, '<div class="split">' +
       srow('Альянс', 'var(--ally)', s.sides.alliance) + srow('Акацуки', 'var(--aka)', s.sides.akatsuki) +
       srow('Первый пик', 'var(--ink)', ps.fp) + srow('Второй пик', 'var(--soft)', ps.sp) + '</div>'));
-    var ms = Object.keys(s.mates).filter(function (n) { return s.mates[n].g >= 2; });
-    if (ms.length) {
-      ms.sort(function (x, y) { return s.mates[y].w / s.mates[y].g - s.mates[x].w / s.mates[x].g || s.mates[y].g - s.mates[x].g; });
-      var bm = ms[0], wm = ms[ms.length - 1];
-      var mrow = function (n, cls, label) {
-        return '<div class="mate ' + cls + '">' + avatar(stats[n]) + '<span class="t"><em>' + label + '</em>' + plink(n) + '</span><span class="r">' + wl(s.mates[n]) + '</span></div>';
-      };
-      cards.push(card('c-win', 'СВЯЗКИ', 'от 2 игр вместе', mrow(bm, 'good', 'Лучший напарник') +
-        (wm !== bm && s.mates[wm].w / s.mates[wm].g < 0.5 ? mrow(wm, 'bad', 'Хуже всего вместе') : '')));
+    if (D.bm) {
+      cards.push(card('c-win', 'СВЯЗКИ', 'от 2 игр вместе', mateRowHTML(s, D.bm, 'good', 'Лучший напарник') +
+        (D.wm ? mateRowHTML(s, D.wm, 'bad', 'Хуже всего вместе') : '')));
     }
     var pens = penaltyLog.filter(function (p) { return p.p === s.name; });
     var penPts = pens.reduce(function (t, p) { return t + (p.pts || 0); }, 0);
@@ -14532,6 +14588,56 @@ img { max-width: 100%; }
     cmpA.addEventListener('change', changed);
     cmpB.addEventListener('change', changed);
   })();
+  // Two dossiers side by side: A grows to the left in Alliance blue, B to the right in Akatsuki red.
+  function dossierCompare(A, B) {
+    var DA = dossierData(A), DB = dossierData(B), cards = [];
+    function who(fa, fb, cls) {
+      return '<div class="who' + (cls ? ' ' + cls : '') + '"><div class="a"><span class="nm">' + esc(A.name) + '</span>' + fa + '</div><div class="k"><span class="nm">' + esc(B.name) + '</span>' + fb + '</div></div>';
+    }
+    // one butterfly row; ra/rb are bar lengths 0..1, dir says which side is better (1 higher, −1 lower, 0 neither)
+    function bf(label, ra, rb, sa, sb, dir, mid) {
+      var wa = dir && ra !== rb && (dir > 0 ? ra > rb : ra < rb), wb = dir && ra !== rb && !wa;
+      return '<div class="bf-row"><span class="va' + (wa ? ' win' : '') + '">' + sa + '</span>' +
+        '<span class="bf-t a' + (wa ? ' win' : '') + (mid ? ' mid' : '') + '"><b style="width:' + Math.min(Math.max(ra, 0), 1) * 100 + '%"></b></span>' +
+        '<span class="l">' + label + '</span>' +
+        '<span class="bf-t k' + (wb ? ' win' : '') + (mid ? ' mid' : '') + '"><b style="width:' + Math.min(Math.max(rb, 0), 1) * 100 + '%"></b></span>' +
+        '<span class="vb' + (wb ? ' win' : '') + '">' + sb + '</span></div>';
+    }
+    if (DA.sg >= 2 && DB.sg >= 2) {
+      var rows = DA.mets.map(function (m) {
+        var o = DB.mets.filter(function (x) { return x.l === m.l; })[0];
+        if (!o) return '';
+        return bf(m.l, m.r / 2, o.r / 2, m.shown + '<i>×' + num1(m.r) + '</i>', o.shown + '<i>×' + num1(o.r) + '</i>', m.dir, true);
+      }).join('');
+      cards.push(dosCard('wide', 'СТИЛЬ ИГРЫ', 'в среднем за игру, черта — средний игрок лиги',
+        who('<div class="traits">' + traitsHTML(DA) + '</div>', '<div class="traits">' + traitsHTML(DB) + '</div>') + '<div class="bf">' + rows + '</div>'));
+    }
+    var pa = DA.ps, pb = DB.ps;
+    function wr(x) { return x.g ? x.w / x.g : 0; }
+    function wtxt(x) { return x.g ? wl(x) + '<i>' + Math.round(wr(x) * 100) + '%</i>' : '—'; }
+    cards.push(dosCard('wide', 'СТОРОНЫ И ПИКИ', 'победы – поражения и процент побед', '<div class="bf">' +
+      [['Альянс', A.sides.alliance, B.sides.alliance], ['Акацуки', A.sides.akatsuki, B.sides.akatsuki], ['Первый пик', pa.fp, pb.fp], ['Второй пик', pa.sp, pb.sp]].map(function (r) {
+        return bf(r[0], wr(r[1]), wr(r[2]), wtxt(r[1]), wtxt(r[2]), r[1].g && r[2].g ? 1 : 0, true);
+      }).join('') + '</div>'));
+    function heroes(s, D) {
+      return D.main ? heroRowHTML(s, D.main, 'Чаще всего') + (D.best ? heroRowHTML(s, D.best, 'Лучший результат') : '') : '<span class="muted">Пока нет</span>';
+    }
+    var common = Object.keys(A.heroes).filter(function (h) { return B.heroes[h]; }).sort(function (x, y) {
+      return (B.heroes[y].g + A.heroes[y].g) - (B.heroes[x].g + A.heroes[x].g);
+    }).slice(0, 5);
+    var crow = common.map(function (h) {
+      var a = A.heroes[h], b = B.heroes[h], wa = wr(a) > wr(b), wb = wr(b) > wr(a);
+      return '<div class="common-row"><span class="ra' + (wa ? ' win' : '') + '">' + wl(a) + '</span><span class="h">' + heroPic(h) + esc(h) + '</span><span class="rb' + (wb ? ' win' : '') + '">' + wl(b) + '</span></div>';
+    }).join('');
+    cards.push(dosCard('wide', 'ГЕРОИ', '', who(heroes(A, DA), heroes(B, DB)) +
+      (crow ? '<div class="dos-h"><h4 style="color:var(--gold)">ОБЩИЕ ГЕРОИ</h4><small>победы – поражения, лучший результат выделен</small></div><div class="common">' + crow + '</div>' : '')));
+    function mates(s, D) {
+      return D.bm ? mateRowHTML(s, D.bm, 'good', 'Лучший напарник') + (D.wm ? mateRowHTML(s, D.wm, 'bad', 'Хуже всего вместе') : '') : '<span class="muted">Пока мало игр вместе</span>';
+    }
+    cards.push(dosCard('wide', 'СВЯЗКИ', 'от 2 игр вместе', who(mates(A, DA), mates(B, DB), 'stack')));
+    return '<div class="dos dcmp">' + cards.join('') + '</div>';
+  }
+
   function renderCompare(an, bn) {
     var A = stats[an], B = stats[bn];
     cmpA.value = slugFor(an); cmpB.value = slugFor(bn);
@@ -14588,6 +14694,7 @@ img { max-width: 100%; }
       '<div class="tile"><span class="k">В одной команде</span><span class="v">' + together.w + ' – ' + (together.g - together.w) + '</span><span class="s">' +
         (together.g ? 'победы – поражения · игры ' + mlinks(together.list) : 'ещё не играли вместе') + '</span></div></div>';
     html += '<div class="panel cmp-table">' + table + '</div>';
+    html += '<div class="sec" style="gap:10px"><h3>СРАВНЕНИЕ ДОСЬЕ</h3>' + dossierCompare(A, B) + '</div>';
     if (!A.sg || !B.sg) html += '<p class="note" style="margin:0">K/D/A и урон есть только по играм со статистикой.</p>';
     out.innerHTML = html;
   }
