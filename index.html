@@ -171,6 +171,78 @@ h3 { font-size: 18px; letter-spacing: 0.04em; }
   .lead-stat.main .v { font-size: 36px; }
 }
 
+/* Player dossier */
+.dos { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px; }
+.dos-card {
+  --c: var(--ally); position: relative; display: grid; gap: 14px; align-content: start;
+  padding: 16px 18px 18px; background: linear-gradient(180deg, color-mix(in srgb, var(--c) 9%, transparent), transparent 70px), var(--panel);
+  border: 1px solid var(--line); border-top: 2px solid var(--c);
+}
+.dos-card.wide { grid-column: 1 / -1; }
+.dos-card.c-gold { --c: var(--gold); }
+.dos-card.c-aka { --c: var(--aka); }
+.dos-card.c-win { --c: var(--win); }
+.dos-h { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 10px; }
+.dos-h h4 { white-space: nowrap; margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 14px; letter-spacing: 0.14em; color: var(--c); }
+.dos-h small { font-size: 12px; color: var(--muted); text-align: right; }
+.dos .traits { display: flex; flex-wrap: wrap; gap: 8px; }
+.dos .trait { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; font-size: 14px; font-weight: 600; border: 1px solid; }
+.dos .trait::before { content: ""; width: 7px; height: 7px; transform: rotate(45deg); background: currentColor; flex: none; }
+.dos .trait.good { color: var(--win); background: rgba(79, 209, 139, 0.1); border-color: rgba(79, 209, 139, 0.35); }
+.dos .trait.bad { color: var(--loss); background: rgba(255, 107, 127, 0.1); border-color: rgba(255, 107, 127, 0.35); }
+.dos .trait.even { color: var(--soft); background: rgba(255, 255, 255, 0.04); border-color: var(--line-2); }
+.dos .mets { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px 28px; }
+.dos .met { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: baseline; }
+.dos .met .l { font-size: 14px; color: var(--soft); }
+.dos .met .v { font-family: var(--f-display); font-size: 17px; font-variant-numeric: tabular-nums; }
+.dos .met .v i { font-style: normal; font-family: var(--f-body); font-size: 12px; font-weight: 600; margin-left: 6px; color: var(--muted); }
+.dos .met.good .v i { color: var(--win); }
+.dos .met.bad .v i { color: var(--loss); }
+.dos .bar { grid-column: 1 / -1; position: relative; height: 8px; background: var(--line); overflow: visible; }
+.dos .bar b { position: absolute; inset: 0 auto 0 0; background: var(--ally); }
+.dos .met.good .bar b { background: var(--win); }
+.dos .met.bad .bar b { background: var(--loss); }
+.dos .bar::after { content: ""; position: absolute; left: 50%; top: -4px; bottom: -4px; width: 2px; background: var(--soft); opacity: 0.7; }
+.dos .met-key { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
+.dos .met-key::before { content: ""; width: 2px; height: 12px; background: var(--soft); opacity: 0.7; }
+.dos .dh { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; align-items: center; }
+.dos .dh .hi { width: 58px; height: 58px; grid-row: span 2; border-color: var(--c); }
+.dos .dh .hi.none { display: grid; place-items: center; }
+.dos .dh .n { font-family: var(--f-display); font-size: 18px; line-height: 1.1; }
+.dos .dh .n em { font-style: normal; font-family: var(--f-body); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--c); display: block; margin-bottom: 3px; }
+.dos .dh .s { font-size: 13px; color: var(--muted); }
+.dos .dh .s b { color: var(--ink); font-weight: 600; }
+.dos .split { display: grid; gap: 12px; }
+.dos .sp-row { display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+.dos .sp-row .l { font-size: 14px; font-weight: 600; }
+.dos .sp-row .r { font-family: var(--f-display); font-size: 15px; font-variant-numeric: tabular-nums; min-width: 92px; text-align: right; }
+.dos .sp-row .r i { font-style: normal; font-family: var(--f-body); font-size: 12px; color: var(--muted); margin-left: 6px; }
+.dos .wbar { position: relative; height: 10px; background: rgba(255, 107, 127, 0.28); }
+.dos .wbar b { position: absolute; inset: 0 auto 0 0; background: var(--win); }
+.dos .wbar.none { background: var(--line); }
+.dos .mate { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); background: rgba(0, 0, 0, 0.18); }
+.dos .mate .ava { width: 44px; height: 44px; font-size: 18px; }
+.dos .mate .t { display: grid; gap: 2px; min-width: 0; }
+.dos .mate .t em { font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.dos .mate.good .t em { color: var(--win); }
+.dos .mate.bad .t em { color: var(--loss); }
+.dos .mate .plink { font-weight: 700; overflow-wrap: anywhere; }
+.dos .mate .r { font-family: var(--f-display); font-size: 16px; font-variant-numeric: tabular-nums; }
+.dos .dz-awds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.dos .dz-awd { display: grid; gap: 2px; padding: 12px; text-align: center; border: 1px solid var(--line); background: rgba(0, 0, 0, 0.18); }
+.dos .dz-awd .v { font-family: var(--f-display); font-size: 30px; line-height: 1; }
+.dos .dz-awd .l { font-size: 12px; color: var(--muted); }
+.dos .dz-awd.mvp .v { color: var(--gold); text-shadow: 0 0 18px rgba(255, 201, 74, 0.35); }
+.dos .dz-awd.svp .v { color: #c9d3e0; }
+.dos .dz-awd.neg .v { color: var(--loss); }
+.dos .dz-awd.neg.clean .v { color: var(--win); }
+.dos-note { margin: 0; font-size: 13px; color: var(--muted); }
+@media (max-width: 600px) {
+  .dos-card { padding: 14px; }
+  .dos .sp-row { grid-template-columns: 92px minmax(0, 1fr) auto; gap: 10px; }
+  .dos .sp-row .r { min-width: 0; }
+}
+
 /* Shared bits */
 .rk {
   display: inline-block; transform: skewX(-12deg); border: 1px solid var(--line-2);
@@ -14141,15 +14213,12 @@ img { max-width: 100%; }
   }
   function num1(x) { return x.toFixed(1).replace('.', ','); }
   function wl(x) { return x.w + '–' + (x.g - x.w); }
-  function dossier(s) {
-    var L = leagueAvg(), ps = pickStats(s), out = [];
-    var wr = s.g ? Math.round(s.w / s.g * 100) : 0;
-    out.push(s.place + '-е место из ' + rows.length + ' с ' + signed(s.pts) + ' ' + plural(Math.abs(s.pts), 'очком', 'очками', 'очками') + ': ' +
-      s.w + ' ' + plural(s.w, 'победа', 'победы', 'побед') + ' и ' + s.l + ' ' + plural(s.l, 'поражение', 'поражения', 'поражений') +
-      ' за ' + s.g + ' ' + plural(s.g, 'игру', 'игры', 'игр') + ', винрейт ' + wr + '%.');
-    var last = s.form.slice(-5), lw = last.filter(function (f) { return f === 'w'; }).length;
-    var tail = s.streak >= 3 ? ' — сейчас идёт серия из ' + s.streak + ' побед подряд' : s.lstreak >= 3 ? ' — сейчас ' + s.lstreak + ' ' + plural(s.lstreak, 'поражение', 'поражения', 'поражений') + ' подряд' : '';
-    if (s.g > 1) out.push((last.length >= 5 ? 'Форма в последних 5 играх: ' : 'Форма: ') + lw + '–' + (last.length - lw) + tail + '.');
+  // The dossier is laid out as cards: play style against the league, heroes, sides and picks, partners, awards.
+  function dossierHTML(s) {
+    var L = leagueAvg(), ps = pickStats(s), cards = [];
+    function card(cls, title, note, body) {
+      return '<section class="dos-card ' + cls + '"><div class="dos-h"><h4>' + title + '</h4>' + (note ? '<small>' + note + '</small>' : '') + '</div>' + body + '</section>';
+    }
     // play style from per-game averages against the league average
     var sg = 0, k = 0, d = 0, a = 0, cs = 0, sh = 0, tn = 0, td = 0, tk = 0;
     s.games.forEach(function (g) {
@@ -14160,51 +14229,75 @@ img { max-width: 100%; }
     });
     if (sg >= 2) {
       k /= sg; d /= sg; a /= sg; cs /= sg; sh /= sg; if (tn) { td /= tn; tk /= tn; }
-      var tr = [];
-      function add(ratio, hi, lo, textHi, textLo) {
-        if (ratio >= hi) tr.push([ratio - 1, textHi]); else if (lo && ratio <= lo) tr.push([1 - ratio, textLo]);
-      }
-      add(sh / L.share, 1.15, 0.85, 'берёт на себя основной урон команды (в среднем ' + Math.round(sh * 100) + '% урона по героям)', 'наносит меньше урона, чем средний игрок (' + Math.round(sh * 100) + '% урона команды)');
-      add(k / L.k, 1.25, 0.7, 'много убивает (' + num1(k) + ' за игру)', 'редко добивает сам (' + num1(k) + ' убийства за игру)');
-      add(a / L.a, 1.2, 0, 'постоянно участвует в драках (' + num1(a) + ' помощи за игру)');
-      add(L.d / Math.max(d, 0.1), 1.25, 0.8, 'редко умирает (' + num1(d) + ' смерти за игру)', 'часто умирает (' + num1(d) + ' смерти за игру)');
-      add(cs / L.cs, 1.2, 0.75, 'хорошо фармит (' + Math.round(cs) + ' крипов за игру)', 'мало фармит (' + Math.round(cs) + ' крипов)');
-      if (tn && L.td) add(td / L.td, 1.3, 0, 'активно сносит здания (' + fmt(Math.round(td)) + ' урона по зданиям за игру)');
-      if (tn && L.tk) add(tk / L.tk, 1.2, 0, 'принимает на себя много урона (' + fmt(Math.round(tk)) + ' за игру)');
-      tr.sort(function (x, y) { return y[0] - x[0]; });
-      tr = tr.slice(0, 3).map(function (t) { return t[1]; });
-      out.push(tr.length ? 'По стилю ' + (tr.length > 1 ? tr.slice(0, -1).join(', ') + ' и ' + tr[tr.length - 1] : tr[0]) + '.' :
-        'Статистика близка к средней по лиге — ровный игрок без явного перекоса в урон, фарм или помощь.');
+      // [label, player value, league value, shown value, higher is better (1), lower is better (−1) or neutral (0), trait if good, trait if bad]
+      var M = [
+        ['Доля урона команды', sh, L.share, Math.round(sh * 100) + '%', 1, 'Главный урон команды', 'Мало урона'],
+        ['Убийства за игру', k, L.k, num1(k), 1, 'Много убивает', 'Редко добивает'],
+        ['Помощь за игру', a, L.a, num1(a), 1, 'Командный игрок', ''],
+        ['Смерти за игру', d, L.d, num1(d), -1, 'Живучий', 'Часто умирает'],
+        ['Крипы за игру', cs, L.cs, fmt(cs), 1, 'Фармер', 'Мало фармит']
+      ];
+      if (tn && L.td) M.push(['Урон по зданиям', td, L.td, fmt(td), 1, 'Сносит здания', '']);
+      if (tn && L.tk) M.push(['Получает урона', tk, L.tk, fmt(tk), 0, 'Принимает удар', '']);
+      var traits = [], mets = '';
+      M.forEach(function (m) {
+        var r = m[2] ? m[1] / m[2] : 1, good = m[4] >= 0 ? r >= 1.15 : r <= 0.85, bad = m[4] > 0 ? r <= 0.85 : m[4] < 0 ? r >= 1.15 : false;
+        if (m[4] === 0 && r >= 1.2) traits.push([r - 1, m[5], 'even']);
+        else if (good && m[5]) traits.push([Math.abs(r - 1), m[5], 'good']);
+        else if (bad && m[6]) traits.push([Math.abs(r - 1), m[6], 'bad']);
+        var cls = m[4] === 0 ? '' : good ? ' good' : bad ? ' bad' : '';
+        mets += '<div class="met' + cls + '"><span class="l">' + m[0] + '</span><span class="v">' + m[3] + '<i>×' + num1(r) + '</i></span>' +
+          '<span class="bar"><b style="width:' + Math.min(r / 2, 1) * 100 + '%"></b></span></div>';
+      });
+      traits.sort(function (x, y) { return y[0] - x[0]; });
+      var tr = traits.slice(0, 4).map(function (x) { return '<span class="trait ' + x[2] + '">' + x[1] + '</span>'; }).join('') ||
+        '<span class="trait even">Ровный игрок без перекоса</span>';
+      cards.push(card('wide', 'СТИЛЬ ИГРЫ', 'в среднем за игру, ×1,0 — средний игрок лиги',
+        '<div class="traits">' + tr + '</div><div class="mets">' + mets + '</div><span class="met-key">средний уровень лиги</span>'));
     }
     var hs = Object.keys(s.heroes).sort(function (x, y) { return s.heroes[y].g - s.heroes[x].g || s.heroes[y].w - s.heroes[x].w; });
     if (hs.length) {
       var mh = hs[0], best = hs.filter(function (h) { return h !== mh && s.heroes[h].g >= 2 && s.heroes[h].w / s.heroes[h].g >= 0.6; })[0];
-      out.push('Чаще всего играет на ' + mh + ' (' + s.heroes[mh].g + ' ' + plural(s.heroes[mh].g, 'игра', 'игры', 'игр') + ', ' + wl(s.heroes[mh]) + ')' +
-        (hs.length > 1 ? ', всего в пуле ' + hs.length + ' ' + plural(hs.length, 'герой', 'героя', 'героев') : '') +
-        (best ? '; лучший результат — на ' + best + ' (' + wl(s.heroes[best]) + ')' : '') + '.');
+      var hrow = function (h, label) {
+        var x = s.heroes[h];
+        return '<div class="dh">' + heroPic(h) + '<span class="n"><em>' + label + '</em>' + esc(h) + '</span>' +
+          '<span class="s"><b>' + x.g + '</b> ' + plural(x.g, 'игра', 'игры', 'игр') + ' · <b>' + wl(x) + '</b> · ' + pct(x.w, x.g) + ' побед</span></div>';
+      };
+      cards.push(card('c-gold', 'ГЕРОИ', 'в пуле ' + hs.length + ' ' + plural(hs.length, 'герой', 'героя', 'героев'),
+        hrow(mh, 'Чаще всего') + (best ? hrow(best, 'Лучший результат') : '')));
     }
-    var pickTxt = 'За Альянс ' + wl(s.sides.alliance) + ', за Акацуки ' + wl(s.sides.akatsuki) + '; с первым пиком ' + wl(ps.fp) + ', со вторым ' + wl(ps.sp);
+    function srow(label, color, x) {
+      var w = x.g ? x.w / x.g * 100 : 0;
+      return '<div class="sp-row"><span class="l" style="color:' + color + '">' + label + '</span>' +
+        '<span class="wbar' + (x.g ? '' : ' none') + '"><b style="width:' + w + '%"></b></span>' +
+        '<span class="r">' + (x.g ? wl(x) + '<i>' + Math.round(w) + '%</i>' : '—') + '</span></div>';
+    }
+    var pnote = '';
     if (ps.fp.g >= 2 && ps.sp.g >= 2) {
       var dfp = ps.fp.w / ps.fp.g - ps.sp.w / ps.sp.g;
-      if (Math.abs(dfp) >= 0.25) pickTxt += ' — заметно сильнее ' + (dfp > 0 ? 'с первым пиком' : 'со второго пика');
+      if (Math.abs(dfp) >= 0.25) pnote = 'сильнее ' + (dfp > 0 ? 'с первым пиком' : 'со вторым пиком');
     }
-    out.push(pickTxt + '.');
+    cards.push(card('', 'СТОРОНЫ И ПИКИ', pnote, '<div class="split">' +
+      srow('Альянс', 'var(--ally)', s.sides.alliance) + srow('Акацуки', 'var(--aka)', s.sides.akatsuki) +
+      srow('Первый пик', 'var(--ink)', ps.fp) + srow('Второй пик', 'var(--soft)', ps.sp) + '</div>'));
     var ms = Object.keys(s.mates).filter(function (n) { return s.mates[n].g >= 2; });
-    var mates = '';
     if (ms.length) {
       ms.sort(function (x, y) { return s.mates[y].w / s.mates[y].g - s.mates[x].w / s.mates[x].g || s.mates[y].g - s.mates[x].g; });
       var bm = ms[0], wm = ms[ms.length - 1];
-      mates = 'Лучшая связка — с ' + bm + ' (' + wl(s.mates[bm]) + ')';
-      if (wm !== bm && s.mates[wm].w / s.mates[wm].g < 0.5) mates += ', хуже всего получается с ' + wm + ' (' + wl(s.mates[wm]) + ')';
-      mates += '.';
+      var mrow = function (n, cls, label) {
+        return '<div class="mate ' + cls + '">' + avatar(stats[n]) + '<span class="t"><em>' + label + '</em>' + plink(n) + '</span><span class="r">' + wl(s.mates[n]) + '</span></div>';
+      };
+      cards.push(card('c-win', 'СВЯЗКИ', 'от 2 игр вместе', mrow(bm, 'good', 'Лучший напарник') +
+        (wm !== bm && s.mates[wm].w / s.mates[wm].g < 0.5 ? mrow(wm, 'bad', 'Хуже всего вместе') : '')));
     }
     var pens = penaltyLog.filter(function (p) { return p.p === s.name; });
     var penPts = pens.reduce(function (t, p) { return t + (p.pts || 0); }, 0);
-    var fin = (s.mvp || s.svp ? 'На счету ' + s.mvp + ' MVP и ' + s.svp + ' SVP' : 'Наград MVP/SVP пока нет') +
-      (pens.length ? ', ' + pens.length + ' ' + plural(pens.length, 'штраф', 'штрафа', 'штрафов') + ' (' + signed(penPts) + ')' : ', без штрафов') + '.';
-    if (s.g < 5) fin += ' Игр пока мало — выводы предварительные.';
-    out.push(mates ? mates + ' ' + fin : fin);
-    return out.join(' ');
+    cards.push(card('c-aka wide', 'НАГРАДЫ И ШТРАФЫ', '', '<div class="dz-awds">' +
+      '<div class="dz-awd mvp"><span class="v">' + s.mvp + '</span><span class="l">MVP</span></div>' +
+      '<div class="dz-awd svp"><span class="v">' + s.svp + '</span><span class="l">SVP</span></div>' +
+      '<div class="dz-awd neg' + (pens.length ? '' : ' clean') + '"><span class="v">' + (pens.length ? signed(penPts) : '0') + '</span><span class="l">' +
+      (pens.length ? pens.length + ' ' + plural(pens.length, 'штраф', 'штрафа', 'штрафов') : 'без штрафов') + '</span></div></div>'));
+    return '<div class="dos">' + cards.join('') + '</div>' + (s.g < 5 ? '<p class="dos-note">Игр пока мало, выводы предварительные.</p>' : '');
   }
 
   // dir −1: best win rate first (partners); dir 1: worst first (opponents who beat this player).
@@ -14311,7 +14404,7 @@ img { max-width: 100%; }
       (s.champs || []).map(function (c) { return '<span class="champ" title="Больше всех побед на этом герое"><span>Лучший ' + esc(c) + '</span></span>'; }).join('') + '</div></div>' +
       '<div class="prof-actions"><button type="button" class="btn primary" id="pc-png"><span>Скачать карточку игрока</span></button><span class="note" id="pc-msg" role="status"></span></div>' +
       '<div class="tiles">' + tiles.map(function (t) { return '<div class="tile"><span class="k">' + t[0] + '</span><span class="v">' + t[1] + '</span><span class="s">' + esc(t[2]) + '</span></div>'; }).join('') + '</div>';
-    html += '<div class="sec" style="gap:10px"><h3>ДОСЬЕ</h3><div class="panel" style="padding:14px 16px"><p style="margin:0;line-height:1.65">' + esc(dossier(s)) + '</p></div></div>';
+    html += '<div class="sec" style="gap:10px"><h3>ДОСЬЕ</h3>' + dossierHTML(s) + '</div>';
     html += '<div class="sec" style="gap:10px"><h3>ОЧКИ ПО ИГРАМ</h3><div class="panel chart" id="pts-chart"></div></div>';
     chartFor = s;
     if (s.sg < s.g) html += '<p class="note" style="margin:0">K/D/A и урон посчитаны по ' + s.sg + ' из ' + s.g + ' ' + plural(s.g, 'игры', 'игр', 'игр') + ': для остальных статистики нет.</p>';
