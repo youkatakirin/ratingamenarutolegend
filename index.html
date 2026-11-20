@@ -17797,7 +17797,7 @@ img { max-width: 100%; }
     };
     var s = st(name);
     // reset: true sets the player's points to zero at that moment (an organizer decision, not a penalty)
-    if (info.reset) e.pts = -s.pts;
+    if (info.reset) { e.pts = -s.pts; e.reset = true; }
     s.pts += e.pts; if (!info.reset) s.blocks++;
     penaltyLog.push(e);
     return e;
@@ -18437,7 +18437,7 @@ img { max-width: 100%; }
       cards.push(card('c-win', 'СВЯЗКИ', 'от 2 игр вместе', mateRowHTML(s, D.bm, 'good', 'Лучший напарник') +
         (D.wm ? mateRowHTML(s, D.wm, 'bad', 'Хуже всего вместе') : '')));
     }
-    var pens = penaltyLog.filter(function (p) { return p.p === s.name; });
+    var pens = penaltyLog.filter(function (p) { return p.p === s.name && !p.reset; });
     var penPts = pens.reduce(function (t, p) { return t + (p.pts || 0); }, 0);
     cards.push(card('c-aka wide', 'НАГРАДЫ И ШТРАФЫ', '', '<div class="dz-awds">' +
       '<div class="dz-awd mvp"><span class="v">' + s.mvp + '</span><span class="l">MVP</span></div>' +
@@ -18581,7 +18581,7 @@ img { max-width: 100%; }
 
     html += '<div class="cols">' + pairBlock('ЛУЧШИЕ СВЯЗКИ', s.mates, -1, 'Пока нет напарников с 3 совместными играми') +
       pairBlock('НЕУДОБНЫЕ СОПЕРНИКИ', s.foes, 1, 'Пока нет соперников с 3 играми друг против друга') + '</div>';
-    var pens = penaltyLog.filter(function (p) { return p.p === s.name; });
+    var pens = penaltyLog.filter(function (p) { return p.p === s.name && !p.reset; });
     if (pens.length) {
       html += '<div class="sec" style="gap:10px"><h3>НАКАЗАНИЯ</h3><div class="panel list">' + pens.map(function (p) {
         return '<div class="list-row"><span style="min-width:0">' + ruleLink(p.reason, p.rule) + (p.match ? ' <span class="muted">· игра #' + p.match + '</span>' : '') + '</span><span class="meta">' + esc(dmy(p.date)) + '</span><span style="color:var(--loss)">' + esc(penText(p)) + '</span></div>';
