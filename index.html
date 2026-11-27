@@ -638,8 +638,34 @@ footer .line { border-top: 1px solid var(--line); padding-top: 16px; display: fl
 .btn:hover { border-color: var(--ally); }
 .btn.primary { background: var(--ally); border-color: var(--ally); color: #07090f; box-shadow: 0 0 18px rgba(47, 155, 255, 0.35); }
 .tl { display: grid; gap: 6px; }
-.tl-row { display: grid; grid-template-columns: 76px minmax(0, 1fr); background: rgba(15, 19, 29, 0.9); border: 1px solid var(--line); }
-.tl-lbl { display: grid; place-items: center; font-family: var(--f-display); font-size: 30px; color: #07090f; cursor: pointer; }
+.tl-row { display: grid; grid-template-columns: 92px minmax(0, 1fr); background: rgba(15, 19, 29, 0.9); border: 1px solid var(--line); }
+.tl-lbl { display: grid; place-items: center; padding: 4px; font-family: var(--f-display); font-size: 30px; color: #07090f; cursor: pointer; text-align: center; }
+.tl-lt { line-height: 1.05; overflow-wrap: anywhere; }
+.tl-lt.m, .tl-name.m { font-size: 22px; }
+.tl-lt.s, .tl-name.s { font-size: 16px; }
+.tl-lt.xs, .tl-name.xs { font-size: 13px; }
+.tl.editing .tl-row { grid-template-columns: 92px minmax(0, 1fr) auto; }
+.tl-name {
+  width: 100%; min-width: 0; font-family: var(--f-display); font-size: 30px; line-height: 1.1; text-align: center; color: inherit;
+  background: rgba(0, 0, 0, 0.14); border: 1px dashed currentColor; padding: 6px 2px; cursor: text; resize: none; overflow: hidden;
+}
+.tl-name:focus { outline: 2px solid currentColor; outline-offset: -4px; background: rgba(0, 0, 0, 0.22); }
+.tl-ctl { display: grid; grid-template-columns: repeat(2, 34px); gap: 4px; align-content: center; padding: 6px 8px; border-left: 1px solid var(--line); }
+.tl-ctl button {
+  font: inherit; font-size: 13px; width: 34px; height: 30px; color: var(--soft); background: var(--panel-2); border: 1px solid var(--line-2); cursor: pointer;
+}
+.tl-ctl button:hover:not(:disabled) { color: var(--ink); border-color: var(--ally); }
+.tl-ctl button.del:hover:not(:disabled) { border-color: var(--aka); color: var(--aka); }
+.tl-ctl button:disabled { opacity: 0.35; cursor: default; }
+.tl-sw { position: relative; width: 34px; height: 30px; border: 1px solid var(--line-2); cursor: pointer; }
+.tl-sw input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: 0; padding: 0; }
+.tl-edit-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding-top: 4px; }
+.tl-edit-bar .btn:disabled { opacity: 0.4; cursor: default; }
+@media (max-width: 600px) {
+  .tl-row, .tl.editing .tl-row { grid-template-columns: 70px minmax(0, 1fr); }
+  .tl.editing .tl-ctl { grid-column: 1 / -1; grid-template-columns: repeat(4, 34px); justify-content: end; border-left: 0; border-top: 1px solid var(--line); padding: 6px; }
+  .tl-lbl { font-size: 26px; }
+}
 .tl-zone { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; padding: 8px; min-height: 62px; }
 .tl-zone.over { background: rgba(47, 155, 255, 0.08); outline: 1px dashed var(--ally); outline-offset: -4px; }
 .tl-pool { min-height: 70px; }
@@ -1088,6 +1114,7 @@ img { max-width: 100%; }
     <div class="tl-tools">
       <button type="button" class="btn" id="tl-auto"><span id="tl-auto-t">Заполнить по рейтингу</span></button>
       <button type="button" class="btn" id="tl-clear"><span>Очистить</span></button>
+      <button type="button" class="btn" id="tl-edit" aria-controls="tl-board"><span id="tl-edit-t">Настроить полки</span></button>
       <button type="button" class="btn" id="tl-link"><span>Ссылка на мой тир-лист</span></button>
       <button type="button" class="btn primary" id="tl-png"><span>Скачать картинку</span></button>
       <span class="note" id="tl-msg" role="status"></span>
@@ -19224,6 +19251,411 @@ img { max-width: 100%; }
       ],
       "shot": "shots/game-118.jpg",
       "card": "cards/game-118.png"
+    },
+    {
+      "n": 119,
+      "date": "2026-11-27T23:02",
+      "org": "laineq",
+      "firstPick": "alliance",
+      "winner": "alliance",
+      "bans": [
+        "Обито",
+        "Наруто",
+        "Ямато",
+        "Итачи"
+      ],
+      "alliance": [
+        {
+          "p": "Magistor",
+          "d": 20,
+          "hero": "Забуза",
+          "kda": [
+            10,
+            6,
+            7
+          ],
+          "cs": 268,
+          "gold": 30457,
+          "dmg": 27416,
+          "lvl": 30
+        },
+        {
+          "p": "black_reaper",
+          "d": 20,
+          "hero": "Какаши",
+          "kda": [
+            9,
+            6,
+            11
+          ],
+          "cs": 164,
+          "gold": 27197,
+          "dmg": 30451,
+          "lvl": 30
+        },
+        {
+          "p": "ByGbIGA",
+          "d": 20,
+          "hero": "Орочимару",
+          "kda": [
+            7,
+            6,
+            11
+          ],
+          "cs": 278,
+          "gold": 31719,
+          "dmg": 46076,
+          "lvl": 30,
+          "award": "MVP"
+        },
+        {
+          "p": "SoulWind",
+          "d": 20,
+          "hero": "Раса",
+          "kda": [
+            3,
+            5,
+            11
+          ],
+          "cs": 166,
+          "gold": 26226,
+          "dmg": 35460,
+          "lvl": 30
+        }
+      ],
+      "akatsuki": [
+        {
+          "p": "Reyin",
+          "d": -20,
+          "hero": "Сасори",
+          "kda": [
+            6,
+            5,
+            13
+          ],
+          "cs": 197,
+          "gold": 24589,
+          "dmg": 32486,
+          "lvl": 30,
+          "award": "SVP"
+        },
+        {
+          "p": "nekt0",
+          "d": -20,
+          "hero": "Хан",
+          "kda": [
+            6,
+            9,
+            8
+          ],
+          "cs": 192,
+          "gold": 23569,
+          "dmg": 28916,
+          "lvl": 30
+        },
+        {
+          "p": "laineq",
+          "d": -20,
+          "hero": "Киллер Би",
+          "kda": [
+            6,
+            7,
+            7
+          ],
+          "cs": 304,
+          "gold": 29416,
+          "dmg": 26713,
+          "lvl": 30
+        },
+        {
+          "p": "Myamm",
+          "d": -20,
+          "hero": "Гаара",
+          "kda": [
+            4,
+            10,
+            9
+          ],
+          "cs": 121,
+          "gold": 20400,
+          "dmg": 11417,
+          "lvl": 30
+        }
+      ],
+      "src": 8508,
+      "duration": "66:38",
+      "kills": [
+        29,
+        22
+      ],
+      "card": "cards/game-119.png"
+    },
+    {
+      "n": 120,
+      "date": "2026-11-28T00:03",
+      "org": "laineq",
+      "firstPick": "akatsuki",
+      "winner": "akatsuki",
+      "bans": [
+        "Забуза",
+        "Какаши",
+        "Орочимару",
+        "Раса"
+      ],
+      "alliance": [
+        {
+          "p": "d4vd",
+          "d": -20,
+          "hero": "Югито",
+          "kda": [
+            7,
+            8,
+            3
+          ],
+          "cs": 179,
+          "gold": 17159,
+          "dmg": 9936,
+          "lvl": 27
+        },
+        {
+          "p": "Myamm",
+          "d": -20,
+          "hero": "Данзо",
+          "kda": [
+            4,
+            11,
+            3
+          ],
+          "cs": 96,
+          "gold": 13741,
+          "dmg": 11898,
+          "lvl": 23
+        },
+        {
+          "p": "Magistor",
+          "d": -20,
+          "hero": "Йондайме Эй",
+          "kda": [
+            2,
+            6,
+            5
+          ],
+          "cs": 144,
+          "gold": 13592,
+          "dmg": 4474,
+          "lvl": 25
+        },
+        {
+          "p": "Reyin",
+          "d": -20,
+          "hero": "Обито",
+          "kda": [
+            1,
+            7,
+            8
+          ],
+          "cs": 139,
+          "gold": 13741,
+          "dmg": 10281,
+          "lvl": 25,
+          "award": "SVP"
+        }
+      ],
+      "akatsuki": [
+        {
+          "p": "laineq",
+          "d": 20,
+          "hero": "Хаку",
+          "kda": [
+            9,
+            2,
+            7
+          ],
+          "cs": 245,
+          "gold": 27873,
+          "dmg": 20108,
+          "lvl": 30,
+          "award": "MVP"
+        },
+        {
+          "p": "black_reaper",
+          "d": 20,
+          "hero": "Итачи",
+          "kda": [
+            7,
+            2,
+            9
+          ],
+          "cs": 153,
+          "gold": 21676,
+          "dmg": 15636,
+          "lvl": 30
+        },
+        {
+          "p": "KimEtsu_No",
+          "d": 20,
+          "hero": "Сасори",
+          "kda": [
+            6,
+            6,
+            7
+          ],
+          "cs": 71,
+          "gold": 16922,
+          "dmg": 20422,
+          "lvl": 27
+        },
+        {
+          "p": "nekt0",
+          "d": 20,
+          "hero": "Асума",
+          "kda": [
+            4,
+            8,
+            8
+          ],
+          "cs": 115,
+          "gold": 17880,
+          "dmg": 13024,
+          "lvl": 27
+        }
+      ],
+      "src": 8514,
+      "duration": "45:36",
+      "kills": [
+        14,
+        26
+      ],
+      "card": "cards/game-120.png"
+    },
+    {
+      "n": 121,
+      "date": "2026-11-28T01:17",
+      "org": "laineq",
+      "firstPick": "alliance",
+      "winner": "akatsuki",
+      "bans": [
+        "Хаку",
+        "Итачи",
+        "Сасори",
+        "Асума"
+      ],
+      "alliance": [
+        {
+          "p": "laineq",
+          "d": -20,
+          "hero": "Саске",
+          "kda": [
+            4,
+            5,
+            2
+          ],
+          "gold": 23225,
+          "dmg": 15728,
+          "lvl": 27
+        },
+        {
+          "p": "Lil_Happy",
+          "d": -20,
+          "hero": "Какаши",
+          "kda": [
+            4,
+            10,
+            4
+          ],
+          "gold": 19532,
+          "dmg": 16374,
+          "lvl": 29
+        },
+        {
+          "p": "milancore",
+          "d": -20,
+          "hero": "Обито",
+          "kda": [
+            4,
+            8,
+            8
+          ],
+          "gold": 18278,
+          "dmg": 22674,
+          "lvl": 29,
+          "award": "SVP"
+        },
+        {
+          "p": "nekt0",
+          "d": -20,
+          "hero": "Кисаме",
+          "kda": [
+            3,
+            10,
+            8
+          ],
+          "gold": 17421,
+          "dmg": 18904,
+          "lvl": 30
+        }
+      ],
+      "akatsuki": [
+        {
+          "p": "Initio",
+          "d": 20,
+          "hero": "Хирузен",
+          "kda": [
+            5,
+            2,
+            20
+          ],
+          "gold": 25186,
+          "dmg": 35665,
+          "lvl": 30,
+          "award": "MVP"
+        },
+        {
+          "p": "KimEtsu_No",
+          "d": 20,
+          "hero": "Джирая",
+          "kda": [
+            3,
+            7,
+            20
+          ],
+          "gold": 21899,
+          "dmg": 18466,
+          "lvl": 30
+        },
+        {
+          "p": "Myamm",
+          "d": 20,
+          "hero": "Ягура",
+          "kda": [
+            14,
+            6,
+            11
+          ],
+          "gold": 22534,
+          "dmg": 30293,
+          "lvl": 30
+        },
+        {
+          "p": "SoulWind",
+          "d": 20,
+          "hero": "Суйгецу",
+          "kda": [
+            9,
+            4,
+            6
+          ],
+          "gold": 29901,
+          "dmg": 36612,
+          "lvl": 30
+        }
+      ],
+      "duration": "60:59",
+      "kills": [
+        15,
+        31
+      ],
+      "card": "cards/game-121.png"
     }
   ],
   "adjustments": [],
@@ -19625,6 +20057,18 @@ img { max-width: 100%; }
       "kind": "note",
       "match": 117,
       "text": "Итога #117 в канале нет: игра взята со страницы Immortal League на narutolegend.dog и с ac (#8466). Скриншота нет, урона по зданиям и полученного урона нет."
+    },
+    {
+      "date": "2026-11-27",
+      "kind": "note",
+      "match": 119,
+      "text": "Итогов #119 и #120 в канале нет: игры взяты со страницы Immortal League на narutolegend.dog и с ac (#8508, #8514). Скриншотов нет, урона по зданиям и полученного урона нет."
+    },
+    {
+      "date": "2026-11-28",
+      "kind": "note",
+      "match": 121,
+      "text": "Итога #121 в канале нет: игра взята с narutolegend.dog (матч #2045). На ac матча пока нет, поэтому крипов нет; урона по зданиям и полученного урона тоже нет."
     }
   ]
 }
@@ -21769,8 +22213,8 @@ img { max-width: 100%; }
     });
     document.getElementById('ht-own').addEventListener('click', function () {
       tlSetMode('heroes');
-      if (TIERS.every(function (t) { return !tierState[t.id].length; })) {
-        tierState = TL.heroes.auto(); tlSave();
+      if (tierState.every(function (r) { return !r.n.length; })) {
+        tierState = tlFill(TL.heroes.auto()); tlSave();
         tlMsg('Начали с тир-листа по статистике — дальше двигай как хочешь');
       }
     });
@@ -21789,10 +22233,12 @@ img { max-width: 100%; }
       icon: function (name) { var s = stats[name]; return (s && HERO_ICON[s.mainHero]) || null; },
       color: function (name) { var s = stats[name]; return s.place === 1 ? '#ffc94a' : s.place === 2 ? '#c8d6ea' : s.place === 3 ? '#f0a868' : '#f2f4f8'; },
       auto: function () {
-        var o = tlEmpty(), cut = [0.1, 0.3, 0.6, 0.85, 1], n = rows.length || 1;
+        // the default five shelves are top-heavy; any other number of shelves is split evenly by place
+        var N = tierState ? tierState.length : TIERS.length, n = rows.length || 1, o = [], cut = [];
+        for (var k = 0; k < N; k++) { o.push([]); cut.push(N === 5 ? [0.1, 0.3, 0.6, 0.85, 1][k] : (k + 1) / N); }
         rows.forEach(function (s) {
           var q = s.place / n;
-          for (var k = 0; k < cut.length; k++) { if (q <= cut[k] + 1e-9) { o[TIERS[k].id].push(s.name); break; } }
+          for (var k = 0; k < N; k++) { if (q <= cut[k] + 1e-9 || k === N - 1) { o[k].push(s.name); break; } }
         });
         return o;
       }
@@ -21810,20 +22256,44 @@ img { max-width: 100%; }
       },
       icon: function (name) { return HERO_ICON[name] || null; },
       color: function () { return '#f2f4f8'; },
-      auto: function () { var o = tlEmpty(); heroList.forEach(function (h) { if (h.tier) o[h.tier].push(h.name); }); return o; }
+      auto: function () {
+        // statistic tiers S–D are spread over however many shelves there are
+        var N = tierState ? tierState.length : TIERS.length, o = [], ix = {};
+        for (var k = 0; k < N; k++) o.push([]);
+        TIERS.forEach(function (tt, i) { ix[tt.id] = Math.min(N - 1, Math.floor(i * N / TIERS.length)); });
+        heroList.forEach(function (h) { if (h.tier) o[ix[h.tier]].push(h.name); });
+        return o;
+      }
     }
   };
-  var tlMode = 'players', tierStates = {}, tierState = null, tierSel = null;
+  // A tier list is an array of shelves { l: label, c: colour, n: [names] }; the visitor can rename, recolour, add and remove shelves.
+  var tlMode = 'players', tierStates = {}, tierState = null, tierSel = null, tlEditing = false;
+  var TL_MAX = 15, TL_LABEL = 16, TL_NEW = ['#b07cff', '#ff7ad1', '#4fe0d8', '#8a94aa', '#c8a2ff', '#9be15d', '#ffb38a', '#7fb2ff'];
   function tlCfg() { return TL[tlMode]; }
-  function tlEmpty() { var o = {}; TIERS.forEach(function (t) { o[t.id] = []; }); return o; }
-  function tlClean(st) {
-    var known = {}, seen = {}, o = tlEmpty();
-    tlCfg().items().forEach(function (n) { known[n] = true; });
-    TIERS.forEach(function (t) {
-      ((st && st[t.id]) || []).forEach(function (n) { if (known[n] && !seen[n]) { seen[n] = true; o[t.id].push(n); } });
-    });
-    return o;
+  function tlDefault() { return TIERS.map(function (tt) { return { l: tt.id, c: tt.c, n: [] }; }); }
+  function tlEmpty() { return (tierState || tlDefault()).map(function (r) { return { l: r.l, c: r.c, n: [] }; }); }
+  function tlColor(c, i) { return /^#[0-9a-f]{6}$/i.test(c || '') ? c.toLowerCase() : TL_NEW[i % TL_NEW.length]; }
+  function tlInk(c) {
+    var v = parseInt(c.slice(1), 16), r = v >> 16 & 255, g = v >> 8 & 255, b = v & 255;
+    return 0.299 * r + 0.587 * g + 0.114 * b > 150 ? '#07090f' : '#f2f4f8';
   }
+  function tlClean(st) {
+    var known = {}, seen = {}, out;
+    tlCfg().items().forEach(function (n) { known[n] = true; });
+    if (Array.isArray(st)) {
+      out = st.slice(0, TL_MAX).map(function (r, i) {
+        r = r || {};
+        return { l: String(r.l == null ? '' : r.l).slice(0, TL_LABEL), c: tlColor(r.c, i), n: Array.isArray(r.n) ? r.n : [] };
+      });
+    } else {
+      // older lists were stored as { S: [...], A: [...] } with the five fixed shelves
+      out = tlDefault(); out.forEach(function (r) { r.n = (st && Array.isArray(st[r.l])) ? st[r.l] : []; });
+    }
+    if (!out.length) out = tlDefault();
+    out.forEach(function (r) { r.n = r.n.filter(function (n) { if (!known[n] || seen[n]) return false; seen[n] = true; return true; }); });
+    return out;
+  }
+  function tlFill(lists) { var o = tlEmpty(); lists.forEach(function (ns, i) { if (o[i]) o[i].n = ns; }); return o; }
   function tlEncode(st) {
     try { return btoa(unescape(encodeURIComponent(JSON.stringify(st)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); } catch (e) { return ''; }
   }
@@ -21835,7 +22305,7 @@ img { max-width: 100%; }
   function tlSetMode(mode) {
     tlMode = TL[mode] ? mode : 'players';
     tierState = tierStates[tlMode] || (tierStates[tlMode] = tlClean(tlLoad()));
-    tierSel = null;
+    tierSel = null; tlEditing = false;
   }
   function tlMsg(t) { var m = document.getElementById('tl-msg'); m.textContent = t; clearTimeout(tlMsg.t); tlMsg.t = setTimeout(function () { m.textContent = ''; }, 4000); }
   function tlChip(name) {
@@ -21851,18 +22321,31 @@ img { max-width: 100%; }
     document.querySelectorAll('#view-tier .seg a').forEach(function (a) {
       if (a.getAttribute('data-mode') === tlMode) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
     });
-    TIERS.forEach(function (t) { tierState[t.id].forEach(function (n) { placed[n] = true; }); });
-    document.getElementById('tl-board').innerHTML = TIERS.map(function (t) {
-      return '<div class="tl-row"><div class="tl-lbl" style="background:' + t.c + '" data-tier="' + t.id + '">' + t.id + '</div>' +
-        '<div class="tl-zone" data-tier="' + t.id + '">' + tierState[t.id].map(tlChip).join('') + '</div></div>';
-    }).join('');
+    tierState.forEach(function (r) { r.n.forEach(function (n) { placed[n] = true; }); });
+    var board = document.getElementById('tl-board');
+    board.classList.toggle('editing', tlEditing);
+    board.innerHTML = tierState.map(function (r, i) {
+      var ink = tlInk(r.c), L = r.l || '?', sz = L.length <= 2 ? '' : L.length <= 4 ? ' m' : L.length <= 8 ? ' s' : ' xs';
+      var lbl = tlEditing
+        ? '<div class="tl-lbl" style="background:' + r.c + ';color:' + ink + '" data-tier="' + i + '"><textarea class="tl-name' + sz + '" rows="' + (r.l.length > 8 ? 2 : 1) + '" maxlength="' + TL_LABEL + '" spellcheck="false" aria-label="Название полки ' + (i + 1) + '" data-i="' + i + '">' + esc(r.l) + '</textarea></div>'
+        : '<div class="tl-lbl" style="background:' + r.c + ';color:' + ink + '" data-tier="' + i + '"><span class="tl-lt' + sz + '">' + esc(L) + '</span></div>';
+      var ctl = tlEditing ? '<div class="tl-ctl" data-i="' + i + '">' +
+        '<label class="tl-sw" title="Цвет полки" style="background:' + r.c + '"><input type="color" value="' + r.c + '" data-i="' + i + '" aria-label="Цвет полки ' + esc(L) + '"></label>' +
+        '<button type="button" data-act="up" title="Выше" aria-label="Поднять полку"' + (i ? '' : ' disabled') + '>▲</button>' +
+        '<button type="button" data-act="down" title="Ниже" aria-label="Опустить полку"' + (i < tierState.length - 1 ? '' : ' disabled') + '>▼</button>' +
+        '<button type="button" data-act="del" class="del" title="Удалить полку" aria-label="Удалить полку"' + (tierState.length > 1 ? '' : ' disabled') + '>✕</button></div>' : '';
+      return '<div class="tl-row">' + lbl + '<div class="tl-zone" data-tier="' + i + '">' + r.n.map(tlChip).join('') + '</div>' + ctl + '</div>';
+    }).join('') + (tlEditing ? '<div class="tl-edit-bar"><button type="button" class="btn" id="tl-add"' + (tierState.length >= TL_MAX ? ' disabled' : '') + '><span>+ Добавить полку</span></button>' +
+      '<button type="button" class="btn" id="tl-reset"><span>Вернуть S, A, B, C, D</span></button>' +
+      '<span class="note">Название — нажми на него и пиши что угодно. Цвет — квадратик справа. Игроки с удалённой полки вернутся вниз.</span></div>' : '');
+    document.getElementById('tl-edit-t').textContent = tlEditing ? 'Готово' : 'Настроить полки';
     var pool = cfg.items().filter(function (n) { return !placed[n]; });
     document.getElementById('tl-pool').innerHTML = pool.length ? pool.map(tlChip).join('') : '<span class="muted">' + cfg.allPlaced + '</span>';
   }
   function tlMove(name, tier, before) {
-    TIERS.forEach(function (t) { var a = tierState[t.id], i = a.indexOf(name); if (i >= 0) a.splice(i, 1); });
-    if (tier) {
-      var a = tierState[tier], j = before ? a.indexOf(before) : -1;
+    tierState.forEach(function (r) { var i = r.n.indexOf(name); if (i >= 0) r.n.splice(i, 1); });
+    if (tier && tierState[+tier]) {
+      var a = tierState[+tier].n, j = before ? a.indexOf(before) : -1;
       if (j >= 0) a.splice(j, 0, name); else a.push(name);
     }
     tierSel = null; tlSave(); renderTier();
@@ -21873,7 +22356,7 @@ img { max-width: 100%; }
   function tlImage() {
     // portraits are loaded first: same-origin files, so the canvas stays exportable
     var cfg = tlCfg(), want = {}, imgs = {};
-    TIERS.forEach(function (t) { tierState[t.id].forEach(function (n) { var u = cfg.icon(n); if (u) want[n] = u; }); });
+    tierState.forEach(function (r) { r.n.forEach(function (n) { var u = cfg.icon(n); if (u) want[n] = u; }); });
     Promise.all(Object.keys(want).map(function (n) {
       return new Promise(function (done) {
         var im = new Image();
@@ -21889,9 +22372,9 @@ img { max-width: 100%; }
     var cv = document.createElement('canvas'), x = cv.getContext('2d');
     x.font = '600 20px ' + F;
     var maxW = W - PAD * 2 - LBL - 24;
-    var lay = TIERS.map(function (t) {
+    var lay = tierState.map(function (t) {
       var lines = [[]], lw = 0;
-      tierState[t.id].forEach(function (n) {
+      t.n.forEach(function (n) {
         var w = x.measureText(n).width + 28 + (imgs[n] ? CH - 2 : 0);
         if (lw + w > maxW && lines[lines.length - 1].length) { lines.push([]); lw = 0; }
         lines[lines.length - 1].push({ n: n, w: w }); lw += w + GAP;
@@ -21911,8 +22394,21 @@ img { max-width: 100%; }
       x.fillStyle = '#0f131d'; x.fillRect(PAD, y, W - PAD * 2, r.h);
       x.strokeStyle = '#1d2433'; x.lineWidth = 1; x.strokeRect(PAD + 0.5, y + 0.5, W - PAD * 2 - 1, r.h - 1);
       x.fillStyle = r.t.c; x.fillRect(PAD, y, LBL, r.h);
-      x.textBaseline = 'middle'; x.textAlign = 'center'; x.font = '40px ' + FD; x.fillStyle = '#07090f';
-      x.fillText(r.t.id, PAD + LBL / 2, y + r.h / 2 + 2);
+      x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillStyle = tlInk(r.t.c);
+      // a long shelf name is shrunk, then broken into lines at spaces
+      var L = r.t.l || '?', fs = 40, lines = [L], W = LBL - 14;
+      do { x.font = fs + 'px ' + FD; } while (x.measureText(L).width > W && --fs > 22);
+      if (x.measureText(L).width > W && / /.test(L.trim())) {
+        for (fs = 24; fs >= 13; fs--) {
+          x.font = fs + 'px ' + FD; lines = [];
+          L.trim().split(/\s+/).forEach(function (w) {
+            var k = lines.length - 1;
+            if (k >= 0 && x.measureText(lines[k] + ' ' + w).width <= W) lines[k] += ' ' + w; else lines.push(w);
+          });
+          if (lines.every(function (s) { return x.measureText(s).width <= W; }) && lines.length * fs * 1.1 <= r.h - 8) break;
+        }
+      } else while (x.measureText(L).width > W && fs > 11) x.font = --fs + 'px ' + FD;
+      lines.forEach(function (s, k) { x.fillText(s, PAD + LBL / 2, y + r.h / 2 + 2 + (k - (lines.length - 1) / 2) * fs * 1.1, W); });
       x.textAlign = 'left'; x.font = '600 20px ' + F;
       r.lines.forEach(function (line, li) {
         var cx = PAD + LBL + 12, cy = y + 10 + li * (CH + GAP);
@@ -21987,11 +22483,52 @@ img { max-width: 100%; }
     window.addEventListener('pointerup', function (e) { end(e, false); });
     window.addEventListener('pointercancel', function (e) { end(e, true); });
     view.addEventListener('click', function (e) {
+      var ctl = e.target.closest('.tl-ctl button[data-act]');
+      if (ctl) {
+        var i = +ctl.parentNode.getAttribute('data-i'), act = ctl.getAttribute('data-act');
+        if (act === 'del' && tierState.length > 1) tierState.splice(i, 1);
+        else if (act === 'up' && i > 0) tierState.splice(i - 1, 0, tierState.splice(i, 1)[0]);
+        else if (act === 'down' && i < tierState.length - 1) tierState.splice(i + 1, 0, tierState.splice(i, 1)[0]);
+        tlSave(); renderTier(); return;
+      }
+      if (e.target.closest('#tl-add')) {
+        if (tierState.length < TL_MAX) {
+          var used = {}; tierState.forEach(function (r) { used[r.l] = true; });
+          var nm = 'SABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(function (ch) { return !used[ch]; })[0] || '?';
+          tierState.push({ l: nm, c: TL_NEW[tierState.length % TL_NEW.length], n: [] }); tlSave(); renderTier();
+          var inp = view.querySelectorAll('.tl-name'); if (inp.length) { inp[inp.length - 1].focus(); inp[inp.length - 1].select(); }
+        }
+        return;
+      }
+      if (e.target.closest('#tl-reset')) {
+        var d = tlDefault(); tierState.forEach(function (r, i) { if (d[i]) d[i].n = r.n; });
+        tierState = d; tlSave(); renderTier(); tlMsg('Полки вернулись к S, A, B, C, D'); return;
+      }
+      if (e.target.closest('.tl-ctl, .tl-name, .tl-edit-bar')) return;
       if (!tierSel || e.target.closest('.tl-chip')) return;
       var lbl = e.target.closest('.tl-lbl'), z = lbl ? lbl.parentNode.querySelector('.tl-zone') : e.target.closest('.tl-zone');
       if (z) tlMove(tierSel, z.getAttribute('data-tier'), null);
     });
-    document.getElementById('tl-auto').addEventListener('click', function () { tierState = tlCfg().auto(); tierSel = null; tlSave(); renderTier(); tlMsg(tlCfg().autoMsg); });
+    view.addEventListener('input', function (e) {
+      var el = e.target, i = +el.getAttribute('data-i');
+      if (!tierState[i]) return;
+      if (el.classList.contains('tl-name')) {
+        if (/\n/.test(el.value)) el.value = el.value.replace(/\s*\n\s*/g, ' ');
+        var L = tierState[i].l = el.value.slice(0, TL_LABEL);
+        el.className = 'tl-name' + (L.length <= 2 ? '' : L.length <= 4 ? ' m' : L.length <= 8 ? ' s' : ' xs');
+        el.rows = L.length > 8 ? 2 : 1;
+        tlSave();
+      }
+      else if (el.type === 'color' && /^#[0-9a-f]{6}$/i.test(el.value)) {
+        tierState[i].c = el.value.toLowerCase();
+        var lbl = el.closest('.tl-row').querySelector('.tl-lbl');
+        lbl.style.background = el.value; lbl.style.color = tlInk(tierState[i].c); el.parentNode.style.background = el.value;
+        tlSave();
+      }
+    });
+    view.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.classList.contains('tl-name')) { e.preventDefault(); e.target.blur(); } });
+    document.getElementById('tl-edit').addEventListener('click', function () { tlEditing = !tlEditing; tierSel = null; renderTier(); });
+    document.getElementById('tl-auto').addEventListener('click', function () { tierState = tlFill(tlCfg().auto()); tierSel = null; tlSave(); renderTier(); tlMsg(tlCfg().autoMsg); });
     document.getElementById('tl-clear').addEventListener('click', function () { tierState = tlEmpty(); tierSel = null; tlSave(); renderTier(); });
     document.getElementById('tl-png').addEventListener('click', tlImage);
     document.getElementById('tl-link').addEventListener('click', function () {
